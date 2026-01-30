@@ -30,6 +30,10 @@ This repository consolidates multiple Home Assistant integrations into a unified
 
 ## 🚀 Quick Start
 
+> **⚡ New to this repo?** Check out our [**5-Minute Quick Start Guide**](./QUICKSTART.md) for the fastest setup!
+
+For repository synchronization with source repos, see [**Sync Guide**](./SYNC_GUIDE.md).
+
 ### Prerequisites
 - Docker & Docker Compose
 - Home Assistant (2024.1+)
