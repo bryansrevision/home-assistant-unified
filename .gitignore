@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+
+# Home Assistant
+*.db
+*.db-shm
+*.db-wal
+secrets.yaml
+known_devices.yaml
+
+# Environment
+.env
+.env.local
+*.log
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*_secret*
+*.key
+*.pem

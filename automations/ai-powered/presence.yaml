@@ -1,0 +1,171 @@
+---
+# Presence Detection Automations
+# Handles arrival and departure automations using iCloud device tracking
+
+- id: 'presence_arrival_home'
+  alias: "Arrival: Welcome Home"
+  description: "Trigger actions when someone arrives home"
+  trigger:
+    - platform: state
+      entity_id:
+        - person.dylan
+        - person.family_member
+      from: 'not_home'
+      to: 'home'
+  condition:
+    - condition: sun
+      after: sunset
+      after_offset: "-00:30:00"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.entryway
+          - light.living_room
+      data:
+        brightness_pct: 80
+        color_temp: 370
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+        hvac_mode: auto
+    - service: notify.mobile_app
+      data:
+        title: "Welcome Home"
+        message: "{{ trigger.to_state.attributes.friendly_name }} arrived home at {{ now().strftime('%I:%M %p') }}"
+    - service: script.turn_on
+      target:
+        entity_id: script.alexa_welcome_home
+
+- id: 'presence_departure_home'
+  alias: "Departure: Goodbye"
+  description: "Trigger actions when everyone leaves home"
+  trigger:
+    - platform: state
+      entity_id: zone.home
+      to: '0'
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+  action:
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 68
+        hvac_mode: auto
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: media_player.turn_off
+      target:
+        entity_id:
+          - media_player.living_room_tv
+          - media_player.bedroom_tv
+    - service: script.turn_on
+      target:
+        entity_id: script.security_arm
+    - service: notify.mobile_app
+      data:
+        title: "Goodbye"
+        message: "Everyone has left home. Security armed and lights off."
+
+- id: 'presence_first_person_home'
+  alias: "Arrival: First Person Home"
+  description: "Special actions when first person arrives"
+  trigger:
+    - platform: numeric_state
+      entity_id: zone.home
+      above: 0
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      for:
+        hours: 1
+  action:
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: home
+    - service: script.turn_on
+      target:
+        entity_id: script.security_disarm
+    - service: switch.turn_on
+      target:
+        entity_id:
+          - switch.water_heater
+          - switch.router
+
+- id: 'presence_extended_away'
+  alias: "Presence: Extended Away Mode"
+  description: "Activate extended away mode after 24 hours"
+  trigger:
+    - platform: state
+      entity_id: zone.home
+      to: '0'
+      for:
+        hours: 24
+  action:
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: away
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.vacation_mode
+    - service: notify.mobile_app
+      data:
+        title: "Extended Away Mode Activated"
+        message: "No one has been home for 24 hours. Activating vacation settings."
+        data:
+          actions:
+            - action: "DISABLE_VACATION"
+              title: "Disable Vacation Mode"
+
+- id: 'presence_arrive_work'
+  alias: "Arrival: Arrived at Work"
+  description: "Notify when arriving at work"
+  trigger:
+    - platform: zone
+      entity_id: person.dylan
+      zone: zone.work
+      event: enter
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "Work Arrival"
+        message: "Arrived at work at {{ now().strftime('%I:%M %p') }}"
+
+- id: 'presence_leaving_work'
+  alias: "Departure: Leaving Work"
+  description: "Prepare home when leaving work"
+  trigger:
+    - platform: zone
+      entity_id: person.dylan
+      zone: zone.work
+      event: leave
+  condition:
+    - condition: time
+      after: '15:00:00'
+      before: '19:00:00'
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: 'on'
+  action:
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    - service: notify.mobile_app
+      data:
+        title: "Heading Home"
+        message: "Preparing home. Estimated arrival in {{ (distance(states.person.dylan, states.zone.home) / 35 * 60) | round(0) }} minutes."

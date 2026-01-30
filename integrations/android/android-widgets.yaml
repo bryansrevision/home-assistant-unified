@@ -1,0 +1,547 @@
+# ================================================
+# Android Widget Configurations for Home Assistant
+# ================================================
+# This file documents widget configurations for the Home Assistant Companion app
+# Configure these widgets directly in the Home Assistant Android app
+# ================================================
+
+# ================================================
+# WIDGET CONFIGURATION GUIDE
+# ================================================
+
+# To add widgets on Android:
+# 1. Long-press on home screen
+# 2. Tap "Widgets"
+# 3. Scroll to "Home Assistant"
+# 4. Drag desired widget to home screen
+# 5. Configure widget by selecting entities or dashboard
+
+# ================================================
+# SECTION 1: QUICK ACTION WIDGETS (2x2)
+# ================================================
+
+# ------------------------------------------------
+# Widget 1: Essential Controls
+# ------------------------------------------------
+widget_essential_controls:
+  name: "Essential Controls"
+  size: "2x2"
+  type: "button_widget"
+  description: "Quick access to most-used controls"
+  entities:
+    - entity_id: light.living_room
+      icon: mdi:lightbulb
+      label: "Living Room"
+      
+    - entity_id: light.bedroom
+      icon: mdi:lightbulb-outline
+      label: "Bedroom"
+      
+    - entity_id: lock.front_door
+      icon: mdi:door-closed-lock
+      label: "Front Door"
+      
+    - entity_id: switch.garage_door
+      icon: mdi:garage
+      label: "Garage"
+
+# ------------------------------------------------
+# Widget 2: Security Dashboard
+# ------------------------------------------------
+widget_security:
+  name: "Security Dashboard"
+  size: "2x2"
+  type: "button_widget"
+  description: "Security system quick controls"
+  entities:
+    - entity_id: alarm_control_panel.home_security
+      icon: mdi:shield-home
+      label: "Security"
+      
+    - entity_id: binary_sensor.front_door
+      icon: mdi:door
+      label: "Front Door"
+      
+    - entity_id: binary_sensor.back_door
+      icon: mdi:door
+      label: "Back Door"
+      
+    - entity_id: camera.front_door
+      icon: mdi:camera
+      label: "Cameras"
+
+# ------------------------------------------------
+# Widget 3: Climate Control
+# ------------------------------------------------
+widget_climate:
+  name: "Climate Control"
+  size: "2x2"
+  type: "button_widget"
+  description: "Temperature and climate controls"
+  entities:
+    - entity_id: climate.home_thermostat
+      icon: mdi:thermostat
+      label: "Thermostat"
+      
+    - entity_id: sensor.indoor_temperature
+      icon: mdi:thermometer
+      label: "Indoor Temp"
+      
+    - entity_id: fan.bedroom_fan
+      icon: mdi:fan
+      label: "Bedroom Fan"
+      
+    - entity_id: switch.humidifier
+      icon: mdi:air-humidifier
+      label: "Humidifier"
+
+# ------------------------------------------------
+# Widget 4: Media Control
+# ------------------------------------------------
+widget_media:
+  name: "Media Control"
+  size: "2x2"
+  type: "button_widget"
+  description: "Control media players"
+  entities:
+    - entity_id: media_player.living_room_tv
+      icon: mdi:television
+      label: "Living Room TV"
+      
+    - entity_id: media_player.bedroom_tv
+      icon: mdi:television
+      label: "Bedroom TV"
+      
+    - entity_id: media_player.google_home
+      icon: mdi:google-home
+      label: "Speakers"
+      
+    - entity_id: media_player.spotify
+      icon: mdi:spotify
+      label: "Spotify"
+
+# ================================================
+# SECTION 2: DASHBOARD WIDGETS (4x2)
+# ================================================
+
+# ------------------------------------------------
+# Widget 5: Home Overview
+# ------------------------------------------------
+widget_home_overview:
+  name: "Home Overview"
+  size: "4x2"
+  type: "dashboard_widget"
+  description: "Complete home status at a glance"
+  dashboard: "default_view"
+  entities_shown:
+    - Light states (all)
+    - Lock states (all)
+    - Security system status
+    - Temperature sensors
+    - Person locations
+    - System status
+
+# ------------------------------------------------
+# Widget 6: Camera Grid
+# ------------------------------------------------
+widget_cameras:
+  name: "Camera Grid"
+  size: "4x2"
+  type: "dashboard_widget"
+  description: "Live camera feeds"
+  dashboard: "cameras"
+  entities_shown:
+    - camera.front_door
+    - camera.driveway
+    - camera.backyard
+    - camera.garage
+
+# ------------------------------------------------
+# Widget 7: Energy Dashboard
+# ------------------------------------------------
+widget_energy:
+  name: "Energy Dashboard"
+  size: "4x2"
+  type: "dashboard_widget"
+  description: "Energy usage monitoring"
+  dashboard: "energy"
+  entities_shown:
+    - sensor.daily_energy
+    - sensor.monthly_energy
+    - sensor.current_power
+    - sensor.solar_production
+
+# ================================================
+# SECTION 3: SINGLE ENTITY WIDGETS (1x1)
+# ================================================
+
+# ------------------------------------------------
+# Widget 8: Front Door Lock
+# ------------------------------------------------
+widget_front_door_lock:
+  name: "Front Door"
+  size: "1x1"
+  type: "single_entity"
+  entity_id: lock.front_door
+  description: "Quick lock/unlock front door"
+  tap_action: toggle
+
+# ------------------------------------------------
+# Widget 9: Garage Door
+# ------------------------------------------------
+widget_garage_door:
+  name: "Garage"
+  size: "1x1"
+  type: "single_entity"
+  entity_id: cover.garage_door
+  description: "Open/close garage door"
+  tap_action: toggle
+
+# ------------------------------------------------
+# Widget 10: All Lights Off
+# ------------------------------------------------
+widget_lights_off:
+  name: "Lights Off"
+  size: "1x1"
+  type: "script_widget"
+  script: script.all_lights_off
+  icon: mdi:lightbulb-off
+  description: "Turn off all lights"
+
+# ------------------------------------------------
+# Widget 11: Security Arm/Disarm
+# ------------------------------------------------
+widget_security_toggle:
+  name: "Security"
+  size: "1x1"
+  type: "single_entity"
+  entity_id: alarm_control_panel.home_security
+  description: "Arm/disarm security"
+  tap_action: more_info
+
+# ================================================
+# SECTION 4: TEMPLATE WIDGETS (Configurable)
+# ================================================
+
+# ------------------------------------------------
+# Template Widget 1: Scene Activator
+# ------------------------------------------------
+widget_template_scenes:
+  name: "Scenes"
+  size: "2x1"
+  type: "template_widget"
+  description: "Activate home scenes"
+  template: |
+    {% if is_state('sun.sun', 'below_horizon') %}
+      Evening Mode
+    {% else %}
+      Day Mode
+    {% endif %}
+  tap_action:
+    action: call-service
+    service: scene.turn_on
+    data:
+      entity_id: >
+        {% if is_state('sun.sun', 'below_horizon') %}
+          scene.evening
+        {% else %}
+          scene.day
+        {% endif %}
+
+# ------------------------------------------------
+# Template Widget 2: Presence Status
+# ------------------------------------------------
+widget_template_presence:
+  name: "Presence"
+  size: "2x1"
+  type: "template_widget"
+  description: "Show who's home"
+  template: |
+    {% set home = states.person | selectattr('state', 'eq', 'home') | list | count %}
+    {% set total = states.person | list | count %}
+    {{ home }}/{{ total }} home
+
+# ------------------------------------------------
+# Template Widget 3: System Status
+# ------------------------------------------------
+widget_template_system:
+  name: "System"
+  size: "2x1"
+  type: "template_widget"
+  description: "System health indicator"
+  template: |
+    {% if states('sensor.proxmox_status') == 'online' %}
+      ✅ All Systems OK
+    {% else %}
+      ⚠️ System Issues
+    {% endif %}
+
+# ================================================
+# SECTION 5: QUICK SETTINGS TILES
+# ================================================
+# These appear in Android's Quick Settings panel
+
+# ------------------------------------------------
+# Tile 1: Favorites
+# ------------------------------------------------
+quick_tile_favorites:
+  name: "Favorites Tile"
+  type: "favorites"
+  description: "Access favorite entities from Quick Settings"
+  entities:
+    - light.living_room
+    - lock.front_door
+    - climate.home_thermostat
+    - switch.garage_door
+
+# ------------------------------------------------
+# Tile 2: Template Tile 1 - All Lights Off
+# ------------------------------------------------
+quick_tile_template_1:
+  name: "All Lights Off"
+  type: "template"
+  icon: mdi:lightbulb-off
+  label: "Lights Off"
+  tap_action:
+    action: call-service
+    service: light.turn_off
+    target:
+      entity_id: all
+
+# ------------------------------------------------
+# Tile 3: Template Tile 2 - Lock All Doors
+# ------------------------------------------------
+quick_tile_template_2:
+  name: "Lock All"
+  type: "template"
+  icon: mdi:lock
+  label: "Lock All"
+  tap_action:
+    action: call-service
+    service: lock.lock
+    target:
+      entity_id: all
+
+# ------------------------------------------------
+# Tile 4: Script Tile - Movie Mode
+# ------------------------------------------------
+quick_tile_script:
+  name: "Movie Mode"
+  type: "script"
+  icon: mdi:movie
+  label: "Movie"
+  script: script.movie_mode
+
+# ================================================
+# SECTION 6: WIDGET REFRESH INTERVALS
+# ================================================
+
+widget_refresh_settings:
+  # How often widgets update (in minutes)
+  quick_action_widgets: 5
+  dashboard_widgets: 2
+  single_entity_widgets: 1
+  template_widgets: 1
+  
+  # Battery optimization
+  # Set longer intervals if battery drain is an issue
+  battery_saver_mode:
+    quick_action_widgets: 15
+    dashboard_widgets: 10
+    single_entity_widgets: 5
+    template_widgets: 5
+
+# ================================================
+# SECTION 7: WIDGET PLACEMENT RECOMMENDATIONS
+# ================================================
+
+recommended_home_screen_layout:
+  home_screen_1:
+    description: "Main home screen with most-used controls"
+    widgets:
+      - name: "Essential Controls"
+        position: "Top row, left"
+        size: "2x2"
+      
+      - name: "Security Dashboard"
+        position: "Top row, right"
+        size: "2x2"
+      
+      - name: "Home Overview"
+        position: "Middle, spanning width"
+        size: "4x2"
+      
+      - name: "Front Door Lock"
+        position: "Bottom row, left"
+        size: "1x1"
+      
+      - name: "Garage Door"
+        position: "Bottom row, center-left"
+        size: "1x1"
+      
+      - name: "Lights Off"
+        position: "Bottom row, center-right"
+        size: "1x1"
+      
+      - name: "Security Toggle"
+        position: "Bottom row, right"
+        size: "1x1"
+
+  home_screen_2:
+    description: "Secondary screen with media and climate"
+    widgets:
+      - name: "Climate Control"
+        position: "Top row, left"
+        size: "2x2"
+      
+      - name: "Media Control"
+        position: "Top row, right"
+        size: "2x2"
+      
+      - name: "Energy Dashboard"
+        position: "Middle, spanning width"
+        size: "4x2"
+
+  home_screen_3:
+    description: "Security and monitoring"
+    widgets:
+      - name: "Camera Grid"
+        position: "Top, spanning width"
+        size: "4x2"
+      
+      - name: "Security Dashboard"
+        position: "Middle, left"
+        size: "2x2"
+
+# ================================================
+# SECTION 8: WIDGET STYLING
+# ================================================
+
+widget_theme_settings:
+  light_theme:
+    background: "#FFFFFF"
+    text_color: "#000000"
+    accent_color: "#03A9F4"
+    icon_color: "#757575"
+  
+  dark_theme:
+    background: "#121212"
+    text_color: "#FFFFFF"
+    accent_color: "#03A9F4"
+    icon_color: "#CCCCCC"
+  
+  use_theme: "auto"  # auto, light, dark
+
+# ================================================
+# CONFIGURATION INSTRUCTIONS
+# ================================================
+
+configuration_steps:
+  step_1:
+    title: "Add Widget to Home Screen"
+    instructions:
+      - "Long-press on Android home screen"
+      - "Tap 'Widgets'"
+      - "Scroll to 'Home Assistant'"
+      - "Select widget size (1x1, 2x2, 4x2, etc.)"
+      - "Drag to desired position"
+  
+  step_2:
+    title: "Configure Widget"
+    instructions:
+      - "Tap on newly placed widget"
+      - "Select configuration type (Button, Dashboard, Entity)"
+      - "Choose entities or dashboard to display"
+      - "Customize label and icon if available"
+      - "Save configuration"
+  
+  step_3:
+    title: "Configure Quick Settings Tiles"
+    instructions:
+      - "Swipe down from top to open Quick Settings"
+      - "Tap edit button (pencil icon)"
+      - "Find Home Assistant tiles"
+      - "Drag to Quick Settings area"
+      - "Arrange in preferred order"
+  
+  step_4:
+    title: "Configure Tile Actions"
+    instructions:
+      - "Open Home Assistant app"
+      - "Go to App Configuration > Manage Tiles"
+      - "Configure Template Tile 1 and 2"
+      - "Set label, icon, and action"
+      - "Save changes"
+
+# ================================================
+# TROUBLESHOOTING
+# ================================================
+
+troubleshooting:
+  widget_not_updating:
+    problem: "Widget shows old data"
+    solutions:
+      - "Check battery optimization settings"
+      - "Ensure Home Assistant app is not restricted"
+      - "Reduce update interval if too frequent"
+      - "Force close and reopen app"
+      - "Remove and re-add widget"
+  
+  widget_shows_unavailable:
+    problem: "Widget displays 'Unavailable'"
+    solutions:
+      - "Check Home Assistant connection"
+      - "Verify entity still exists"
+      - "Check entity permissions"
+      - "Ensure sensors are enabled in app"
+      - "Update Home Assistant app"
+  
+  quick_tile_not_working:
+    problem: "Quick Settings tile doesn't respond"
+    solutions:
+      - "Reconfigure tile in app settings"
+      - "Check service call permissions"
+      - "Verify entity ID is correct"
+      - "Clear app cache"
+      - "Reinstall Home Assistant app"
+
+# ================================================
+# PERFORMANCE TIPS
+# ================================================
+
+performance_tips:
+  - description: "Use fewer dashboard widgets"
+    reason: "Dashboard widgets consume more battery"
+    
+  - description: "Increase refresh intervals"
+    reason: "Less frequent updates save battery"
+    
+  - description: "Use single entity widgets for frequently used controls"
+    reason: "Faster response and lower battery usage"
+    
+  - description: "Disable widgets when not needed"
+    reason: "Reduces background activity"
+    
+  - description: "Use Quick Settings tiles instead of widgets"
+    reason: "Tiles use less resources"
+
+# ================================================
+# NOTES
+# ================================================
+# 1. Widget configuration is done in the Home Assistant Android app
+#    This YAML file is for documentation and planning purposes
+#
+# 2. Not all widget types support all features
+#    Check app documentation for current capabilities
+#
+# 3. Widgets require background app access
+#    Ensure battery optimization is disabled
+#
+# 4. Dashboard widgets load entire dashboard
+#    Use curated dashboards for better performance
+#
+# 5. Template widgets require Home Assistant 2021.11+
+#
+# 6. Quick Settings tiles are limited to 4 on most devices
+#    Choose your most important actions
+# ================================================

@@ -1,0 +1,43 @@
+{
+  "mobile_devices": [
+    {
+      "name": "Primary Android Phone",
+      "device_id": "android_phone_001",
+      "ip_address": "",
+      "port": 8080,
+      "connection_method": "wireless",
+      "description": "Primary Android device for home automation control"
+    }
+  ],
+  "connection_settings": {
+    "wireless": {
+      "auto_discover": true,
+      "timeout": 10,
+      "retry_attempts": 3
+    },
+    "usb": {
+      "adb_enabled": true,
+      "debugging_enabled": true
+    },
+    "bluetooth": {
+      "enabled": false,
+      "pairing_required": true
+    }
+  },
+  "home_assistant_app": {
+    "server_url": "http://192.168.1.201:8123",
+    "external_url": "",
+    "internal_url": "http://192.168.1.201:8123",
+    "use_ssl": false,
+    "webhook_id": "",
+    "cloudhook_url": "",
+    "push_notification_key": ""
+  },
+  "features": {
+    "push_notifications": true,
+    "location_tracking": false,
+    "sensor_reporting": true,
+    "camera_access": false,
+    "nfc_tags": true
+  }
+}

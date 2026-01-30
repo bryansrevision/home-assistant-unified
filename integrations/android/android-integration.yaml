@@ -1,0 +1,369 @@
+# ================================================
+# Android Integration Configuration for Home Assistant
+# ================================================
+# This file configures the Android device integration with Home Assistant
+# Add this to your configuration.yaml:
+#   mobile_app: !include android-integration.yaml
+# ================================================
+
+# Mobile App Configuration
+mobile_app:
+
+# ================================================
+# Device Trackers
+# ================================================
+# Automatically created by the Home Assistant Companion app
+# These entities will be available after setting up the app:
+# - device_tracker.mobile_app_<device_name>
+# - sensor.mobile_app_<device_name>_battery_level
+# - sensor.mobile_app_<device_name>_battery_state
+# - sensor.mobile_app_<device_name>_geocoded_location
+# - sensor.mobile_app_<device_name>_activity
+# - And many more...
+
+# ================================================
+# Person Integration (Link device tracker to person)
+# ================================================
+person:
+  - name: "Primary User"
+    id: primary_user
+    user_id: !secret primary_user_id
+    device_trackers:
+      - device_tracker.mobile_app_primary_android  # Replace with your actual device name
+      - device_tracker.icloud_primary  # Add iCloud if configured
+
+# ================================================
+# Zones Configuration
+# ================================================
+zone:
+  # Home Zone (automatically configured, but can be customized)
+  - name: Home
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude
+    radius: 100
+    icon: mdi:home
+    passive: false
+
+  # Work Zone
+  - name: Work
+    latitude: !secret work_latitude
+    longitude: !secret work_longitude
+    radius: 150  # Larger radius for parking lots
+    icon: mdi:briefcase
+    passive: false
+
+  # Gym Zone
+  - name: Gym
+    latitude: !secret gym_latitude
+    longitude: !secret gym_longitude
+    radius: 100
+    icon: mdi:dumbbell
+    passive: false
+
+  # Grocery Store (Passive tracking only)
+  - name: Grocery Store
+    latitude: !secret grocery_latitude
+    longitude: !secret grocery_longitude
+    radius: 200
+    icon: mdi:cart
+    passive: true  # Won't trigger automations
+
+# ================================================
+# Input Boolean Helpers (for automation logic)
+# ================================================
+input_boolean:
+  # Track if user just arrived home
+  just_arrived_home:
+    name: "Just Arrived Home"
+    icon: mdi:home-import-outline
+
+  # Track if user is away
+  away_mode_active:
+    name: "Away Mode Active"
+    icon: mdi:home-export-outline
+
+  # Guest mode (disable some automations)
+  guest_mode:
+    name: "Guest Mode"
+    icon: mdi:account-multiple
+
+  # Phone battery low alert sent
+  phone_battery_alert_sent:
+    name: "Phone Battery Alert Sent"
+    icon: mdi:battery-alert
+
+# ================================================
+# Input Select Helpers
+# ================================================
+input_select:
+  # House mode based on activity
+  house_mode:
+    name: "House Mode"
+    options:
+      - "Normal"
+      - "Away"
+      - "Sleep"
+      - "Quiet"
+      - "Party"
+      - "Movie"
+      - "Gaming"
+    icon: mdi:home-automation
+
+# ================================================
+# Input DateTime Helpers (for tracking times)
+# ================================================
+input_datetime:
+  last_arrival:
+    name: "Last Arrival Time"
+    has_date: true
+    has_time: true
+
+  last_departure:
+    name: "Last Departure Time"
+    has_date: true
+    has_time: true
+
+  last_phone_charge:
+    name: "Last Phone Charge Time"
+    has_date: true
+    has_time: true
+
+# ================================================
+# Template Sensors (derived from Android sensors)
+# ================================================
+template:
+  - sensor:
+      # Battery status with friendly text
+      - name: "Phone Battery Status"
+        unique_id: phone_battery_status
+        state: >
+          {% set level = states('sensor.mobile_app_primary_android_battery_level') | int(0) %}
+          {% set charging = is_state('binary_sensor.mobile_app_primary_android_is_charging', 'on') %}
+          {% if charging %}
+            Charging ({{ level }}%)
+          {% elif level > 80 %}
+            High ({{ level }}%)
+          {% elif level > 50 %}
+            Good ({{ level }}%)
+          {% elif level > 20 %}
+            Medium ({{ level }}%)
+          {% else %}
+            Low ({{ level }}%)
+          {% endif %}
+        icon: >
+          {% set level = states('sensor.mobile_app_primary_android_battery_level') | int(0) %}
+          {% set charging = is_state('binary_sensor.mobile_app_primary_android_is_charging', 'on') %}
+          {% if charging %}
+            mdi:battery-charging
+          {% elif level > 80 %}
+            mdi:battery
+          {% elif level > 60 %}
+            mdi:battery-80
+          {% elif level > 40 %}
+            mdi:battery-60
+          {% elif level > 20 %}
+            mdi:battery-40
+          {% else %}
+            mdi:battery-20
+          {% endif %}
+
+      # Location summary
+      - name: "Phone Location"
+        unique_id: phone_location
+        state: >
+          {% set tracker = states('device_tracker.mobile_app_primary_android') %}
+          {% if tracker == 'home' %}
+            Home
+          {% elif tracker == 'not_home' %}
+            Away
+          {% else %}
+            {{ tracker | title }}
+          {% endif %}
+        icon: mdi:map-marker
+
+      # Time at current location
+      - name: "Time at Location"
+        unique_id: time_at_location
+        state: >
+          {% set tracker = 'device_tracker.mobile_app_primary_android' %}
+          {% set last_changed = as_timestamp(states[tracker].last_changed) %}
+          {% set now = as_timestamp(now()) %}
+          {% set diff = (now - last_changed) / 60 %}
+          {% if diff < 60 %}
+            {{ diff | int }} minutes
+          {% else %}
+            {{ (diff / 60) | int }} hours {{ (diff % 60) | int }} minutes
+          {% endif %}
+        icon: mdi:clock-outline
+
+      # Activity status
+      - name: "Phone Activity"
+        unique_id: phone_activity
+        state: >
+          {% set activity = states('sensor.mobile_app_primary_android_activity') %}
+          {% if activity == 'in_vehicle' %}
+            Driving
+          {% elif activity == 'on_bicycle' %}
+            Cycling
+          {% elif activity == 'on_foot' %}
+            Walking
+          {% elif activity == 'running' %}
+            Running
+          {% elif activity == 'still' %}
+            Stationary
+          {% elif activity == 'walking' %}
+            Walking
+          {% else %}
+            {{ activity | title }}
+          {% endif %}
+        icon: >
+          {% set activity = states('sensor.mobile_app_primary_android_activity') %}
+          {% if activity == 'in_vehicle' %}
+            mdi:car
+          {% elif activity == 'on_bicycle' %}
+            mdi:bike
+          {% elif activity in ['on_foot', 'walking'] %}
+            mdi:walk
+          {% elif activity == 'running' %}
+            mdi:run
+          {% else %}
+            mdi:motion-sensor
+          {% endif %}
+
+  - binary_sensor:
+      # Is phone at home?
+      - name: "Phone at Home"
+        unique_id: phone_at_home
+        state: >
+          {{ is_state('device_tracker.mobile_app_primary_android', 'home') }}
+        device_class: presence
+
+      # Is battery low?
+      - name: "Phone Battery Low"
+        unique_id: phone_battery_low
+        state: >
+          {{ states('sensor.mobile_app_primary_android_battery_level') | int(100) < 20 }}
+        device_class: battery
+
+      # Is phone in power save mode?
+      - name: "Phone Power Save Active"
+        unique_id: phone_power_save_active
+        state: >
+          {{ is_state('binary_sensor.mobile_app_primary_android_power_save', 'on') }}
+        icon: mdi:battery-alert
+
+# ================================================
+# Notify Groups (for broadcasting to multiple devices)
+# ================================================
+notify:
+  - name: all_mobile_devices
+    platform: group
+    services:
+      - service: mobile_app_primary_android
+      # Add more devices here as needed
+      # - service: mobile_app_secondary_android
+
+  - name: critical_alerts
+    platform: group
+    services:
+      - service: mobile_app_primary_android
+      - service: persistent_notification  # Also show in HA UI
+
+# ================================================
+# Proximity (Calculate distance from home)
+# ================================================
+proximity:
+  home_distance:
+    zone: home
+    devices:
+      - device_tracker.mobile_app_primary_android
+    tolerance: 50
+    unit_of_measurement: km
+
+# ================================================
+# Automation Helpers
+# ================================================
+# Create counter for tracking false presence triggers
+counter:
+  false_departure_count:
+    name: "False Departure Count"
+    initial: 0
+    step: 1
+    icon: mdi:counter
+
+# ================================================
+# Recorder Configuration (optimize database)
+# ================================================
+# Add to your recorder configuration to exclude frequent sensors
+# recorder:
+#   exclude:
+#     entities:
+#       - sensor.mobile_app_primary_android_light_sensor
+#       - sensor.mobile_app_primary_android_pressure_sensor
+#       - sensor.mobile_app_primary_android_proximity_sensor
+#     entity_globs:
+#       - sensor.mobile_app_*_step_*
+
+# ================================================
+# Logbook Configuration
+# ================================================
+# Customize logbook entries for better readability
+logbook:
+  exclude:
+    entities:
+      - sensor.mobile_app_primary_android_light_sensor
+      - sensor.mobile_app_primary_android_pressure_sensor
+
+# ================================================
+# Customize Entity Configuration
+# ================================================
+homeassistant:
+  customize:
+    device_tracker.mobile_app_primary_android:
+      friendly_name: "Primary Android Phone"
+      icon: mdi:cellphone
+
+    sensor.mobile_app_primary_android_battery_level:
+      friendly_name: "Phone Battery"
+      device_class: battery
+
+    sensor.mobile_app_primary_android_activity:
+      friendly_name: "Phone Activity"
+      icon: mdi:run
+
+    binary_sensor.mobile_app_primary_android_is_charging:
+      friendly_name: "Phone Charging"
+      device_class: battery_charging
+
+# ================================================
+# NOTES:
+# ================================================
+# 1. Replace 'primary_android' with your actual device name
+#    You can find this in HA: Settings > Devices > Mobile App > Device Name
+#
+# 2. Add secrets to your secrets.yaml:
+#    home_latitude: 37.7749
+#    home_longitude: -122.4194
+#    work_latitude: 37.7849
+#    work_longitude: -122.4094
+#    gym_latitude: 37.7949
+#    gym_longitude: -122.3994
+#    grocery_latitude: 37.7649
+#    grocery_longitude: -122.4294
+#    primary_user_id: <user_id_from_HA>
+#
+# 3. For best battery life:
+#    - Adjust sensor update frequencies in the mobile app
+#    - Disable sensors you don't need
+#    - Use WiFi-based presence detection as backup
+#
+# 4. For multiple Android devices:
+#    - Duplicate person entries
+#    - Add device trackers to person
+#    - Create separate notification services
+#
+# 5. Integration with other systems:
+#    - Use MQTT for Zigbee2MQTT devices
+#    - Add Proxmox integration for VM control
+#    - Connect MCP Hub via webhooks or API calls
+# ================================================

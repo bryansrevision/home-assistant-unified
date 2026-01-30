@@ -1,0 +1,44 @@
+# Default device configuration for HOME-AI-AUTOMATION
+
+{
+  "devices": [
+    {
+      "name": "Living Room Light",
+      "type": "light",
+      "location": "Living Room"
+    },
+    {
+      "name": "Bedroom Light",
+      "type": "light", 
+      "location": "Bedroom"
+    },
+    {
+      "name": "Kitchen Light",
+      "type": "light",
+      "location": "Kitchen"
+    },
+    {
+      "name": "Main Thermostat",
+      "type": "thermostat",
+      "location": "Living Room"
+    },
+    {
+      "name": "Temperature Sensor",
+      "type": "sensor",
+      "location": "Living Room",
+      "sensor_type": "temperature"
+    },
+    {
+      "name": "Humidity Sensor", 
+      "type": "sensor",
+      "location": "Living Room",
+      "sensor_type": "humidity"
+    },
+    {
+      "name": "Motion Sensor",
+      "type": "sensor",
+      "location": "Hallway",
+      "sensor_type": "motion"
+    }
+  ]
+}

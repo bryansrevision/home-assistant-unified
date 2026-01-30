@@ -1,0 +1,253 @@
+# Home Assistant Configuration Template
+# This file should be placed in your Home Assistant config directory
+
+homeassistant:
+  name: Home
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  elevation: !secret home_elevation
+  unit_system: metric
+  time_zone: !secret timezone
+  internal_url: "http://192.168.1.201:8123"
+  external_url: !secret external_url
+
+# Enable HTTP
+http:
+  server_port: 8123
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.0/24
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+  # Uncomment for SSL
+  # ssl_certificate: /ssl/fullchain.pem
+  # ssl_key: /ssl/privkey.pem
+
+# Enable the default frontend
+frontend:
+  themes: !include_dir_merge_named themes
+
+# Enable configuration UI
+config:
+
+# Enable system health
+system_health:
+
+# Uncomment for cloud integration
+# cloud:
+
+# Enable API
+api:
+
+# Enable history
+history:
+  include:
+    domains:
+      - sensor
+      - binary_sensor
+      - switch
+      - light
+      - climate
+      - cover
+      - lock
+      - device_tracker
+  exclude:
+    entities:
+      - sun.sun
+      - sensor.date
+      - sensor.time
+
+# Enable database recorder
+recorder:
+  db_url: sqlite:////config/home-assistant_v2.db
+  purge_keep_days: 7
+  commit_interval: 30
+  auto_purge: true
+  exclude:
+    domains:
+      - automation
+      - updater
+      - group
+    entity_globs:
+      - sensor.weather_*
+
+# Enable logbook
+logbook:
+  exclude:
+    domains:
+      - automation
+    entities:
+      - sun.sun
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+# Mobile app integration
+mobile_app:
+
+# Person tracking
+person:
+
+# Device tracker
+device_tracker:
+
+# Zone definitions
+zone:
+  - name: Home
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude
+    radius: 100
+    icon: mdi:home
+
+  - name: Work
+    latitude: !secret work_latitude
+    longitude: !secret work_longitude
+    radius: 200
+    icon: mdi:briefcase
+
+# MQTT Configuration for Mosquitto and Zigbee2MQTT
+mqtt:
+  broker: 192.168.1.201
+  port: 1883
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  discovery: true
+  discovery_prefix: homeassistant
+  birth_message:
+    topic: 'homeassistant/status'
+    payload: 'online'
+  will_message:
+    topic: 'homeassistant/status'
+    payload: 'offline'
+
+# REST Commands for external services
+rest_command:
+  ai_automation_trigger:
+    url: "http://192.168.1.201:5000/api/automation/trigger"
+    method: POST
+    headers:
+      Authorization: !secret ai_automation_token
+      Content-Type: "application/json"
+    payload: '{"automation_id": "{{ automation_id }}", "trigger": "{{ trigger }}", "data": {{ data | tojson }}}'
+    
+  mcp_hub_command:
+    url: "http://192.168.1.201:3000/api/command"
+    method: POST
+    headers:
+      Authorization: !secret mcp_hub_token
+      Content-Type: "application/json"
+    payload: '{"command": "{{ command }}", "params": {{ params | tojson }}}'
+
+# Webhooks for receiving external events
+webhook:
+
+# Sun integration for sunrise/sunset
+sun:
+
+# Notify platforms
+notify:
+  - name: all_mobile_devices
+    platform: group
+    services:
+      - service: mobile_app_android_phone
+
+# System Monitor
+sensor:
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /
+      - type: memory_use_percent
+      - type: processor_use
+      - type: last_boot
+      - type: load_1m
+      - type: load_5m
+      - type: load_15m
+
+  # MCP Hub Status
+  - platform: rest
+    name: "MCP Hub Status"
+    resource: "http://192.168.1.201:3000/api/status"
+    method: GET
+    headers:
+      Authorization: !secret mcp_hub_token
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - services
+      - uptime
+      - version
+    scan_interval: 60
+
+  # AI Automation Status
+  - platform: rest
+    name: "AI Automation Status"
+    resource: "http://192.168.1.201:5000/api/status"
+    method: GET
+    headers:
+      Authorization: !secret ai_automation_token
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - active_automations
+      - uptime
+      - version
+    scan_interval: 60
+
+  # Time and Date
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
+      - 'date_time'
+      - 'date_time_utc'
+      - 'date_time_iso'
+      - 'time_date'
+      - 'time_utc'
+      - 'beat'
+
+# Template sensors
+  - platform: template
+    sensors:
+      android_phone_battery_status:
+        friendly_name: "Android Phone Battery"
+        unit_of_measurement: '%'
+        value_template: >
+          {% if states('sensor.android_phone_battery_level') != 'unknown' %}
+            {{ states('sensor.android_phone_battery_level') | int }}
+          {% else %}
+            0
+          {% endif %}
+        icon_template: >
+          {% set battery_level = states('sensor.android_phone_battery_level') | int %}
+          {% set battery_round = (battery_level / 10) | int * 10 %}
+          {% if battery_round >= 100 %}
+            mdi:battery
+          {% elif battery_round > 0 %}
+            mdi:battery-{{ battery_round }}
+          {% else %}
+            mdi:battery-alert
+          {% endif %}
+
+# Binary sensors
+binary_sensor:
+  # MQTT Bridge Status
+  - platform: mqtt
+    name: "Zigbee2MQTT Bridge State"
+    state_topic: "zigbee2mqtt/bridge/state"
+    payload_on: "online"
+    payload_off: "offline"
+    device_class: connectivity
+
+# Include separate configuration files
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Logger configuration
+logger:
+  default: info
+  logs:
+    homeassistant.components.mqtt: warning
+    homeassistant.components.mobile_app: info
+    homeassistant.components.device_tracker: info
+    homeassistant.components.rest: warning

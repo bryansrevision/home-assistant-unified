@@ -1,0 +1,196 @@
+---
+# Gaming Mode Script
+# Optimizes environment for gaming sessions
+
+gaming_mode:
+  alias: "Gaming Mode"
+  description: "Activate optimal gaming environment"
+  icon: mdi:gamepad-variant
+  mode: single
+  sequence:
+    - service: notify.mobile_app
+      data:
+        message: "🎮 Activating Gaming Mode..."
+    
+    # Turn on gaming lights with RGB effects
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.gaming_room_led
+          - light.desk_led_strip
+      data:
+        brightness_pct: 80
+        rgb_color: [0, 255, 100]
+        effect: "gaming_pulse"
+    
+    # Optimal screen bias lighting
+    - service: light.turn_on
+      target:
+        entity_id: light.tv_bias_lighting
+      data:
+        brightness_pct: 60
+        rgb_color: [50, 50, 255]
+    
+    # Ambient room lighting
+    - service: light.turn_on
+      target:
+        area_id: gaming_room
+      data:
+        brightness_pct: 40
+        color_temp: 300
+    
+    # Climate control for extended sessions
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.gaming_room
+      data:
+        temperature: 68
+    
+    # Turn on gaming PC/equipment
+    - service: switch.turn_on
+      target:
+        entity_id:
+          - switch.gaming_pc
+          - switch.monitor_power
+          - switch.gaming_headset_charger
+      continue_on_error: true
+    
+    # Close blinds to reduce glare
+    - service: cover.close_cover
+      target:
+        entity_id: cover.gaming_room_blinds
+    
+    # Enable Do Not Disturb
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.do_not_disturb
+    
+    # Optimize network for gaming
+    - service: switch.turn_on
+      target:
+        entity_id: switch.gaming_mode_qos
+      continue_on_error: true
+    
+    # Set Xbox to game mode if available
+    - service: media_player.select_source
+      target:
+        entity_id: media_player.xbox_one
+      data:
+        source: "Game Mode"
+      continue_on_error: true
+    
+    # Start game mode monitoring
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.gaming_session_active
+    
+    # Announce gaming mode
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_gaming_room
+      data:
+        media_content_id: "Gaming mode activated. Good luck and have fun!"
+        media_content_type: announce
+    
+    # Turn on gaming playlist
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.gaming_room_speakers
+      data:
+        media_content_id: "playlist:Gaming Beats"
+        media_content_type: playlist
+      continue_on_error: true
+    
+    - delay:
+        seconds: 2
+    
+    - service: notify.mobile_app
+      data:
+        message: "✅ Gaming Mode activated! GG!"
+        data:
+          actions:
+            - action: "DISABLE_GAMING_MODE"
+              title: "Exit Gaming Mode"
+            - action: "GAMING_BREAK"
+              title: "Take a Break"
+
+gaming_mode_exit:
+  alias: "Exit Gaming Mode"
+  description: "Restore normal environment after gaming"
+  icon: mdi:gamepad-variant-outline
+  mode: single
+  sequence:
+    # Restore normal lighting
+    - service: light.turn_on
+      target:
+        area_id: gaming_room
+      data:
+        brightness_pct: 60
+        color_temp: 370
+        transition: 5
+    
+    # Turn off RGB effects
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.desk_led_strip
+          - light.tv_bias_lighting
+      data:
+        transition: 3
+    
+    # Restore climate
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.gaming_room
+      data:
+        temperature: 72
+    
+    # Disable gaming network priority
+    - service: switch.turn_off
+      target:
+        entity_id: switch.gaming_mode_qos
+      continue_on_error: true
+    
+    # Turn off do not disturb
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.do_not_disturb
+          - input_boolean.gaming_session_active
+    
+    - service: notify.mobile_app
+      data:
+        message: "Gaming session ended. Great games!"
+
+gaming_break_reminder:
+  alias: "Gaming Break Reminder"
+  description: "Remind to take breaks during long gaming sessions"
+  icon: mdi:timer
+  mode: single
+  sequence:
+    # Flash lights as reminder
+    - service: light.turn_on
+      target:
+        entity_id: light.gaming_room_led
+      data:
+        flash: short
+    
+    # Voice announcement
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_gaming_room
+      data:
+        media_content_id: "Time for a break! Remember to rest your eyes and stretch."
+        media_content_type: announce
+    
+    # Send notification
+    - service: notify.mobile_app
+      data:
+        title: "⏰ Gaming Break Time"
+        message: "You've been gaming for 2 hours. Time for a break!"
+        data:
+          actions:
+            - action: "SNOOZE_BREAK"
+              title: "15 More Minutes"
+            - action: "TAKE_BREAK"
+              title: "Taking a Break"

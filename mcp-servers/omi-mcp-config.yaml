@@ -1,0 +1,462 @@
+# Omi.me MCP Server Configuration for Home Assistant
+# Complete setup guide for Omi wearables integration
+
+version: 1.0
+
+# Omi Wearable Device Configuration
+omi_device:
+  # Device Settings
+  name: "Omi Dev Kit 2"
+  type: "wearable_ai"
+
+  # Connection
+  connection:
+    mcp_enabled: true
+    mcp_server: "https://api.omi.me/v1/mcp/sse"
+    api_base: "https://api.omi.me/v1"
+
+  # Authentication
+  authentication:
+    method: "mcp_token"
+    token_source: "omi_app"
+    instructions:
+      - "Open Omi mobile app"
+      - "Navigate to: Settings → Developer → MCP"
+      - "Copy API Token"
+      - "Set OMI_MCP_API_TOKEN environment variable"
+
+  # Capabilities
+  capabilities:
+    - "real_time_memory_streaming"
+    - "conversation_recording"
+    - "transcript_generation"
+    - "ai_memory_analysis"
+    - "webhook_integration"
+
+# MCP Event Types & Mappings
+events:
+  # Memory Created
+  memory_created:
+    trigger_type: "event"
+    description: "New memory recorded on device"
+    payload:
+      - memory_id
+      - timestamp
+      - content
+      - duration
+      - emotions
+    home_assistant_trigger: "mqtt"
+    topic: "ha/omi/events/memory_created"
+    automation_templates:
+      - name: "store_memory"
+        description: "Store memory in InfluxDB"
+        action: "influxdb.write"
+
+      - name: "process_memory"
+        description: "Process with AI agents"
+        action: "agentstack.process"
+
+      - name: "extract_actions"
+        description: "Extract action items"
+        action: "webhook.send"
+
+  # Conversation Ended
+  conversation_ended:
+    trigger_type: "event"
+    description: "Conversation recording completed"
+    payload:
+      - conversation_id
+      - participants
+      - duration
+      - summary
+      - sentiment
+    home_assistant_trigger: "mqtt"
+    topic: "ha/omi/events/conversation_ended"
+    automation_templates:
+      - name: "store_conversation"
+        description: "Store conversation metadata"
+        action: "influxdb.write"
+
+      - name: "generate_transcript"
+        description: "Generate transcript from recording"
+        action: "webhook.call"
+
+      - name: "notify_actions"
+        description: "Notify of extracted action items"
+        action: "notify.send"
+
+  # Transcript Received
+  transcript_received:
+    trigger_type: "event"
+    description: "Transcript generated and available"
+    payload:
+      - memory_id
+      - transcript
+      - timestamps
+      - speakers
+    home_assistant_trigger: "mqtt"
+    topic: "ha/omi/events/transcript_received"
+    automation_templates:
+      - name: "analyze_transcript"
+        description: "Analyze transcript content"
+        action: "python_script.analyze"
+
+      - name: "create_tasks"
+        description: "Create Home Assistant tasks"
+        action: "todo_list.add"
+
+# Bee AI AgentStack Integration
+agentstack:
+  enabled: true
+
+  # Agent Configuration
+  agents:
+    memory_analyzer:
+      name: "Memory Analyzer Agent"
+      description: "Analyzes Omi memories for insights"
+      model: "gpt-4"
+      provider: "openai"
+
+      capabilities:
+        - "extract_action_items"
+        - "summarize_content"
+        - "detect_sentiment"
+        - "identify_topics"
+        - "generate_insights"
+
+      integration:
+        input_source: "mqtt"
+        input_topic: "ha/omi/events/memory_created"
+        output_topic: "ha/agentstack/analysis"
+        output_format: "json"
+
+    health_monitor:
+      name: "Health Monitor Agent"
+      description: "Tracks health metrics from conversations"
+      model: "gpt-4"
+      provider: "openai"
+
+      capabilities:
+        - "health_tracking"
+        - "wellness_analysis"
+        - "recommendation_generation"
+        - "trend_detection"
+
+      integration:
+        input_source: "mqtt"
+        input_topic: "ha/omi/events/conversation_ended"
+        output_topic: "ha/agentstack/health"
+        output_format: "json"
+
+    task_manager:
+      name: "Task Manager Agent"
+      description: "Extracts and manages tasks"
+      model: "gpt-4"
+      provider: "openai"
+
+      capabilities:
+        - "task_extraction"
+        - "priority_assignment"
+        - "deadline_detection"
+        - "task_organization"
+
+      integration:
+        input_source: "mqtt"
+        input_topic: "ha/omi/events/transcript_received"
+        output_topic: "ha/agentstack/tasks"
+        output_format: "json"
+
+        # Home Assistant Integration
+        ha_integration:
+          enabled: true
+          service: "todo.add_item"
+          target: "todo.home_assistant_tasks"
+          mapping:
+            task_name: "summary"
+            priority: "priority"
+            due_date: "deadline"
+            description: "full_text"
+
+# Webhook Configuration
+webhook:
+  # Receiving Webhooks (from Omi.me)
+  receiving:
+    enabled: true
+    endpoint: "/webhook/omi-mcp"
+    port: 8001
+
+    # Security
+    security:
+      secret_env: "OMI_WEBHOOK_SECRET"
+      validate_signature: true
+      signature_header: "X-Omi-Signature"
+      signature_algorithm: "sha256"
+
+    # Event Processing
+    processing:
+      async: true
+      queue_size: 1000
+      worker_threads: 4
+
+      # Timeout and Retry
+      timeout_seconds: 30
+      retry_count: 3
+      retry_backoff: "exponential"
+
+    # Event Handlers
+    handlers:
+      memory_created:
+        handler_name: "store_memory"
+        actions:
+          - write_to_influxdb
+          - publish_to_mqtt
+          - trigger_agentstack
+
+      conversation_ended:
+        handler_name: "process_conversation"
+        actions:
+          - store_metadata
+          - generate_transcript
+          - notify_summary
+
+      transcript_received:
+        handler_name: "process_transcript"
+        actions:
+          - analyze_content
+          - extract_entities
+          - create_automations
+
+  # Sending Webhooks (to Omi.me)
+  sending:
+    enabled: true
+    events:
+      - "automation_triggered"
+      - "task_completed"
+      - "reminder_created"
+
+    configuration:
+      url: "https://api.omi.me/v1/webhook/events"
+      method: "POST"
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Bearer ${OMI_MCP_API_TOKEN}"
+      timeout_seconds: 10
+
+# Data Processing Pipeline
+data_pipeline:
+  # Event Flow
+  flow:
+    "Omi Device" → "MCP Server" → "Webhook Service" → "Processing" → "Storage" → "Home Assistant"
+
+  # Processing Stages
+  stages:
+    reception:
+      enabled: true
+      validator: "validate_webhook"
+      transformer: "parse_json"
+
+    enrichment:
+      enabled: true
+      enrichers:
+        - "add_timestamp"
+        - "add_metadata"
+        - "add_source_info"
+
+    analysis:
+      enabled: true
+      processors:
+        - "agentstack_analyze"
+        - "extract_entities"
+        - "detect_sentiment"
+
+    storage:
+      enabled: true
+      backends:
+        - "mqtt_publish"
+        - "influxdb_write"
+        - "elasticsearch_index"
+
+    notification:
+      enabled: true
+      channels:
+        - "home_assistant_entity"
+        - "web_interface"
+        - "mobile_notification"
+
+# MQTT Topics Structure
+mqtt:
+  # Input Topics (receive from Omi)
+  input:
+    memory_created: "omi/events/memory/created"
+    memory_updated: "omi/events/memory/updated"
+    conversation_started: "omi/events/conversation/started"
+    conversation_ended: "omi/events/conversation/ended"
+    transcript_received: "omi/events/transcript/received"
+
+  # Output Topics (send to Home Assistant)
+  output:
+    memory_stored: "ha/omi/memory/stored"
+    actions_extracted: "ha/omi/actions/extracted"
+    tasks_created: "ha/omi/tasks/created"
+    health_updated: "ha/omi/health/updated"
+    sentiment_detected: "ha/omi/sentiment/detected"
+
+  # Subscription Configuration
+  subscriptions:
+    - topic: "omi/events/+/+"
+      qos: 1
+      retain: false
+
+    - topic: "ha/commands/omi/+"
+      qos: 1
+      retain: false
+
+# InfluxDB Time-Series Storage
+influxdb:
+  enabled: true
+  measurements:
+    # Omi Metrics
+    omi_memory:
+      tags:
+        - device_id
+        - memory_type
+        - emotion
+      fields:
+        - duration (int)
+        - confidence (float)
+      retention_policy: "30d"
+
+    omi_conversation:
+      tags:
+        - participants_count
+        - sentiment
+      fields:
+        - duration (int)
+        - turns_count (int)
+      retention_policy: "30d"
+
+    omi_sentiment:
+      tags:
+        - event_type
+        - sentiment_label
+      fields:
+        - score (float, 0-1)
+      retention_policy: "90d"
+
+    omi_actions:
+      tags:
+        - action_type
+        - priority
+        - status
+      fields:
+        - count (int)
+      retention_policy: "90d"
+
+# Grafana Dashboards
+grafana:
+  enabled: true
+  dashboards:
+    - name: "Omi Wearables Overview"
+      description: "Real-time Omi device metrics"
+      panels:
+        - memory_count_today
+        - conversation_duration_total
+        - sentiment_trend
+        - action_items_pending
+
+    - name: "Omi Memory Analysis"
+      description: "Deep dive into memory content"
+      panels:
+        - topics_cloud
+        - entities_identified
+        - insights_generated
+        - key_phrases
+
+    - name: "Omi Health Tracking"
+      description: "Health metrics from wearables"
+      panels:
+        - wellness_score
+        - stress_levels
+        - activity_tracking
+        - sleep_patterns
+
+# Testing & Validation
+testing:
+  # Unit Tests
+  unit_tests:
+    - "test_webhook_signature_validation"
+    - "test_event_parsing"
+    - "test_mqtt_publishing"
+
+  # Integration Tests
+  integration_tests:
+    - "test_end_to_end_memory_flow"
+    - "test_agentstack_integration"
+    - "test_home_assistant_automation"
+
+  # Mock Data
+  mock_events:
+    - type: "memory_created"
+      file: "tests/data/omi_memory_event.json"
+
+    - type: "conversation_ended"
+      file: "tests/data/omi_conversation_event.json"
+
+    - type: "transcript_received"
+      file: "tests/data/omi_transcript_event.json"
+
+# Monitoring & Alerts
+monitoring:
+  enabled: true
+
+  # Health Checks
+  health_checks:
+    - name: "mcp_connection"
+      interval_seconds: 300
+      endpoint: "https://api.omi.me/v1/health"
+
+    - name: "webhook_service"
+      interval_seconds: 60
+      endpoint: "http://webhook:8001/health"
+
+    - name: "mqtt_broker"
+      interval_seconds: 60
+      endpoint: "mqtt://mosquitto:1883"
+
+  # Alerts
+  alerts:
+    - name: "mcp_disconnected"
+      condition: "mcp_connection.status == DOWN"
+      action: "notify.send"
+
+    - name: "webhook_down"
+      condition: "webhook_service.status == DOWN"
+      action: "notify.send"
+
+    - name: "events_backed_up"
+      condition: "event_queue.size > 500"
+      action: "notify.send"
+
+# Troubleshooting Guide
+troubleshooting:
+  common_issues:
+    - issue: "No events received from Omi"
+      solutions:
+        - "Verify OMI_MCP_API_TOKEN is valid"
+        - "Check firewall allows HTTPS to api.omi.me"
+        - "Verify MCP enabled in Omi app"
+        - "Check webhook service logs"
+
+    - issue: "Automations not triggering"
+      solutions:
+        - "Verify MQTT topic subscriptions"
+        - "Check Home Assistant MQTT integration"
+        - "Review automation trigger conditions"
+        - "Check Home Assistant logs"
+
+    - issue: "Missing action items"
+      solutions:
+        - "Verify AgentStack service running"
+        - "Check OpenAI API key"
+        - "Review agent processing logs"
+        - "Test with manual API call"

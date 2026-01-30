@@ -1,0 +1,326 @@
+---
+# Daily Routines Automations
+# Morning and evening routines for optimal comfort
+
+- id: 'routine_good_morning'
+  alias: "Routine: Good Morning"
+  description: "Morning routine when waking up"
+  trigger:
+    - platform: time
+      at: '06:30:00'
+    - platform: state
+      entity_id: binary_sensor.bedroom_motion
+      to: 'on'
+  condition:
+    - condition: time
+      after: '05:00:00'
+      before: '09:00:00'
+    - condition: state
+      entity_id: input_boolean.morning_routine_complete
+      state: 'off'
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.morning_routine_complete
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.bedroom
+          - light.bathroom
+      data:
+        brightness_pct: 30
+        color_temp: 370
+        transition: 300
+    - delay:
+        seconds: 30
+    - service: cover.open_cover
+      target:
+        entity_id:
+          - cover.bedroom_blinds
+          - cover.living_room_blinds
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    - service: switch.turn_on
+      target:
+        entity_id: switch.coffee_maker
+    - delay:
+        minutes: 2
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_kitchen
+      data:
+        media_content_id: "Good morning! It's {{ now().strftime('%A, %B %d') }}. The temperature is {{ states('sensor.outdoor_temperature') }} degrees. Your first calendar event is at {{ state_attr('calendar.personal', 'start_time') }}."
+        media_content_type: announce
+    - service: notify.mobile_app
+      data:
+        title: "☀️ Good Morning"
+        message: "Morning routine started. Coffee is brewing!"
+
+- id: 'routine_workday_morning'
+  alias: "Routine: Workday Morning Prep"
+  description: "Additional morning routine for workdays"
+  trigger:
+    - platform: time
+      at: '07:00:00'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: 'on'
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_bathroom
+      data:
+        media_content_id: "playlist:Morning Motivation"
+        media_content_type: playlist
+    - service: light.turn_on
+      target:
+        entity_id: light.closet
+      data:
+        brightness_pct: 100
+    - service: notify.mobile_app
+      data:
+        title: "Work Day Prep"
+        message: "Leave in 30 minutes to arrive on time. Traffic: {{ states('sensor.work_commute_time') }} minutes."
+
+- id: 'routine_good_night'
+  alias: "Routine: Good Night"
+  description: "Evening routine when going to bed"
+  trigger:
+    - platform: time
+      at: '22:00:00'
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: ACTIVATE_BEDTIME
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.sleep_mode
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.morning_routine_complete
+    - service: light.turn_off
+      target:
+        area_id:
+          - living_room
+          - kitchen
+          - office
+      data:
+        transition: 30
+    - service: light.turn_on
+      target:
+        entity_id: light.bedroom
+      data:
+        brightness_pct: 10
+        color_temp: 454
+    - service: cover.close_cover
+      target:
+        entity_id:
+          - cover.living_room_blinds
+          - cover.bedroom_blinds
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 68
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.front_door_lock
+          - lock.back_door_lock
+    - service: media_player.turn_off
+      target:
+        entity_id:
+          - media_player.living_room_tv
+          - media_player.xbox_one
+    - service: switch.turn_on
+      target:
+        entity_id: switch.white_noise_machine
+    - service: script.turn_on
+      target:
+        entity_id: script.security_arm
+    - delay:
+        seconds: 30
+    - service: notify.mobile_app
+      data:
+        title: "🌙 Good Night"
+        message: "Bedtime routine complete. Sleep well!"
+
+- id: 'routine_evening_wind_down'
+  alias: "Routine: Evening Wind Down"
+  description: "Gradual transition to evening mode"
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: "00:30:00"
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - service: light.turn_on
+      target:
+        area_id:
+          - living_room
+          - kitchen
+      data:
+        brightness_pct: 60
+        color_temp: 400
+        transition: 600
+    - service: scene.turn_on
+      target:
+        entity_id: scene.evening_ambiance
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_living_room
+      data:
+        media_content_id: "playlist:Evening Chill"
+        media_content_type: playlist
+
+- id: 'routine_weekend_morning'
+  alias: "Routine: Weekend Morning"
+  description: "Relaxed weekend morning routine"
+  trigger:
+    - platform: time
+      at: '08:30:00'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: 'off'
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.bedroom
+      data:
+        brightness_pct: 20
+        color_temp: 370
+        transition: 600
+    - service: cover.open_cover
+      target:
+        entity_id: cover.bedroom_blinds
+      data:
+        position: 50
+    - delay:
+        minutes: 15
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_bedroom
+      data:
+        media_content_id: "playlist:Sunday Morning"
+        media_content_type: playlist
+
+- id: 'routine_dinner_time'
+  alias: "Routine: Dinner Time"
+  description: "Dinner time ambiance"
+  trigger:
+    - platform: time
+      at: '18:00:00'
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - service: light.turn_on
+      target:
+        area_id: dining_room
+      data:
+        brightness_pct: 70
+        color_temp: 380
+    - service: scene.turn_on
+      target:
+        entity_id: scene.dinner_time
+
+- id: 'routine_focus_mode'
+  alias: "Routine: Focus Mode Workday"
+  description: "Focus mode during work hours"
+  trigger:
+    - platform: time
+      at: '09:00:00'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: 'on'
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+    - condition: state
+      entity_id: person.dylan
+      state: 'home'
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.focus_mode
+    - service: light.turn_on
+      target:
+        area_id: office
+      data:
+        brightness_pct: 100
+        color_temp: 250
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.office
+      data:
+        temperature: 70
+    - service: notify.mobile_app
+      data:
+        title: "🎯 Focus Mode Activated"
+        message: "Focus mode until 5 PM. Notifications silenced."
+
+- id: 'routine_reset_daily_flags'
+  alias: "Routine: Reset Daily Flags"
+  description: "Reset daily routine flags at midnight"
+  trigger:
+    - platform: time
+      at: '00:00:00'
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.morning_routine_complete
+          - input_boolean.sleep_mode
+          - input_boolean.focus_mode
+
+- id: 'routine_laundry_reminder'
+  alias: "Routine: Laundry Reminder"
+  description: "Remind to check laundry"
+  trigger:
+    - platform: state
+      entity_id: sensor.washer_status
+      to: 'complete'
+      for:
+        minutes: 30
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🧺 Laundry Complete"
+        message: "Don't forget to move laundry to dryer!"
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_living_room
+      data:
+        media_content_id: "The laundry is complete"
+        media_content_type: announce

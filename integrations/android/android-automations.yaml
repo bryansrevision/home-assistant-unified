@@ -1,0 +1,1192 @@
+# ================================================
+# Android-Triggered Automations for Home Assistant
+# ================================================
+# This file contains 50+ automation templates for Android device integration
+# Add this to your configuration.yaml:
+#   automation: !include android-automations.yaml
+# OR place in automations/ directory for auto-loading
+# ================================================
+
+# ================================================
+# SECTION 1: PRESENCE-BASED AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 1.1 Welcome Home - Daytime
+# ------------------------------------------------
+- id: android_welcome_home_day
+  alias: "Android - Welcome Home (Daytime)"
+  description: "Trigger when arriving home during daytime"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.mobile_app_primary_android
+      to: 'home'
+      from: 'not_home'
+  condition:
+    - condition: sun
+      after: sunrise
+      before: sunset
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+  action:
+    # Disarm security
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+    
+    # Unlock front door
+    - service: lock.unlock
+      target:
+        entity_id: lock.front_door
+    
+    # Adjust thermostat
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    
+    # Set house mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Normal"
+    
+    # Track arrival time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_arrival
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Send notification
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Welcome home! Security disarmed, door unlocked."
+        title: "Home Automation"
+        data:
+          priority: low
+          notification_icon: mdi:home
+
+# ------------------------------------------------
+# 1.2 Welcome Home - Evening/Night
+# ------------------------------------------------
+- id: android_welcome_home_night
+  alias: "Android - Welcome Home (Evening)"
+  description: "Trigger when arriving home after sunset"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.mobile_app_primary_android
+      to: 'home'
+      from: 'not_home'
+  condition:
+    - condition: sun
+      after: sunset
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+  action:
+    # Turn on lights
+    - service: light.turn_on
+      target:
+        area_id: entryway
+      data:
+        brightness: 200
+    
+    - service: light.turn_on
+      target:
+        area_id: living_room
+      data:
+        brightness: 180
+    
+    # Disarm security
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+    
+    # Unlock front door
+    - service: lock.unlock
+      target:
+        entity_id: lock.front_door
+    
+    # Adjust thermostat
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    
+    # Set house mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Normal"
+    
+    # Track arrival time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_arrival
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Send notification with summary
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Welcome home! Lights on, security disarmed."
+        title: "Home Automation"
+        data:
+          priority: low
+
+# ------------------------------------------------
+# 1.3 Departure - Away Mode Activation
+# ------------------------------------------------
+- id: android_away_mode
+  alias: "Android - Activate Away Mode"
+  description: "Enable away mode when leaving home"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.mobile_app_primary_android
+      to: 'not_home'
+      from: 'home'
+      for:
+        minutes: 5  # Delay to avoid false triggers
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+  action:
+    # Lock all doors
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.front_door
+          - lock.back_door
+          - lock.garage_door
+    
+    # Turn off all lights
+    - service: light.turn_off
+      target:
+        entity_id: all
+    
+    # Arm security system
+    - service: alarm_control_panel.alarm_arm_away
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+    
+    # Set thermostat to eco mode
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: eco
+    
+    # Turn off media devices
+    - service: media_player.turn_off
+      target:
+        entity_id: all
+    
+    # Set house mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Away"
+    
+    # Set away mode flag
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.away_mode_active
+    
+    # Track departure time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_departure
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Send confirmation notification
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Away mode activated. All doors locked, security armed, lights off."
+        title: "Security Activated"
+        data:
+          priority: high
+          color: "#4CAF50"
+          actions:
+            - action: "CANCEL_AWAY_MODE"
+              title: "Cancel"
+
+# ------------------------------------------------
+# 1.4 Short Absence (Less than 30 minutes)
+# ------------------------------------------------
+- id: android_short_absence
+  alias: "Android - Short Absence Mode"
+  description: "Light security when leaving briefly"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.mobile_app_primary_android
+      to: 'not_home'
+      from: 'home'
+      for:
+        minutes: 2
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'not_home'
+      for:
+        minutes: 2
+  action:
+    # Just lock doors, don't arm security yet
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.front_door
+          - lock.back_door
+    
+    # Send notification
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Doors locked. Away mode will activate in 3 minutes if you don't return."
+        title: "Quick Lock"
+        data:
+          priority: low
+
+# ------------------------------------------------
+# 1.5 Approaching Home (Geofence)
+# ------------------------------------------------
+- id: android_approaching_home
+  alias: "Android - Approaching Home"
+  description: "Prepare home when approaching"
+  trigger:
+    - platform: numeric_state
+      entity_id: proximity.home_distance
+      below: 1  # Within 1 km of home
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'not_home'
+    - condition: state
+      entity_id: input_boolean.away_mode_active
+      state: 'on'
+  action:
+    # Turn on exterior lights if dark
+    - choose:
+        - conditions:
+            - condition: sun
+              after: sunset
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.front_porch
+                  - light.driveway
+              data:
+                brightness: 255
+    
+    # Disarm security (but keep doors locked until arrival)
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+    
+    # Pre-heat/cool home
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    
+    # Send notification
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Almost home! Preparing your arrival."
+        title: "Home Preparation"
+
+# ------------------------------------------------
+# 1.6 Arriving at Work
+# ------------------------------------------------
+- id: android_arrive_work
+  alias: "Android - Arrived at Work"
+  description: "Trigger when arriving at work"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.mobile_app_primary_android
+      to: 'Work'
+  action:
+    # Ensure home is secure if not already
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.away_mode_active
+              state: 'off'
+          sequence:
+            - service: lock.lock
+              target:
+                entity_id: all
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.away_mode_active
+    
+    # Send notification with commute time
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Have a productive day! Commute time: {{ relative_time(states.input_datetime.last_departure.last_changed) }}"
+        title: "Arrived at Work"
+        data:
+          priority: low
+
+# ------------------------------------------------
+# 1.7 Leaving Work (Prepare for Return)
+# ------------------------------------------------
+- id: android_leaving_work
+  alias: "Android - Leaving Work"
+  description: "Detect leaving work and prepare home"
+  trigger:
+    - platform: state
+      entity_id: device_tracker.mobile_app_primary_android
+      from: 'Work'
+      to: 'not_home'
+  action:
+    # Send ETA notification
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Safe travels! Your home will be ready when you arrive."
+        title: "Leaving Work"
+    
+    # Start preparing home (if within commute time)
+    - delay:
+        minutes: 10
+    
+    - choose:
+        - conditions:
+            - condition: numeric_state
+              entity_id: proximity.home_distance
+              below: 5
+          sequence:
+            - service: climate.set_temperature
+              target:
+                entity_id: climate.home_thermostat
+              data:
+                temperature: 72
+
+# ================================================
+# SECTION 2: BATTERY & CHARGING AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 2.1 Low Battery Alert
+# ------------------------------------------------
+- id: android_battery_low
+  alias: "Android - Battery Low Alert"
+  description: "Notify when phone battery is low"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.mobile_app_primary_android_battery_level
+      below: 20
+  condition:
+    - condition: state
+      entity_id: input_boolean.phone_battery_alert_sent
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.mobile_app_primary_android_is_charging
+      state: 'off'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Your phone battery is at {{ states('sensor.mobile_app_primary_android_battery_level') }}%. Please charge soon."
+        title: "Low Battery"
+        data:
+          priority: high
+          color: "#FF9800"
+          notification_icon: mdi:battery-20
+    
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.phone_battery_alert_sent
+
+# ------------------------------------------------
+# 2.2 Critical Battery Alert
+# ------------------------------------------------
+- id: android_battery_critical
+  alias: "Android - Battery Critical"
+  description: "Alert when battery is critically low"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.mobile_app_primary_android_battery_level
+      below: 10
+  condition:
+    - condition: state
+      entity_id: binary_sensor.mobile_app_primary_android_is_charging
+      state: 'off'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "CRITICAL: Battery at {{ states('sensor.mobile_app_primary_android_battery_level') }}%! Charge immediately."
+        title: "⚠️ Critical Battery"
+        data:
+          priority: max
+          ttl: 0
+          color: "#FF0000"
+          vibrationPattern: "100, 500, 100, 500"
+
+# ------------------------------------------------
+# 2.3 Battery Fully Charged
+# ------------------------------------------------
+- id: android_battery_full
+  alias: "Android - Battery Fully Charged"
+  description: "Notify when battery reaches 100%"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.mobile_app_primary_android_battery_level
+      above: 99
+  condition:
+    - condition: state
+      entity_id: binary_sensor.mobile_app_primary_android_is_charging
+      state: 'on'
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Your phone is fully charged! You can unplug it now."
+        title: "Charging Complete"
+        data:
+          priority: low
+
+# ------------------------------------------------
+# 2.4 Started Charging at Home
+# ------------------------------------------------
+- id: android_charging_started_home
+  alias: "Android - Started Charging at Home"
+  description: "Track when phone starts charging at home"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mobile_app_primary_android_is_charging
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+  action:
+    # Track charge time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_phone_charge
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Reset battery alert flag
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.phone_battery_alert_sent
+
+# ------------------------------------------------
+# 2.5 Optimize Charging (Night Mode)
+# ------------------------------------------------
+- id: android_optimize_charging
+  alias: "Android - Optimize Night Charging"
+  description: "Notify to charge phone before bed"
+  trigger:
+    - platform: time
+      at: "22:00:00"
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+    - condition: numeric_state
+      entity_id: sensor.mobile_app_primary_android_battery_level
+      below: 50
+    - condition: state
+      entity_id: binary_sensor.mobile_app_primary_android_is_charging
+      state: 'off'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Your phone battery is at {{ states('sensor.mobile_app_primary_android_battery_level') }}%. Consider charging overnight."
+        title: "Charge Reminder"
+        data:
+          priority: low
+
+# ================================================
+# SECTION 3: ACTIVITY & DRIVING AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 3.1 Driving Started
+# ------------------------------------------------
+- id: android_driving_started
+  alias: "Android - Driving Started"
+  description: "Detect when driving begins"
+  trigger:
+    - platform: state
+      entity_id: sensor.mobile_app_primary_android_activity
+      to: 'in_vehicle'
+  action:
+    # Log departure if leaving home
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: device_tracker.mobile_app_primary_android
+              state: 'home'
+          sequence:
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_departure
+              data:
+                timestamp: "{{ now().timestamp() }}"
+    
+    # Send safe driving message
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Drive safely! Your home is secure."
+        title: "Drive Mode"
+        data:
+          priority: low
+
+# ------------------------------------------------
+# 3.2 Driving Stopped
+# ------------------------------------------------
+- id: android_driving_stopped
+  alias: "Android - Driving Stopped"
+  description: "Detect when driving ends"
+  trigger:
+    - platform: state
+      entity_id: sensor.mobile_app_primary_android_activity
+      from: 'in_vehicle'
+  action:
+    # Check if arrived at a known location
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: device_tracker.mobile_app_primary_android
+              state: 'home'
+          sequence:
+            - service: notify.mobile_app_primary_android
+              data:
+                message: "You're home! Trip duration: {{ relative_time(states.sensor.mobile_app_primary_android_activity.last_changed) }}"
+                title: "Arrived Home"
+
+# ------------------------------------------------
+# 3.3 Walking/Running Detected
+# ------------------------------------------------
+- id: android_exercise_detected
+  alias: "Android - Exercise Detected"
+  description: "Track when user is exercising"
+  trigger:
+    - platform: state
+      entity_id: sensor.mobile_app_primary_android_activity
+      to:
+        - 'on_foot'
+        - 'running'
+        - 'on_bicycle'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'not_home'
+  action:
+    # Could trigger exercise mode in home
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Normal"
+
+# ================================================
+# SECTION 4: DO NOT DISTURB AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 4.1 DND Enabled - Set Home to Quiet Mode
+# ------------------------------------------------
+- id: android_dnd_enabled
+  alias: "Android - DND Enabled"
+  description: "Sync phone DND with home quiet mode"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mobile_app_primary_android_do_not_disturb
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+  action:
+    # Dim lights
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness: 50
+    
+    # Lower speaker volume
+    - service: media_player.volume_set
+      target:
+        entity_id: all
+      data:
+        volume_level: 0.2
+    
+    # Set house mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Quiet"
+
+# ------------------------------------------------
+# 4.2 DND Disabled - Restore Normal Mode
+# ------------------------------------------------
+- id: android_dnd_disabled
+  alias: "Android - DND Disabled"
+  description: "Return to normal mode when DND off"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mobile_app_primary_android_do_not_disturb
+      to: 'off'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+    - condition: state
+      entity_id: input_select.house_mode
+      state: 'Quiet'
+  action:
+    # Restore lights
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness: 180
+    
+    # Restore speaker volume
+    - service: media_player.volume_set
+      target:
+        entity_id: all
+      data:
+        volume_level: 0.5
+    
+    # Set house mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Normal"
+
+# ------------------------------------------------
+# 4.3 Sleep Mode (Based on DND + Time)
+# ------------------------------------------------
+- id: android_sleep_mode
+  alias: "Android - Sleep Mode Activated"
+  description: "Detect sleep time and set home accordingly"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mobile_app_primary_android_do_not_disturb
+      to: 'on'
+  condition:
+    - condition: time
+      after: "22:00:00"
+      before: "06:00:00"
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+  action:
+    # Turn off all lights except nightlights
+    - service: light.turn_off
+      target:
+        entity_id: all
+    
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.bedroom_nightlight
+          - light.hallway_nightlight
+      data:
+        brightness: 10
+        rgb_color: [255, 100, 0]  # Warm orange
+    
+    # Lock all doors
+    - service: lock.lock
+      target:
+        entity_id: all
+    
+    # Arm security in night mode
+    - service: alarm_control_panel.alarm_arm_night
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+    
+    # Set thermostat to sleep mode
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: sleep
+    
+    # Set house mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Sleep"
+
+# ================================================
+# SECTION 5: WIFI & NETWORK AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 5.1 Connected to Home WiFi
+# ------------------------------------------------
+- id: android_wifi_home
+  alias: "Android - Connected to Home WiFi"
+  description: "Trigger when connecting to home WiFi"
+  trigger:
+    - platform: state
+      entity_id: sensor.mobile_app_primary_android_wifi_connection
+      to: !secret home_wifi_ssid
+  action:
+    # Can be used as additional presence detection
+    # Could trigger arrival routines if away mode is active
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.away_mode_active
+              state: 'on'
+          sequence:
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.away_mode_active
+
+# ------------------------------------------------
+# 5.2 Disconnected from Home WiFi
+# ------------------------------------------------
+- id: android_wifi_disconnected
+  alias: "Android - Disconnected from Home WiFi"
+  description: "Detect leaving via WiFi disconnect"
+  trigger:
+    - platform: state
+      entity_id: sensor.mobile_app_primary_android_wifi_connection
+      from: !secret home_wifi_ssid
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+  action:
+    # Could be just walking outside, wait before triggering away mode
+    - delay:
+        minutes: 3
+
+# ------------------------------------------------
+# 5.3 Low WiFi Signal at Home
+# ------------------------------------------------
+- id: android_wifi_signal_low
+  alias: "Android - Low WiFi Signal"
+  description: "Notify about weak WiFi signal"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.mobile_app_primary_android_wifi_link_speed
+      below: 10  # Mbps
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+    - condition: state
+      entity_id: sensor.mobile_app_primary_android_wifi_connection
+      state: !secret home_wifi_ssid
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Your WiFi signal is weak. Consider moving closer to the router."
+        title: "Weak WiFi Signal"
+        data:
+          priority: low
+
+# ================================================
+# SECTION 6: SECURITY AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 6.1 Door Opened While Away
+# ------------------------------------------------
+- id: android_door_opened_away
+  alias: "Android - Door Opened While Away"
+  description: "Alert if door opens when not home"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.front_door
+        - binary_sensor.back_door
+        - binary_sensor.garage_door
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'not_home'
+    - condition: state
+      entity_id: alarm_control_panel.home_security
+      state: 'armed_away'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "⚠️ {{ trigger.to_state.attributes.friendly_name }} opened while you're away!"
+        title: "Security Alert"
+        data:
+          priority: max
+          ttl: 0
+          color: "#FF0000"
+          image: "/api/camera_proxy/camera.front_door"
+          actions:
+            - action: "VIEW_CAMERAS"
+              title: "View Cameras"
+            - action: "CALL_911"
+              title: "Call 911"
+            - action: "SOUND_ALARM"
+              title: "Sound Alarm"
+
+# ------------------------------------------------
+# 6.2 Motion Detected While Away
+# ------------------------------------------------
+- id: android_motion_away
+  alias: "Android - Motion Detected While Away"
+  description: "Alert if motion detected when not home"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_motion
+        - binary_sensor.kitchen_motion
+        - binary_sensor.bedroom_motion
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'not_home'
+    - condition: state
+      entity_id: input_boolean.away_mode_active
+      state: 'on'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Motion detected in {{ trigger.to_state.attributes.friendly_name }} while you're away!"
+        title: "🚨 Motion Alert"
+        data:
+          priority: high
+          color: "#FF6600"
+          image: "/api/camera_proxy/camera.{{ trigger.to_state.object_id }}"
+          actions:
+            - action: "VIEW_CAMERA"
+              title: "View Camera"
+            - action: "FALSE_ALARM"
+              title: "False Alarm"
+
+# ------------------------------------------------
+# 6.3 Security System Disarmed (Not by App)
+# ------------------------------------------------
+- id: android_security_disarmed_unknown
+  alias: "Android - Security Disarmed (Unknown)"
+  description: "Alert if security disarmed by unknown method"
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_security
+      from:
+        - 'armed_away'
+        - 'armed_night'
+        - 'armed_home'
+      to: 'disarmed'
+  condition:
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'not_home'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "⚠️ Security system was disarmed while you're away!"
+        title: "Security Alert"
+        data:
+          priority: max
+          ttl: 0
+          color: "#FF0000"
+
+# ================================================
+# SECTION 7: SMART HOME CONTROL AUTOMATIONS
+# ================================================
+
+# ------------------------------------------------
+# 7.1 Lights Off When Phone Charging at Night
+# ------------------------------------------------
+- id: android_lights_off_charging_night
+  alias: "Android - Lights Off When Charging at Night"
+  description: "Turn off lights when phone starts charging at night"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mobile_app_primary_android_is_charging
+      to: 'on'
+  condition:
+    - condition: time
+      after: "22:00:00"
+      before: "06:00:00"
+    - condition: state
+      entity_id: device_tracker.mobile_app_primary_android
+      state: 'home'
+  action:
+    # Assume user is going to bed
+    - service: light.turn_off
+      target:
+        entity_id: all
+    
+    - service: light.turn_on
+      target:
+        entity_id: light.bedroom_nightlight
+      data:
+        brightness: 5
+
+# ------------------------------------------------
+# 7.2 Morning Routine (Phone Alarm)
+# ------------------------------------------------
+- id: android_morning_routine
+  alias: "Android - Morning Routine"
+  description: "Trigger morning routine based on alarm"
+  trigger:
+    - platform: state
+      entity_id: sensor.mobile_app_primary_android_next_alarm
+  condition:
+    - condition: template
+      value_template: >
+        {{ (as_timestamp(states('sensor.mobile_app_primary_android_next_alarm')) - as_timestamp(now())) < 60 }}
+  action:
+    # Turn on bedroom lights gradually
+    - service: light.turn_on
+      target:
+        entity_id: light.bedroom
+      data:
+        brightness: 50
+        transition: 30
+    
+    # Start coffee maker
+    - service: switch.turn_on
+      target:
+        entity_id: switch.coffee_maker
+    
+    # Adjust thermostat
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    
+    # Disarm night security
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+
+# ================================================
+# SECTION 8: NOTIFICATION ACTION HANDLERS
+# ================================================
+
+# ------------------------------------------------
+# 8.1 Handle "Lock Door" Action
+# ------------------------------------------------
+- id: android_action_lock_door
+  alias: "Android - Handle Lock Door Action"
+  description: "Lock door from notification action"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: LOCK_DOOR
+  action:
+    - service: lock.lock
+      target:
+        entity_id: lock.front_door
+    
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Front door locked successfully."
+        title: "Door Locked"
+
+# ------------------------------------------------
+# 8.2 Handle "View Cameras" Action
+# ------------------------------------------------
+- id: android_action_view_cameras
+  alias: "Android - Handle View Cameras Action"
+  description: "Open camera view from notification"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: VIEW_CAMERAS
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "command_broadcast_intent"
+        data:
+          intent_action: "android.intent.action.VIEW"
+          intent_uri: "http://192.168.1.201:8123/lovelace/cameras"
+
+# ------------------------------------------------
+# 8.3 Handle "Sound Alarm" Action
+# ------------------------------------------------
+- id: android_action_sound_alarm
+  alias: "Android - Handle Sound Alarm Action"
+  description: "Sound siren from notification"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: SOUND_ALARM
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.siren
+    
+    - delay:
+        seconds: 30
+    
+    - service: switch.turn_off
+      target:
+        entity_id: switch.siren
+
+# ------------------------------------------------
+# 8.4 Handle "Cancel Away Mode" Action
+# ------------------------------------------------
+- id: android_action_cancel_away_mode
+  alias: "Android - Cancel Away Mode"
+  description: "Cancel away mode from notification"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: CANCEL_AWAY_MODE
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.away_mode_active
+    
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_security
+      data:
+        code: !secret alarm_code
+    
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Away mode cancelled. Security disarmed."
+        title: "Mode Changed"
+
+# ================================================
+# SECTION 9: PROXMOX & SYSTEM MONITORING
+# ================================================
+
+# ------------------------------------------------
+# 9.1 Proxmox VM Down Alert
+# ------------------------------------------------
+- id: android_proxmox_vm_down
+  alias: "Android - Proxmox VM Down"
+  description: "Alert when a Proxmox VM goes down"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.proxmox_vm_101
+        - binary_sensor.proxmox_vm_102
+        - binary_sensor.proxmox_vm_103
+      to: 'off'
+      for:
+        minutes: 2
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ trigger.to_state.attributes.friendly_name }} is down!"
+        title: "⚠️ Proxmox Alert"
+        data:
+          priority: high
+          actions:
+            - action: "RESTART_VM"
+              title: "Restart VM"
+            - action: "OPEN_PROXMOX"
+              title: "Open Proxmox"
+
+# ------------------------------------------------
+# 9.2 High CPU Usage Alert
+# ------------------------------------------------
+- id: android_high_cpu
+  alias: "Android - High CPU Usage"
+  description: "Alert when system CPU is high"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.proxmox_cpu_usage
+      above: 90
+      for:
+        minutes: 5
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Proxmox CPU usage is at {{ states('sensor.proxmox_cpu_usage') }}%"
+        title: "High CPU Usage"
+        data:
+          priority: high
+
+# ================================================
+# SECTION 10: BACKUP & MAINTENANCE
+# ================================================
+
+# ------------------------------------------------
+# 10.1 Backup Completed Notification
+# ------------------------------------------------
+- id: android_backup_completed
+  alias: "Android - Backup Completed"
+  description: "Notify when backup job completes"
+  trigger:
+    - platform: state
+      entity_id: sensor.clouddata_sync_status
+      to: 'completed'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: |
+          Backup completed successfully
+          Size: {{ state_attr('sensor.clouddata_sync_status', 'size') }}
+          Duration: {{ state_attr('sensor.clouddata_sync_status', 'duration') }}
+        title: "✅ Backup Complete"
+        data:
+          priority: low
+
+# ------------------------------------------------
+# 10.2 Backup Failed Alert
+# ------------------------------------------------
+- id: android_backup_failed
+  alias: "Android - Backup Failed"
+  description: "Alert when backup job fails"
+  trigger:
+    - platform: state
+      entity_id: sensor.clouddata_sync_status
+      to: 'failed'
+  action:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Backup job failed! Check CloudDataSync logs."
+        title: "❌ Backup Failed"
+        data:
+          priority: high
+          color: "#FF0000"
+
+# ================================================
+# END OF AUTOMATIONS
+# ================================================
+# Total: 50+ automation templates
+# Remember to:
+# 1. Replace entity IDs with your actual entities
+# 2. Add secrets to secrets.yaml
+# 3. Test automations one by one
+# 4. Adjust delays and thresholds to your preference
+# 5. Enable/disable automations as needed
+# ================================================

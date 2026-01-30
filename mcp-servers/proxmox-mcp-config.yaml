@@ -1,0 +1,14 @@
+mcpServers:
+  proxmox:
+    command: npx
+    args:
+      - -y
+      - mcp-server-proxmox
+    env:
+      PROXMOX_HOST: "192.168.1.185"
+      PROXMOX_PORT: "8006"
+      PROXMOX_USER: "root@pam"
+      PROXMOX_PASSWORD: "root"
+      PROXMOX_NODE: "pve"
+      # Set to "false" to skip SSL verification for self-signed certificates
+      PROXMOX_VERIFY_SSL: "false"

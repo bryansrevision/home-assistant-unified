@@ -1,0 +1,650 @@
+# ================================================
+# Android Notification Templates for Home Assistant
+# ================================================
+# This file contains notification scripts and templates for Android devices
+# These provide rich, actionable notifications with images, buttons, and more
+# ================================================
+
+# ================================================
+# NOTIFICATION SCRIPTS
+# ================================================
+
+# ------------------------------------------------
+# 1. Security Breach Alert (Critical)
+# ------------------------------------------------
+android_security_breach_alert:
+  alias: "Send Security Breach Alert to Android"
+  description: "Critical security notification with camera snapshot and actions"
+  fields:
+    message:
+      description: "Alert message"
+      example: "Unauthorized entry detected at front door"
+    camera:
+      description: "Camera entity ID"
+      example: "camera.front_door"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ message }}"
+        title: "🚨 SECURITY BREACH"
+        data:
+          priority: max
+          ttl: 0
+          importance: max
+          channel: Critical Alerts
+          color: "#FF0000"
+          vibrationPattern: "100, 1000, 100, 1000, 100"
+          ledColor: "#FF0000"
+          sticky: true
+          image: "/api/camera_proxy/{{ camera }}"
+          actions:
+            - action: "CALL_911"
+              title: "📞 Call 911"
+            - action: "VIEW_CAMERAS"
+              title: "📹 View Cameras"
+            - action: "SOUND_ALARM"
+              title: "🚨 Sound Alarm"
+            - action: "FALSE_ALARM"
+              title: "False Alarm"
+
+# ------------------------------------------------
+# 2. Door/Window Alert (High Priority)
+# ------------------------------------------------
+android_door_window_alert:
+  alias: "Send Door/Window Alert to Android"
+  description: "Alert for door or window opening while away"
+  fields:
+    device_name:
+      description: "Name of the door/window"
+      example: "Front Door"
+    camera:
+      description: "Camera entity ID (optional)"
+      example: "camera.front_door"
+      required: false
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ device_name }} was opened while you're away!"
+        title: "⚠️ Entry Alert"
+        data:
+          priority: high
+          ttl: 0
+          channel: High Priority
+          color: "#FF6600"
+          vibrationPattern: "100, 500, 100"
+          image: "{% if camera %}/api/camera_proxy/{{ camera }}{% endif %}"
+          actions:
+            - action: "VIEW_CAMERA_{{ device_name | replace(' ', '_') | upper }}"
+              title: "View Camera"
+            - action: "LOCK_ALL_DOORS"
+              title: "🔒 Lock All"
+            - action: "ARM_SECURITY"
+              title: "🛡️ Arm Security"
+
+# ------------------------------------------------
+# 3. Motion Detection Alert
+# ------------------------------------------------
+android_motion_alert:
+  alias: "Send Motion Detection Alert to Android"
+  description: "Motion detected notification with snapshot"
+  fields:
+    location:
+      description: "Location of motion"
+      example: "Living Room"
+    camera:
+      description: "Camera entity ID"
+      example: "camera.living_room"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Motion detected in {{ location }}"
+        title: "👁️ Motion Alert"
+        data:
+          priority: high
+          channel: High Priority
+          color: "#FFA500"
+          image: "/api/camera_proxy/{{ camera }}"
+          clickAction: "/lovelace/cameras"
+          actions:
+            - action: "VIEW_LIVE_{{ location | replace(' ', '_') | upper }}"
+              title: "📹 View Live"
+            - action: "FALSE_ALARM"
+              title: "False Alarm"
+            - action: "ARM_SECURITY"
+              title: "Arm Security"
+
+# ------------------------------------------------
+# 4. Backup Completion (Low Priority)
+# ------------------------------------------------
+android_backup_complete:
+  alias: "Send Backup Completion Notice to Android"
+  description: "Notification for completed backup with details"
+  fields:
+    backup_size:
+      description: "Size of backup"
+      example: "2.5 GB"
+    backup_duration:
+      description: "Duration of backup"
+      example: "15 minutes"
+    file_count:
+      description: "Number of files backed up"
+      example: "1,234"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: |
+          ✅ Backup completed successfully
+          
+          📦 Size: {{ backup_size }}
+          ⏱️ Duration: {{ backup_duration }}
+          📄 Files: {{ file_count }}
+        title: "Backup Complete"
+        data:
+          priority: low
+          channel: Low Priority
+          color: "#4CAF50"
+          notification_icon: mdi:backup-restore
+          actions:
+            - action: "VIEW_BACKUP_DETAILS"
+              title: "View Details"
+            - action: "VERIFY_BACKUP"
+              title: "Verify Backup"
+
+# ------------------------------------------------
+# 5. Backup Failed (High Priority)
+# ------------------------------------------------
+android_backup_failed:
+  alias: "Send Backup Failed Alert to Android"
+  description: "Alert when backup job fails"
+  fields:
+    error_message:
+      description: "Error details"
+      example: "Connection timeout to cloud storage"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: |
+          ❌ Backup job failed!
+          
+          Error: {{ error_message }}
+        title: "Backup Failed"
+        data:
+          priority: high
+          channel: High Priority
+          color: "#FF0000"
+          notification_icon: mdi:alert-circle
+          actions:
+            - action: "VIEW_LOGS"
+              title: "View Logs"
+            - action: "RETRY_BACKUP"
+              title: "Retry Now"
+            - action: "CONTACT_SUPPORT"
+              title: "Get Help"
+
+# ------------------------------------------------
+# 6. System Health Warning
+# ------------------------------------------------
+android_system_health_warning:
+  alias: "Send System Health Warning to Android"
+  description: "Alert for system issues (CPU, memory, disk)"
+  fields:
+    component:
+      description: "Component with issue"
+      example: "Proxmox VM 101"
+    status:
+      description: "Status description"
+      example: "High CPU usage"
+    cpu_usage:
+      description: "CPU usage percentage"
+      example: "95"
+    memory_usage:
+      description: "Memory usage percentage"
+      example: "87"
+    uptime:
+      description: "System uptime"
+      example: "3 days"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: |
+          ⚠️ {{ component }} is experiencing issues:
+          
+          Status: {{ status }}
+          💻 CPU: {{ cpu_usage }}%
+          🧠 Memory: {{ memory_usage }}%
+          ⏱️ Uptime: {{ uptime }}
+        title: "System Health Alert"
+        data:
+          priority: high
+          channel: High Priority
+          color: "#FFA500"
+          notification_icon: mdi:server-network
+          actions:
+            - action: "RESTART_SERVICE"
+              title: "🔄 Restart"
+            - action: "VIEW_LOGS"
+              title: "📋 View Logs"
+            - action: "OPEN_PROXMOX"
+              title: "🖥️ Open Proxmox"
+
+# ------------------------------------------------
+# 7. Package Delivery Notification
+# ------------------------------------------------
+android_package_delivery:
+  alias: "Send Package Delivery Alert to Android"
+  description: "Notification when package is delivered"
+  fields:
+    camera:
+      description: "Camera entity ID"
+      example: "camera.front_door"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "A package has been delivered to your front door"
+        title: "📦 Package Delivered"
+        data:
+          priority: normal
+          channel: Medium Priority
+          color: "#2196F3"
+          image: "/api/camera_proxy/{{ camera }}"
+          actions:
+            - action: "VIEW_CAMERA"
+              title: "View Camera"
+            - action: "MARK_RECEIVED"
+              title: "Mark Received"
+
+# ------------------------------------------------
+# 8. Weather Alert
+# ------------------------------------------------
+android_weather_alert:
+  alias: "Send Weather Alert to Android"
+  description: "Severe weather notification"
+  fields:
+    alert_type:
+      description: "Type of weather alert"
+      example: "Thunderstorm Warning"
+    alert_message:
+      description: "Alert details"
+      example: "Severe thunderstorms expected"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ alert_message }}"
+        title: "🌩️ {{ alert_type }}"
+        data:
+          priority: high
+          channel: High Priority
+          color: "#FF9800"
+          notification_icon: mdi:weather-lightning
+          actions:
+            - action: "SECURE_HOME"
+              title: "Secure Home"
+            - action: "VIEW_RADAR"
+              title: "View Radar"
+
+# ------------------------------------------------
+# 9. Garage Door Left Open
+# ------------------------------------------------
+android_garage_door_open:
+  alias: "Send Garage Door Open Alert to Android"
+  description: "Alert if garage door left open"
+  fields:
+    duration:
+      description: "How long door has been open"
+      example: "30 minutes"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "Your garage door has been open for {{ duration }}"
+        title: "🚗 Garage Door Open"
+        data:
+          priority: high
+          channel: High Priority
+          color: "#FF6600"
+          vibrationPattern: "100, 500"
+          actions:
+            - action: "CLOSE_GARAGE"
+              title: "Close Door"
+            - action: "VIEW_CAMERA"
+              title: "View Camera"
+            - action: "REMIND_LATER"
+              title: "Remind in 10 min"
+
+# ------------------------------------------------
+# 10. Low Battery Device Alert
+# ------------------------------------------------
+android_device_battery_low:
+  alias: "Send Low Battery Device Alert to Android"
+  description: "Alert when smart device battery is low"
+  fields:
+    device_name:
+      description: "Name of device"
+      example: "Front Door Sensor"
+    battery_level:
+      description: "Battery level percentage"
+      example: "15"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ device_name }} battery is at {{ battery_level }}%"
+        title: "🔋 Low Battery Alert"
+        data:
+          priority: low
+          channel: Low Priority
+          color: "#FF9800"
+          notification_icon: mdi:battery-20
+          actions:
+            - action: "ORDER_BATTERY"
+              title: "Order Battery"
+            - action: "REMIND_TOMORROW"
+              title: "Remind Tomorrow"
+
+# ------------------------------------------------
+# 11. Water Leak Detection (Critical)
+# ------------------------------------------------
+android_water_leak_alert:
+  alias: "Send Water Leak Alert to Android"
+  description: "Critical alert for water leak"
+  fields:
+    location:
+      description: "Location of leak"
+      example: "Basement"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "WATER LEAK DETECTED in {{ location }}! Take immediate action!"
+        title: "💧 WATER LEAK ALERT"
+        data:
+          priority: max
+          ttl: 0
+          importance: max
+          channel: Critical Alerts
+          color: "#0000FF"
+          vibrationPattern: "100, 1000, 100, 1000, 100, 1000"
+          ledColor: "#0000FF"
+          sticky: true
+          actions:
+            - action: "SHUT_OFF_WATER"
+              title: "🚰 Shut Off Water"
+            - action: "CALL_PLUMBER"
+              title: "📞 Call Plumber"
+            - action: "VIEW_CAMERA"
+              title: "View Camera"
+
+# ------------------------------------------------
+# 12. Smoke/Fire Alarm (Critical)
+# ------------------------------------------------
+android_fire_alarm:
+  alias: "Send Fire Alarm Alert to Android"
+  description: "Critical fire/smoke alarm notification"
+  fields:
+    location:
+      description: "Location of alarm"
+      example: "Kitchen"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "SMOKE/FIRE DETECTED in {{ location }}! EVACUATE IMMEDIATELY!"
+        title: "🔥 FIRE ALARM"
+        data:
+          priority: max
+          ttl: 0
+          importance: max
+          channel: Critical Alerts
+          color: "#FF0000"
+          vibrationPattern: "100, 500, 100, 500, 100, 500, 100, 500"
+          ledColor: "#FF0000"
+          sticky: true
+          actions:
+            - action: "CALL_911"
+              title: "📞 CALL 911"
+            - action: "SILENCE_ALARM"
+              title: "Silence (False Alarm)"
+
+# ------------------------------------------------
+# 13. Appliance Left On
+# ------------------------------------------------
+android_appliance_left_on:
+  alias: "Send Appliance Left On Alert to Android"
+  description: "Alert when appliance is left on"
+  fields:
+    appliance:
+      description: "Appliance name"
+      example: "Coffee Maker"
+    duration:
+      description: "How long it's been on"
+      example: "2 hours"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ appliance }} has been on for {{ duration }}"
+        title: "⚡ Appliance Alert"
+        data:
+          priority: normal
+          channel: Medium Priority
+          color: "#FF9800"
+          actions:
+            - action: "TURN_OFF_{{ appliance | replace(' ', '_') | upper }}"
+              title: "Turn Off"
+            - action: "REMIND_LATER"
+              title: "Remind in 30 min"
+
+# ------------------------------------------------
+# 14. Person Detected at Door
+# ------------------------------------------------
+android_person_at_door:
+  alias: "Send Person at Door Alert to Android"
+  description: "Notification when person detected at door"
+  fields:
+    person:
+      description: "Person name (if recognized)"
+      example: "Unknown Person"
+      required: false
+    camera:
+      description: "Camera entity ID"
+      example: "camera.front_door"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "{{ person | default('Someone') }} is at your front door"
+        title: "🚪 Visitor Alert"
+        data:
+          priority: high
+          channel: High Priority
+          color: "#2196F3"
+          image: "/api/camera_proxy/{{ camera }}"
+          actions:
+            - action: "VIEW_LIVE"
+              title: "📹 View Live"
+            - action: "UNLOCK_DOOR"
+              title: "🔓 Unlock Door"
+            - action: "SPEAK_MESSAGE"
+              title: "🔊 Speak Message"
+
+# ------------------------------------------------
+# 15. Daily Summary Notification
+# ------------------------------------------------
+android_daily_summary:
+  alias: "Send Daily Summary to Android"
+  description: "End of day summary notification"
+  fields:
+    energy_usage:
+      description: "Daily energy usage"
+      example: "42.5 kWh"
+    door_entries:
+      description: "Number of door entries"
+      example: "8"
+    motion_events:
+      description: "Number of motion events"
+      example: "127"
+    temperature_high:
+      description: "High temperature"
+      example: "75°F"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: |
+          📊 Your Daily Home Summary:
+          
+          ⚡ Energy: {{ energy_usage }}
+          🚪 Entries: {{ door_entries }}
+          👁️ Motion Events: {{ motion_events }}
+          🌡️ High Temp: {{ temperature_high }}
+        title: "Daily Summary"
+        data:
+          priority: low
+          channel: Low Priority
+          color: "#4CAF50"
+          actions:
+            - action: "VIEW_FULL_REPORT"
+              title: "View Full Report"
+
+# ================================================
+# NOTIFICATION CHANNEL DEFINITIONS
+# ================================================
+# Configure these channels in the Home Assistant Companion app:
+#
+# Critical Alerts:
+#   - Sound: Loud, persistent
+#   - Vibration: Strong
+#   - Do Not Disturb: Override
+#   - Importance: Max
+#
+# High Priority:
+#   - Sound: Normal
+#   - Vibration: Normal
+#   - Do Not Disturb: Allow
+#   - Importance: High
+#
+# Medium Priority:
+#   - Sound: Soft
+#   - Vibration: Short
+#   - Do Not Disturb: Silence
+#   - Importance: Default
+#
+# Low Priority:
+#   - Sound: None
+#   - Vibration: None
+#   - Do Not Disturb: Silence
+#   - Importance: Low
+#
+# ================================================
+
+# ================================================
+# COMMAND NOTIFICATIONS (Special Actions)
+# ================================================
+
+# ------------------------------------------------
+# Command: Set Do Not Disturb
+# ------------------------------------------------
+android_set_dnd:
+  alias: "Set Android Do Not Disturb"
+  description: "Enable/disable DND mode on Android"
+  fields:
+    mode:
+      description: "DND mode"
+      example: "priority_only"  # off, priority_only, alarms_only, total_silence
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "command_dnd"
+        data:
+          command: "{{ mode }}"
+
+# ------------------------------------------------
+# Command: Set Ringer Mode
+# ------------------------------------------------
+android_set_ringer:
+  alias: "Set Android Ringer Mode"
+  description: "Set ringer mode on Android"
+  fields:
+    mode:
+      description: "Ringer mode"
+      example: "vibrate"  # normal, vibrate, silent
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "command_ringer_mode"
+        data:
+          command: "{{ mode }}"
+
+# ------------------------------------------------
+# Command: Update Sensors
+# ------------------------------------------------
+android_update_sensors:
+  alias: "Force Update Android Sensors"
+  description: "Request sensor update from Android device"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "command_update_sensors"
+
+# ------------------------------------------------
+# Command: Request Location Update
+# ------------------------------------------------
+android_request_location:
+  alias: "Request Android Location Update"
+  description: "Force location update from Android device"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "request_location_update"
+
+# ------------------------------------------------
+# Command: Launch App
+# ------------------------------------------------
+android_launch_app:
+  alias: "Launch App on Android"
+  description: "Launch specific app on Android device"
+  fields:
+    package:
+      description: "App package name"
+      example: "com.android.chrome"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "command_launch_app"
+        data:
+          package_name: "{{ package }}"
+
+# ------------------------------------------------
+# Command: Set Volume
+# ------------------------------------------------
+android_set_volume:
+  alias: "Set Android Volume"
+  description: "Set volume level on Android device"
+  fields:
+    stream:
+      description: "Audio stream"
+      example: "music"  # music, alarm, ring, notification
+    level:
+      description: "Volume level"
+      example: "5"
+  sequence:
+    - service: notify.mobile_app_primary_android
+      data:
+        message: "command_volume_level"
+        data:
+          media_stream: "{{ stream }}"
+          level: "{{ level }}"
+
+# ================================================
+# USAGE NOTES:
+# ================================================
+# 1. Add this file to your Home Assistant configuration:
+#    script: !include android-notifications.yaml
+#
+# 2. Call scripts from automations:
+#    - service: script.android_security_breach_alert
+#      data:
+#        message: "Motion detected"
+#        camera: "camera.front_door"
+#
+# 3. Customize notification channels in the HA Companion app
+#
+# 4. Test each notification type before relying on it
+#
+# 5. Adjust priorities and sounds to your preference
+#
+# 6. Remember to handle notification actions in automations
+# ================================================

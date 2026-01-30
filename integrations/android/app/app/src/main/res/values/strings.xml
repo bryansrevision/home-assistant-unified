@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HomeAI</string>
+    <string name="home_tab">Home</string>
+    <string name="chat_tab">AI Chat</string>
+    <string name="devices_tab">Devices</string>
+    <string name="settings_tab">Settings</string>
+    
+    <!-- AI Assistant -->
+    <string name="ai_welcome">Hi! I\'m your AI home assistant. How can I help you today?</string>
+    <string name="ai_placeholder">Ask me anything about your home...</string>
+    <string name="voice_input">Voice Input</string>
+    <string name="send_message">Send</string>
+    
+    <!-- Settings -->
+    <string name="settings_openai">OpenAI Settings</string>
+    <string name="settings_home_assistant">Home Assistant</string>
+    <string name="settings_mqtt">MQTT Broker</string>
+    <string name="settings_smartthings">SmartThings</string>
+    <string name="settings_google_home">Google Home</string>
+    
+    <!-- Actions -->
+    <string name="turn_on">Turn On</string>
+    <string name="turn_off">Turn Off</string>
+    <string name="set_brightness">Set Brightness</string>
+    <string name="set_temperature">Set Temperature</string>
+    <string name="lock">Lock</string>
+    <string name="unlock">Unlock</string>
+    
+    <!-- Status -->
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+</resources>

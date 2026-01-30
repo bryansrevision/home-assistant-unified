@@ -1,0 +1,59 @@
+{
+  "tv_devices": [
+    {
+      "name": "Living Room Samsung TV",
+      "type": "samsung_tv",
+      "ip_address": "192.168.1.100",
+      "port": 8002,
+      "mac_address": "00:00:00:00:00:00",
+      "entity_id": "media_player.living_room_tv",
+      "description": "Samsung Smart TV in living room"
+    },
+    {
+      "name": "Bedroom Google TV",
+      "type": "google_tv",
+      "ip_address": "192.168.1.101",
+      "port": 8080,
+      "entity_id": "media_player.bedroom_tv",
+      "description": "Google TV in bedroom"
+    },
+    {
+      "name": "Android TV Box",
+      "type": "android_box",
+      "ip_address": "192.168.1.102",
+      "port": 5555,
+      "entity_id": "media_player.android_box",
+      "description": "Android TV box in entertainment center"
+    }
+  ],
+  "remote_profiles": {
+    "samsung_tv": {
+      "supported_commands": [
+        "power", "power_on", "power_off",
+        "volume_up", "volume_down", "volume_mute",
+        "channel_up", "channel_down",
+        "input_hdmi1", "input_hdmi2", "input_hdmi3",
+        "home", "back", "up", "down", "left", "right", "select",
+        "play", "pause", "stop",
+        "netflix", "youtube", "prime_video"
+      ]
+    },
+    "google_tv": {
+      "supported_commands": [
+        "power", "power_on", "power_off",
+        "volume_up", "volume_down", "volume_mute",
+        "home", "back", "up", "down", "left", "right", "select",
+        "play", "pause", "stop", "rewind", "fast_forward",
+        "netflix", "youtube", "prime_video"
+      ]
+    },
+    "android_box": {
+      "supported_commands": [
+        "power", "power_on", "power_off",
+        "volume_up", "volume_down", "volume_mute",
+        "home", "back", "up", "down", "left", "right", "select",
+        "play", "pause", "stop", "menu"
+      ]
+    }
+  }
+}

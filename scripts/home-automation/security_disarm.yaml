@@ -1,0 +1,193 @@
+---
+# Security Disarm Script
+# Safely disarms the security system
+
+security_disarm:
+  alias: "Disarm Security System"
+  description: "Disarm security and restore normal mode"
+  icon: mdi:shield-off
+  mode: single
+  sequence:
+    - service: notify.mobile_app
+      data:
+        message: "🔓 Disarming security system..."
+    
+    # Disarm the alarm
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+    
+    # Turn off security mode flags
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.security_armed
+          - input_boolean.night_mode_security
+          - input_boolean.security_armed_stay
+    
+    # Restore normal climate
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: home
+    
+    # Turn on entry lights if dark
+    - condition: sun
+      after: sunset
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.entryway
+          - light.living_room
+      data:
+        brightness_pct: 80
+        color_temp: 370
+    
+    # Welcome home announcement
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_living_room
+      data:
+        media_content_id: "Welcome home! Security system disarmed."
+        media_content_type: announce
+    
+    - delay:
+        seconds: 1
+    
+    - service: notify.mobile_app
+      data:
+        title: "✅ Security Disarmed"
+        message: "Welcome home! Security system disarmed at {{ now().strftime('%I:%M %p') }}"
+
+security_disarm_quick:
+  alias: "Quick Disarm"
+  description: "Fast disarm without announcements"
+  icon: mdi:shield-off-outline
+  mode: single
+  sequence:
+    # Disarm silently
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+    
+    # Turn off flags
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.security_armed
+          - input_boolean.night_mode_security
+          - input_boolean.security_armed_stay
+    
+    - service: notify.mobile_app
+      data:
+        message: "Security disarmed"
+
+security_panic:
+  alias: "Security Panic Mode"
+  description: "Emergency panic mode activation"
+  icon: mdi:alarm-light
+  mode: single
+  sequence:
+    # Trigger all alarms
+    - service: alarm_control_panel.alarm_trigger
+      target:
+        entity_id: alarm_control_panel.home_alarm
+    
+    # Turn on all lights
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness_pct: 100
+        rgb_color: [255, 0, 0]
+    
+    # Emergency notification
+    - service: notify.mobile_app
+      data:
+        title: "🚨 PANIC MODE ACTIVATED"
+        message: "Emergency panic mode triggered at {{ now().strftime('%I:%M %p') }}"
+        data:
+          priority: high
+          ttl: 0
+          channel: alarm_stream
+          actions:
+            - action: "CALL_911"
+              title: "Call 911"
+            - action: "FALSE_ALARM"
+              title: "False Alarm"
+    
+    # Sound alarm on all Alexa devices
+    - service: media_player.play_media
+      target:
+        entity_id:
+          - media_player.alexa_living_room
+          - media_player.alexa_bedroom
+          - media_player.alexa_kitchen
+      data:
+        media_content_id: "Emergency! Panic mode activated!"
+        media_content_type: announce
+    
+    # Flash all lights
+    - repeat:
+        count: 10
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: all
+            data:
+              flash: short
+          - delay:
+              seconds: 1
+    
+    # Send emergency contacts notification
+    - service: notify.emergency_contacts
+      data:
+        title: "🚨 EMERGENCY"
+        message: "Panic button pressed at {{ state_attr('zone.home', 'friendly_name') }}"
+        data:
+          priority: high
+
+security_test_mode:
+  alias: "Security System Test"
+  description: "Test security system sensors and alarms"
+  icon: mdi:shield-check
+  mode: single
+  sequence:
+    - service: notify.mobile_app
+      data:
+        message: "🔧 Starting security system test..."
+    
+    # Test all door sensors
+    - service: script.test_door_sensors
+      continue_on_error: true
+    
+    # Test window sensors
+    - service: script.test_window_sensors
+      continue_on_error: true
+    
+    # Test motion sensors
+    - service: script.test_motion_sensors
+      continue_on_error: true
+    
+    # Test alarm siren (brief)
+    - service: alarm_control_panel.alarm_trigger
+      target:
+        entity_id: alarm_control_panel.home_alarm
+    - delay:
+        seconds: 3
+    - service: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+    
+    # Report results
+    - service: notify.mobile_app
+      data:
+        title: "✅ Security Test Complete"
+        message: "All security systems tested successfully"

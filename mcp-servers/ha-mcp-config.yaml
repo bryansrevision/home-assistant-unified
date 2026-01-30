@@ -1,0 +1,401 @@
+# Home Assistant MCP Configuration
+# Unified MCP Server integration for Home Assistant
+# This config bridges multiple MCP servers with Home Assistant
+
+mcp_servers:
+  omi:
+    name: 'Omi.me MCP Server'
+    enabled: true
+    priority: 'critical'
+    type: 'event_streaming'
+
+    # Server Connection
+    connection:
+      protocol: 'https'
+      host: 'api.omi.me'
+      port: 443
+      base_url: 'https://api.omi.me/v1'
+
+      # MCP Streaming Endpoint
+      sse_endpoint: 'https://api.omi.me/v1/mcp/sse'
+
+      # Authentication
+      auth:
+        type: 'bearer_token'
+        token_env: 'OMI_MCP_API_TOKEN'
+        headers:
+          Authorization: 'Bearer ${OMI_MCP_API_TOKEN}'
+
+    # Event Configuration
+    events:
+      enabled: true
+      types:
+        - 'memory_created'
+        - 'memory_updated'
+        - 'memory_deleted'
+        - 'conversation_started'
+        - 'conversation_ended'
+        - 'transcript_received'
+
+      # Event Routing
+      routing:
+        mqtt:
+          enabled: true
+          topic_prefix: 'ha/omi/events'
+          retain: false
+          qos: 1
+
+        webhook:
+          enabled: true
+          endpoint: '/webhook/omi-mcp'
+          method: 'POST'
+
+        influxdb:
+          enabled: true
+          measurement: 'omi_events'
+          tags:
+            source: 'omi_mcp'
+
+    # Reconnection Strategy
+    reconnection:
+      enabled: true
+      strategy: 'exponential_backoff'
+      initial_delay_seconds: 2
+      max_delay_seconds: 60
+      max_retries: 5
+      backoff_factor: 2.0
+
+    # Health Check
+    health_check:
+      enabled: true
+      interval_seconds: 300
+      method: 'HEAD'
+      endpoint: 'https://api.omi.me/v1/health'
+      timeout_seconds: 10
+      expected_status: [200, 204]
+
+  github:
+    name: 'GitHub MCP Server'
+    enabled: true
+    priority: 'high'
+    type: 'repository_access'
+
+    connection:
+      protocol: 'https'
+      host: 'api.github.com'
+      base_url: 'https://api.github.com'
+      auth:
+        type: 'pat'
+        token_env: 'GITHUB_TOKEN'
+        headers:
+          Authorization: 'Bearer ${GITHUB_TOKEN}'
+
+    repositories:
+      - 'bryansrevision/wearables-integration-platform'
+      - 'bryansrevision/HOME-AI-AUTOMATION'
+      - 'bryansrevision/CodeSpace-Workspace-Template'
+
+    # Repository event triggers
+    events:
+      push:
+        enabled: true
+        branches: ['main', 'develop']
+      pull_request:
+        enabled: true
+        actions: ['opened', 'closed', 'synchronize']
+      release:
+        enabled: true
+
+    # Webhook Configuration
+    webhook:
+      enabled: true
+      endpoint: '/webhook/github-mcp'
+      secret_env: 'GITHUB_WEBHOOK_SECRET'
+
+    health_check:
+      enabled: true
+      interval_seconds: 300
+      endpoint: 'https://api.github.com/user'
+
+  proxmox:
+    name: 'Proxmox VE MCP Server'
+    enabled: true
+    priority: 'high'
+    type: 'infrastructure_management'
+
+    connection:
+      protocol: 'https'
+      host: '${PROXMOX_HOST}'
+      port: 8006
+      verify_ssl: false
+      auth:
+        type: 'api_token'
+        token_env: 'PROXMOX_TOKEN'
+        headers:
+          Authorization: 'PVEAPIToken=${PROXMOX_TOKEN}'
+
+    # Resource Monitoring
+    monitoring:
+      enabled: true
+      vms:
+        - name: 'home-assistant'
+          vmid: 100
+          monitor: true
+        - name: 'mosquitto-broker'
+          vmid: 101
+          monitor: true
+        - name: 'influxdb-server'
+          vmid: 102
+          monitor: true
+
+      metrics:
+        - 'cpu'
+        - 'memory'
+        - 'disk'
+        - 'network'
+
+      collection_interval_seconds: 60
+
+      # InfluxDB Export
+      export:
+        enabled: true
+        backend: 'influxdb'
+        measurement: 'proxmox_resources'
+
+    # Automation Triggers
+    triggers:
+      vm_state_change:
+        enabled: true
+        threshold_memory_percent: 80
+        threshold_cpu_percent: 90
+        threshold_disk_percent: 85
+
+      resource_shortage:
+        enabled: true
+        actions:
+          - send_notification
+          - trigger_automation
+
+    health_check:
+      enabled: true
+      interval_seconds: 300
+      endpoint: '/api2/json/version'
+
+# Home Assistant Integration Settings
+home_assistant:
+  # Connection to Home Assistant Core
+  connection:
+    url: '${HOME_ASSISTANT_URL}'
+    token: '${HOME_ASSISTANT_TOKEN}'
+    verify_ssl: false
+    timeout_seconds: 30
+
+  # Entity Management
+  entities:
+    # Omi Integration Entities
+    omi:
+      - entity_id: 'sensor.omi_last_memory'
+        name: 'Last Omi Memory'
+        icon: 'mdi:waveform'
+
+      - entity_id: 'sensor.omi_conversation_duration'
+        name: 'Conversation Duration'
+        icon: 'mdi:clock'
+
+      - entity_id: 'sensor.omi_action_items'
+        name: 'Action Items'
+        icon: 'mdi:checkbox-multiple-marked'
+
+      - entity_id: 'binary_sensor.omi_connected'
+        name: 'Omi Connected'
+        icon: 'mdi:wifi-check'
+
+    # Proxmox Integration Entities
+    proxmox:
+      - entity_id: 'sensor.proxmox_cpu_usage'
+        name: 'Proxmox CPU'
+        unit: '%'
+
+      - entity_id: 'sensor.proxmox_memory_usage'
+        name: 'Proxmox Memory'
+        unit: '%'
+
+      - entity_id: 'sensor.ha_vm_cpu'
+        name: 'HA VM CPU'
+        unit: '%'
+
+      - entity_id: 'sensor.ha_vm_memory'
+        name: 'HA VM Memory'
+        unit: '%'
+
+  # Automation Integration
+  automations:
+    # Omi Wearables Automations
+    omi_memory_action:
+      trigger:
+        platform: 'mqtt'
+        topic: 'ha/omi/events/action_items'
+      action:
+        - service: 'automation.trigger'
+          data:
+            entity_id: 'automation.process_omi_actions'
+
+    # Proxmox Resource Alerts
+    proxmox_cpu_high:
+      trigger:
+        platform: 'numeric_state'
+        entity_id: 'sensor.proxmox_cpu_usage'
+        above: 90
+      action:
+        - service: 'notify.admin'
+          data:
+            message: 'Proxmox CPU usage above 90%'
+
+    proxmox_memory_high:
+      trigger:
+        platform: 'numeric_state'
+        entity_id: 'sensor.proxmox_memory_usage'
+        above: 85
+      action:
+        - service: 'notify.admin'
+          data:
+            message: 'Proxmox Memory usage above 85%'
+
+  # Scripts for Complex Operations
+  scripts:
+    sync_omi_to_tasks:
+      description: 'Synchronize Omi action items to task list'
+      sequence:
+        - service: 'python_script.process_omi_data'
+          data:
+            source: 'omi_mcp'
+            target: 'home_assistant_tasks'
+
+    monitor_wearable_health:
+      description: 'Monitor wearable health metrics'
+      sequence:
+        - condition: 'state'
+          entity_id: 'binary_sensor.omi_connected'
+          state: 'on'
+        - service: 'python_script.analyze_health_metrics'
+
+# MQTT Bridge Configuration
+mqtt:
+  broker: '${MQTT_BROKER}'
+  port: ${MQTT_PORT:-1883}
+  username: '${MQTT_USER}'
+  password: '${MQTT_PASSWORD}'
+  keepalive: 60
+
+  # Topic Structure
+  topics:
+    # Omi Events
+    omi_events: 'ha/omi/events/#'
+    omi_memories: 'ha/omi/memories'
+    omi_actions: 'ha/omi/actions'
+
+    # Proxmox Metrics
+    proxmox_metrics: 'ha/proxmox/metrics/#'
+    proxmox_alerts: 'ha/proxmox/alerts'
+
+    # Home Assistant Control
+    ha_commands: 'ha/commands/#'
+    ha_status: 'ha/status'
+
+  # Retained Topics
+  retained_topics:
+    - 'ha/omi/status'
+    - 'ha/proxmox/status'
+    - 'ha/system/health'
+
+# Data Storage Configuration
+influxdb:
+  enabled: true
+  host: '${INFLUXDB_HOST}'
+  port: ${INFLUXDB_PORT:-8086}
+  database: '${INFLUXDB_DB}'
+  username: '${INFLUXDB_USER}'
+  password: '${INFLUXDB_PASSWORD}'
+
+  # Data Collection
+  measurements:
+    - name: 'omi_events'
+      retention: '30d'
+      source: 'mqtt'
+
+    - name: 'omi_metrics'
+      retention: '90d'
+      source: 'webhook'
+
+    - name: 'proxmox_resources'
+      retention: '30d'
+      source: 'proxmox_api'
+
+    - name: 'home_assistant_states'
+      retention: '7d'
+      source: 'home_assistant'
+
+# Logging Configuration
+logging:
+  level: 'INFO'
+  format: 'json'
+
+  # Log Destinations
+  destinations:
+    - type: 'file'
+      path: '/var/log/ha-mcp.log'
+      max_size_mb: 100
+      backup_count: 5
+
+    - type: 'syslog'
+      facility: 'LOG_LOCAL0'
+
+    - type: 'loki'
+      enabled: false
+      url: '${LOKI_URL}'
+
+# Performance & Limits
+performance:
+  # Concurrent MCP Connections
+  max_concurrent_connections: 10
+
+  # Request Timeouts
+  request_timeout_seconds: 30
+  event_processing_timeout_seconds: 60
+
+  # Rate Limiting
+  rate_limiting:
+    enabled: true
+    requests_per_second: 100
+    burst_size: 500
+
+  # Caching
+  cache:
+    enabled: true
+    ttl_seconds: 300
+    max_size_mb: 500
+
+  # Queue Management
+  event_queue:
+    max_size: 10000
+    overflow_behavior: 'drop_oldest'
+
+# Security Configuration
+security:
+  # TLS/SSL
+  tls:
+    enabled: true
+    min_version: 'TLSv1.2'
+    cert_path: '/etc/certs/ha-mcp.crt'
+    key_path: '/etc/certs/ha-mcp.key'
+
+  # Token Rotation
+  token_rotation:
+    enabled: true
+    rotation_days: 90
+
+  # Audit Logging
+  audit_logging:
+    enabled: true
+    log_all_api_calls: true
+    sensitive_fields_mask: true

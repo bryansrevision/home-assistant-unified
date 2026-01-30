@@ -1,0 +1,307 @@
+# Home Assistant Automations
+# YAML templates for Omi wearables and AI automations
+
+# Automation: Process Omi Memory Events
+- alias: 'Process Omi Memory Events'
+  description: 'Process newly created Omi memories through AI analysis'
+  trigger:
+    - platform: 'mqtt'
+      topic: 'ha/omi/events/memory_created'
+
+  condition:
+    - condition: 'state'
+      entity_id: 'binary_sensor.omi_connected'
+      state: 'on'
+
+  action:
+    - service: 'python_script.process_omi_memory'
+      data:
+        source: 'mqtt'
+        action: 'analyze'
+
+    - service: 'influxdb.write_points'
+      data:
+        measurement: 'omi_memory_received'
+        tags:
+          source: 'mqtt_trigger'
+        fields:
+          count: 1
+
+    - service: 'notify.admin'
+      data:
+        message: 'New Omi memory received and queued for processing'
+
+# Automation: Extract Action Items from Conversations
+- alias: 'Extract Action Items from Omi Conversations'
+  description: 'Extract action items when conversation ends'
+  trigger:
+    - platform: 'mqtt'
+      topic: 'ha/omi/events/conversation_ended'
+
+  condition:
+    - condition: 'numeric_state'
+      entity_id: 'sensor.omi_last_conversation_duration'
+      above: 30 # Only for conversations > 30 seconds
+
+  action:
+    - service: 'webhook.send'
+      data:
+        method: 'POST'
+        url: 'http://agentstack:8001/api/analyze'
+        data:
+          event_type: 'conversation_ended'
+          action: 'extract_items'
+
+    - delay:
+        seconds: 5
+
+    - service: 'todo.add_item'
+      target:
+        entity_id: 'todo.home_assistant_tasks'
+      data:
+        item: "{{ state_attr('sensor.omi_extracted_tasks', 'items')[0] }}"
+        description: 'From Omi conversation analysis'
+
+# Automation: Monitor Health Metrics from Wearable
+- alias: 'Monitor Omi Health Metrics'
+  description: 'Track health metrics from wearable conversations'
+  trigger:
+    - platform: 'mqtt'
+      topic: 'ha/omi/events/transcript_received'
+
+  condition: []
+
+  action:
+    - service: 'python_script.analyze_health_metrics'
+      data_template:
+        transcript: '{{ trigger.payload_json.transcript }}'
+        timestamp: '{{ now() }}'
+
+    - service: 'influxdb.write_points'
+      data_template:
+        measurement: 'omi_health_metrics'
+        tags:
+          metric_type: "{{ state_attr('sensor.omi_health_metrics', 'type') }}"
+        fields:
+          value: "{{ state_attr('sensor.omi_health_metrics', 'value') }}"
+          confidence: "{{ state_attr('sensor.omi_health_metrics', 'confidence') }}"
+
+    - condition: 'template'
+      value_template: "{{ state_attr('sensor.omi_health_metrics', 'severity') == 'high' }}"
+
+    - service: 'notify.mobile_app_phone'
+      data_template:
+        title: 'Health Alert from Omi'
+        message: "{{ state_attr('sensor.omi_health_metrics', 'alert_message') }}"
+
+# Automation: Create Tasks from Detected Action Items
+- alias: 'Create Home Assistant Tasks from Omi'
+  description: 'Automatically create tasks detected by AI analysis'
+  trigger:
+    - platform: 'mqtt'
+      topic: 'ha/agentstack/tasks'
+
+  condition:
+    - condition: 'template'
+      value_template: '{{ trigger.payload_json.tasks | length > 0 }}'
+
+  action:
+    - repeat:
+        for_each: '{{ trigger.payload_json.tasks }}'
+        sequence:
+          - service: 'todo.add_item'
+            target:
+              entity_id: 'todo.home_assistant_tasks'
+            data_template:
+              item: '{{ repeat.item.title }}'
+              description: '{{ repeat.item.description }}'
+              due_date: '{{ repeat.item.due_date }}'
+
+          - service: 'influxdb.write_points'
+            data:
+              measurement: 'omi_task_created'
+              tags:
+                priority: '{{ repeat.item.priority }}'
+              fields:
+                count: 1
+
+# Automation: Proxmox CPU Alert
+- alias: 'Proxmox CPU Usage Alert'
+  description: 'Alert when Proxmox CPU usage exceeds threshold'
+  trigger:
+    - platform: 'numeric_state'
+      entity_id: 'sensor.proxmox_cpu_usage'
+      above: 90
+      for:
+        minutes: 5
+
+  condition: []
+
+  action:
+    - service: 'notify.admin'
+      data:
+        title: '⚠️ Proxmox CPU Alert'
+        message: "CPU usage is {{ states('sensor.proxmox_cpu_usage') }}%"
+
+    - service: 'influxdb.write_points'
+      data:
+        measurement: 'proxmox_alerts'
+        tags:
+          alert_type: 'cpu_high'
+          severity: 'warning'
+        fields:
+          value: "{{ states('sensor.proxmox_cpu_usage') | float }}"
+
+# Automation: Proxmox Memory Alert
+- alias: 'Proxmox Memory Usage Alert'
+  description: 'Alert when Proxmox memory usage exceeds threshold'
+  trigger:
+    - platform: 'numeric_state'
+      entity_id: 'sensor.proxmox_memory_usage'
+      above: 85
+      for:
+        minutes: 5
+
+  condition: []
+
+  action:
+    - service: 'notify.admin'
+      data:
+        title: '⚠️ Proxmox Memory Alert'
+        message: "Memory usage is {{ states('sensor.proxmox_memory_usage') }}%"
+
+    - service: 'influxdb.write_points'
+      data:
+        measurement: 'proxmox_alerts'
+        tags:
+          alert_type: 'memory_high'
+          severity: 'warning'
+        fields:
+          value: "{{ states('sensor.proxmox_memory_usage') | float }}"
+
+# Automation: Omi Connection Status
+- alias: 'Monitor Omi MCP Connection'
+  description: 'Track Omi MCP server connection status'
+  trigger:
+    - platform: 'state'
+      entity_id: 'binary_sensor.omi_connected'
+
+  condition: []
+
+  action:
+    - service: 'influxdb.write_points'
+      data_template:
+        measurement: 'omi_connection_status'
+        tags:
+          connection_type: 'mcp_sse'
+        fields:
+          connected: "{{ 1 if states('binary_sensor.omi_connected') == 'on' else 0 }}"
+
+    - condition: 'state'
+      entity_id: 'binary_sensor.omi_connected'
+      state: 'off'
+
+    - service: 'notify.admin'
+      data:
+        title: '❌ Omi Connection Lost'
+        message: 'Failed to connect to Omi MCP server'
+
+# Automation: Daily Summary of Omi Memories
+- alias: 'Daily Omi Memory Summary'
+  description: 'Send daily summary of memories and insights'
+  trigger:
+    - platform: 'time'
+      at: '08:00:00'
+
+  condition: []
+
+  action:
+    - service: 'python_script.generate_daily_summary'
+      data:
+        date: "{{ now().strftime('%Y-%m-%d') }}"
+
+    - service: 'notify.admin'
+      data_template:
+        title: '📊 Daily Omi Summary'
+        message: |
+          Memories: {{ state_attr('sensor.omi_daily_summary', 'memory_count') }}
+          Conversations: {{ state_attr('sensor.omi_daily_summary', 'conversation_count') }}
+          Action Items: {{ state_attr('sensor.omi_daily_summary', 'action_items') }}
+          Mood: {{ state_attr('sensor.omi_daily_summary', 'mood') }}
+
+    - service: 'influxdb.write_points'
+      data_template:
+        measurement: 'omi_daily_summary'
+        tags:
+          date: "{{ now().strftime('%Y-%m-%d') }}"
+        fields:
+          memories: "{{ state_attr('sensor.omi_daily_summary', 'memory_count') | int }}"
+          conversations: "{{ state_attr('sensor.omi_daily_summary', 'conversation_count') | int }}"
+          action_items: "{{ state_attr('sensor.omi_daily_summary', 'action_items') | int }}"
+
+# Automation: Sentiment-Based Mood Light
+- alias: 'Omi Sentiment Mood Light'
+  description: 'Change light color based on detected sentiment'
+  trigger:
+    - platform: 'mqtt'
+      topic: 'ha/omi/events/sentiment_detected'
+
+  condition:
+    - condition: 'state'
+      entity_id: 'light.bedroom_light'
+      state: 'on'
+
+  action:
+    - service: 'light.turn_on'
+      target:
+        entity_id: 'light.bedroom_light'
+      data_template:
+        hs_color: |
+          {%- set sentiment = trigger.payload_json.sentiment -%}
+          {%- if sentiment == 'happy' %}[60, 100]{%- endif -%}
+          {%- if sentiment == 'sad' %}[240, 60]{%- endif -%}
+          {%- if sentiment == 'calm' %}[200, 40]{%- endif -%}
+          {%- if sentiment == 'stressed' %}[0, 80]{%- endif -%}
+
+# Automation: Wearable Battery Low Alert
+- alias: 'Omi Wearable Battery Low'
+  description: 'Alert when wearable battery is low'
+  trigger:
+    - platform: 'numeric_state'
+      entity_id: 'sensor.omi_battery_level'
+      below: 20
+
+  condition: []
+
+  action:
+    - service: 'notify.mobile_app_phone'
+      data:
+        title: '🔋 Omi Battery Low'
+        message: "Battery level is {{ states('sensor.omi_battery_level') }}%"
+        data:
+          priority: 'high'
+
+# Automation: Process Missed Memories
+- alias: 'Process Missed Memories'
+  description: 'Catch up on memories when connection restored'
+  trigger:
+    - platform: 'state'
+      entity_id: 'binary_sensor.omi_connected'
+      to: 'on'
+
+  condition:
+    - condition: 'template'
+      value_template: "{{ state_attr('sensor.omi_missed_memories', 'count') | int > 0 }}"
+
+  action:
+    - service: 'webhook.send'
+      data:
+        method: 'POST'
+        url: 'http://omi-webhook:8001/api/sync'
+        data:
+          action: 'process_missed'
+
+    - service: 'notify.admin'
+      data_template:
+        title: '📥 Processing Missed Memories'
+        message: "Processing {{ state_attr('sensor.omi_missed_memories', 'count') }} missed memories"

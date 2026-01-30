@@ -1,0 +1,320 @@
+---
+# Entertainment Automations
+# Movie mode, gaming mode, and media control integrations
+
+- id: 'entertainment_movie_mode_activate'
+  alias: "Entertainment: Movie Mode On"
+  description: "Activate movie mode when streaming starts"
+  trigger:
+    - platform: state
+      entity_id:
+        - media_player.living_room_tv
+        - media_player.jellyfin
+      to: 'playing'
+  condition:
+    - condition: sun
+      after: sunset
+    - condition: state
+      entity_id: input_boolean.movie_mode
+      state: 'off'
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.movie_mode
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.movie_mode
+
+- id: 'entertainment_movie_mode_deactivate'
+  alias: "Entertainment: Movie Mode Off"
+  description: "Deactivate movie mode when streaming stops"
+  trigger:
+    - platform: state
+      entity_id:
+        - media_player.living_room_tv
+        - media_player.jellyfin
+      from: 'playing'
+      to: 'idle'
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: input_boolean.movie_mode
+      state: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        area_id: living_room
+      data:
+        brightness_pct: 50
+        transition: 5
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.movie_mode
+
+- id: 'entertainment_gaming_mode'
+  alias: "Entertainment: Gaming Mode"
+  description: "Activate gaming mode when Xbox is on"
+  trigger:
+    - platform: state
+      entity_id: media_player.xbox_one
+      to: 'playing'
+  condition:
+    - condition: state
+      entity_id: input_boolean.gaming_mode
+      state: 'off'
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.gaming_mode
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.gaming_mode
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.gaming_room_led
+          - light.bias_lighting
+      data:
+        brightness_pct: 80
+        rgb_color: [0, 255, 0]
+
+- id: 'entertainment_gaming_mode_off'
+  alias: "Entertainment: Gaming Mode Off"
+  description: "Deactivate gaming mode when Xbox turns off"
+  trigger:
+    - platform: state
+      entity_id: media_player.xbox_one
+      from: 'playing'
+      to: 'off'
+      for:
+        minutes: 2
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.gaming_mode
+    - service: light.turn_on
+      target:
+        area_id: gaming_room
+      data:
+        brightness_pct: 60
+        color_temp: 370
+
+- id: 'entertainment_jellyfin_pause_notification'
+  alias: "Entertainment: Jellyfin Pause Notification"
+  description: "Notify when Jellyfin is paused for extended time"
+  trigger:
+    - platform: state
+      entity_id: media_player.jellyfin
+      to: 'paused'
+      for:
+        minutes: 30
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "📺 Jellyfin Paused"
+        message: "Jellyfin has been paused for 30 minutes"
+        data:
+          actions:
+            - action: "RESUME_JELLYFIN"
+              title: "Resume"
+            - action: "STOP_JELLYFIN"
+              title: "Stop"
+
+- id: 'entertainment_alexa_music_timer'
+  alias: "Entertainment: Music Auto-Off Timer"
+  description: "Turn off music after specified time"
+  trigger:
+    - platform: state
+      entity_id:
+        - media_player.alexa_living_room
+        - media_player.alexa_bedroom
+      to: 'playing'
+      for:
+        hours: 2
+  condition:
+    - condition: time
+      after: '22:00:00'
+      before: '06:00:00'
+  action:
+    - service: media_player.media_stop
+      target:
+        entity_id: "{{ trigger.entity_id }}"
+
+- id: 'entertainment_volume_control_night'
+  alias: "Entertainment: Volume Control at Night"
+  description: "Reduce volume during late hours"
+  trigger:
+    - platform: time
+      at: '22:00:00'
+  condition:
+    - condition: state
+      entity_id:
+        - media_player.living_room_tv
+        - media_player.xbox_one
+      state: 'playing'
+      match: any
+  action:
+    - service: media_player.volume_set
+      target:
+        entity_id:
+          - media_player.living_room_tv
+          - media_player.xbox_one
+      data:
+        volume_level: 0.3
+    - service: notify.mobile_app
+      data:
+        message: "🔉 Volume reduced for quiet hours"
+
+- id: 'entertainment_sports_mode'
+  alias: "Entertainment: Sports Mode"
+  description: "Optimize settings for sports viewing"
+  trigger:
+    - platform: state
+      entity_id: sensor.sports_game_status
+      to: 'live'
+  action:
+    - service: light.turn_on
+      target:
+        area_id: living_room
+      data:
+        brightness_pct: 40
+        rgb_color: [255, 100, 0]
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.living_room
+      data:
+        temperature: 70
+    - service: notify.mobile_app
+      data:
+        title: "🏈 Game Time!"
+        message: "{{ state_attr('sensor.sports_game_status', 'game_name') }} is starting!"
+
+- id: 'entertainment_sync_lights_to_media'
+  alias: "Entertainment: Sync Lights to Media"
+  description: "Sync bias lighting to media playback"
+  trigger:
+    - platform: state
+      entity_id: media_player.jellyfin
+      to: 'playing'
+  condition:
+    - condition: state
+      entity_id: input_boolean.bias_lighting_sync
+      state: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.tv_bias_lighting
+      data:
+        effect: "movie_sync"
+        brightness_pct: 50
+
+- id: 'entertainment_party_mode'
+  alias: "Entertainment: Party Mode"
+  description: "Activate party mode for gatherings"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: ACTIVATE_PARTY_MODE
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.party_mode
+    - service: light.turn_on
+      target:
+        area_id:
+          - living_room
+          - kitchen
+          - patio
+      data:
+        brightness_pct: 100
+        effect: "party"
+    - service: media_player.play_media
+      target:
+        entity_id:
+          - media_player.alexa_living_room
+          - media_player.alexa_kitchen
+      data:
+        media_content_id: "playlist:Party Mix"
+        media_content_type: playlist
+    - service: notify.mobile_app
+      data:
+        title: "🎉 Party Mode Activated"
+        message: "Let's get this party started!"
+
+- id: 'entertainment_music_follows_you'
+  alias: "Entertainment: Music Follows You"
+  description: "Transfer music to room with motion"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_motion
+        - binary_sensor.kitchen_motion
+        - binary_sensor.bedroom_motion
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.music_follow_mode
+      state: 'on'
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: media_player.alexa_living_room
+          state: 'playing'
+        - condition: state
+          entity_id: media_player.alexa_kitchen
+          state: 'playing'
+  action:
+    - service: media_player.play_media
+      target:
+        entity_id: "media_player.alexa_{{ trigger.entity_id.split('.')[1].replace('_motion', '') }}"
+      data:
+        media_content_id: "{{ state_attr('media_player.alexa_living_room', 'media_content_id') }}"
+        media_content_type: music
+
+- id: 'entertainment_xbox_achievement'
+  alias: "Entertainment: Xbox Achievement Notification"
+  description: "Celebrate Xbox achievements"
+  trigger:
+    - platform: state
+      entity_id: sensor.xbox_gamerscore
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.state | int > trigger.from_state.state | int }}"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.gaming_room_led
+      data:
+        brightness_pct: 100
+        rgb_color: [0, 255, 0]
+        flash: long
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_gaming_room
+      data:
+        media_content_id: "Achievement unlocked!"
+        media_content_type: announce
+
+- id: 'entertainment_streaming_quality_adjust'
+  alias: "Entertainment: Adjust Streaming Quality"
+  description: "Optimize network for streaming"
+  trigger:
+    - platform: state
+      entity_id: media_player.jellyfin
+      to: 'playing'
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.internet_download_speed
+      below: 50
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "Network Optimization"
+        message: "Prioritizing bandwidth for streaming. Current speed: {{ states('sensor.internet_download_speed') }} Mbps"
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.background_downloads
+          - switch.cloud_backup

@@ -1,0 +1,210 @@
+---
+# Security Arm Script
+# Arms the security system with proper checks
+
+security_arm:
+  alias: "Arm Security System"
+  description: "Arm security with pre-flight checks"
+  icon: mdi:shield-lock
+  mode: single
+  sequence:
+    - service: notify.mobile_app
+      data:
+        message: "🔒 Arming security system..."
+    
+    # Check if all doors are closed
+    - variables:
+        open_doors: >
+          {{ states.binary_sensor 
+             | selectattr('attributes.device_class', 'eq', 'door')
+             | selectattr('state', 'eq', 'on')
+             | map(attribute='name') | list }}
+        open_windows: >
+          {{ states.binary_sensor 
+             | selectattr('attributes.device_class', 'eq', 'window')
+             | selectattr('state', 'eq', 'on')
+             | map(attribute='name') | list }}
+        unlocked_locks: >
+          {{ states.lock 
+             | selectattr('state', 'eq', 'unlocked')
+             | map(attribute='name') | list }}
+    
+    # Notify about open doors/windows
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ open_doors | length > 0 }}"
+          sequence:
+            - service: notify.mobile_app
+              data:
+                title: "⚠️ Doors Open"
+                message: "The following doors are open: {{ open_doors | join(', ') }}"
+                data:
+                  actions:
+                    - action: "ARM_ANYWAY"
+                      title: "Arm Anyway"
+                    - action: "CANCEL_ARM"
+                      title: "Cancel"
+            - stop: "Waiting for user response"
+    
+    # Lock all doors
+    - service: lock.lock
+      target:
+        entity_id: all
+    
+    # Close garage door
+    - service: cover.close_cover
+      target:
+        entity_id: cover.garage_door
+    
+    # Turn off most lights (leave some on for security)
+    - service: light.turn_off
+      target:
+        area_id:
+          - living_room
+          - kitchen
+          - bedroom
+          - office
+      data:
+        transition: 2
+    
+    # Keep entry/exterior lights on
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.front_porch
+          - light.back_porch
+          - light.entryway
+      data:
+        brightness_pct: 50
+    
+    # Arm the alarm system
+    - service: alarm_control_panel.alarm_arm_away
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+    
+    # Turn off unnecessary devices
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.coffee_maker
+          - switch.tv_power
+    
+    # Set security mode flag
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.security_armed
+    
+    # Set thermostat to away mode
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: away
+    
+    - delay:
+        seconds: 2
+    
+    # Final confirmation
+    - service: notify.mobile_app
+      data:
+        title: "✅ Security Armed"
+        message: "Home security system is now armed. All doors locked."
+        data:
+          priority: high
+    
+    # Alexa announcement with exit countdown
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_entryway
+      data:
+        media_content_id: "Security system arming in 30 seconds. Please exit now."
+        media_content_type: announce
+
+security_arm_night:
+  alias: "Arm Security System (Night Mode)"
+  description: "Arm security for nighttime with interior sensors disabled"
+  icon: mdi:shield-home
+  mode: single
+  sequence:
+    - service: notify.mobile_app
+      data:
+        message: "🌙 Arming security in night mode..."
+    
+    # Lock all doors
+    - service: lock.lock
+      target:
+        entity_id: all
+    
+    # Close and lock windows
+    - service: cover.close_cover
+      target:
+        entity_id:
+          - cover.bedroom_window
+          - cover.living_room_window
+    
+    # Close garage
+    - service: cover.close_cover
+      target:
+        entity_id: cover.garage_door
+    
+    # Arm in night mode (perimeter only)
+    - service: alarm_control_panel.alarm_arm_night
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+    
+    # Keep minimal lighting
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.hallway
+          - light.bathroom
+      data:
+        brightness_pct: 1
+    
+    # Enable night mode flag
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.night_mode_security
+    
+    - service: notify.mobile_app
+      data:
+        title: "✅ Night Mode Armed"
+        message: "Security armed for the night. Sleep well!"
+
+security_arm_stay:
+  alias: "Arm Security System (Stay Mode)"
+  description: "Arm security while home with interior sensors disabled"
+  icon: mdi:shield-home-outline
+  mode: single
+  sequence:
+    # Lock doors
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.front_door_lock
+          - lock.back_door_lock
+    
+    # Close garage
+    - service: cover.close_cover
+      target:
+        entity_id: cover.garage_door
+    
+    # Arm in stay mode
+    - service: alarm_control_panel.alarm_arm_home
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+    
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.security_armed_stay
+    
+    - service: notify.mobile_app
+      data:
+        message: "🏠 Security armed in stay mode"

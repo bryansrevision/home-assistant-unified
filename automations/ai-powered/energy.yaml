@@ -1,0 +1,230 @@
+---
+# Energy Saving Automations
+# Smart energy management based on presence and usage patterns
+
+- id: 'energy_lights_off_no_motion'
+  alias: "Energy: Turn Off Lights After No Motion"
+  description: "Turn off lights when no motion detected for 10 minutes"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_motion
+        - binary_sensor.kitchen_motion
+        - binary_sensor.bedroom_motion
+        - binary_sensor.bathroom_motion
+      to: 'off'
+      for:
+        minutes: 10
+  action:
+    - service: light.turn_off
+      target:
+        area_id: "{{ state_attr(trigger.entity_id, 'area_id') }}"
+      data:
+        transition: 5
+
+- id: 'energy_ac_optimization'
+  alias: "Energy: AC Temperature Optimization"
+  description: "Adjust AC based on presence and outdoor temperature"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.outdoor_temperature
+      above: 85
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+    - condition: state
+      entity_id: climate.home_thermostat
+      state: 'cool'
+  action:
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 78
+
+- id: 'energy_peak_hours_notification'
+  alias: "Energy: Peak Hours Notification"
+  description: "Notify during peak energy hours"
+  trigger:
+    - platform: time
+      at: '14:00:00'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: 'on'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "⚡ Peak Energy Hours"
+        message: "Peak energy rates from 2-7 PM. Consider reducing usage."
+        data:
+          actions:
+            - action: "ENABLE_ENERGY_SAVER"
+              title: "Enable Energy Saver Mode"
+
+- id: 'energy_standby_devices_off'
+  alias: "Energy: Turn Off Standby Devices"
+  description: "Turn off devices in standby when leaving"
+  trigger:
+    - platform: state
+      entity_id: zone.home
+      to: '0'
+      for:
+        minutes: 15
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.tv_power
+          - switch.game_console_power
+          - switch.coffee_maker
+          - switch.desktop_computer
+
+- id: 'energy_efficient_cooling'
+  alias: "Energy: Use Fan Instead of AC"
+  description: "Suggest fan use when temperature is moderate"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.indoor_temperature
+      above: 76
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.outdoor_temperature
+      below: 80
+    - condition: state
+      entity_id: climate.home_thermostat
+      state: 'off'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "Energy Saving Tip"
+        message: "Temperature is {{ states('sensor.indoor_temperature') }}°F. Consider using ceiling fan instead of AC."
+        data:
+          actions:
+            - action: "TURN_ON_FANS"
+              title: "Turn On Fans"
+
+- id: 'energy_water_heater_schedule'
+  alias: "Energy: Water Heater Schedule"
+  description: "Turn off water heater during peak hours"
+  trigger:
+    - platform: time
+      at: '14:00:00'
+    - platform: time
+      at: '19:00:00'
+  action:
+    - choose:
+        - conditions:
+            - condition: time
+              after: '14:00:00'
+              before: '19:00:00'
+          sequence:
+            - service: switch.turn_off
+              target:
+                entity_id: switch.water_heater
+      default:
+        - service: switch.turn_on
+          target:
+            entity_id: switch.water_heater
+
+- id: 'energy_phantom_load_reduction'
+  alias: "Energy: Reduce Phantom Loads at Night"
+  description: "Turn off unnecessary devices at night"
+  trigger:
+    - platform: time
+      at: '23:00:00'
+  condition:
+    - condition: state
+      entity_id: input_boolean.sleep_mode
+      state: 'on'
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.office_power_strip
+          - switch.entertainment_center
+          - switch.kitchen_appliances
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.exterior_lights
+          - light.decorative_lights
+
+- id: 'energy_solar_optimization'
+  alias: "Energy: Solar Panel Optimization"
+  description: "Run high-energy tasks during peak solar production"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.solar_power_production
+      above: 3000
+  condition:
+    - condition: sun
+      after: sunrise
+      after_offset: "02:00:00"
+      before: sunset
+      before_offset: "-02:00:00"
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "☀️ Peak Solar Production"
+        message: "Solar producing {{ states('sensor.solar_power_production') }}W. Good time for dishwasher/laundry."
+        data:
+          actions:
+            - action: "RUN_DISHWASHER"
+              title: "Start Dishwasher"
+
+- id: 'energy_charging_optimization'
+  alias: "Energy: EV/Device Charging During Off-Peak"
+  description: "Start charging during off-peak hours"
+  trigger:
+    - platform: time
+      at: '22:00:00'
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.ev_battery_level
+      below: 80
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.ev_charger
+    - service: notify.mobile_app
+      data:
+        message: "Starting EV charging during off-peak hours"
+
+- id: 'energy_high_usage_alert'
+  alias: "Energy: High Usage Alert"
+  description: "Alert when power usage is abnormally high"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.home_power_usage
+      above: 5000
+      for:
+        minutes: 15
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "⚠️ High Energy Usage"
+        message: "Current usage: {{ states('sensor.home_power_usage') }}W. Check for running appliances."
+        data:
+          priority: high
+
+- id: 'energy_window_ac_reminder'
+  alias: "Energy: Close Windows When AC On"
+  description: "Remind to close windows when AC starts"
+  trigger:
+    - platform: state
+      entity_id: climate.home_thermostat
+      to: 'cool'
+  condition:
+    - condition: state
+      entity_id:
+        - binary_sensor.living_room_window_contact
+        - binary_sensor.bedroom_window_contact
+      state: 'on'
+      match: any
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "💨 Close Windows"
+        message: "AC is on but windows are open. Close windows to save energy."

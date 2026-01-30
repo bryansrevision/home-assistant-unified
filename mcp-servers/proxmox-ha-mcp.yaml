@@ -1,0 +1,36 @@
+# Proxmox → Home Assistant Bridge (MCP)
+# Placeholder config to be wired with actual Proxmox API token
+
+proxmox_bridge:
+  enabled: true
+
+  connection:
+    host: '${PROXMOX_HOST}'
+    port: 8006
+    protocol: 'https'
+    verify_ssl: false
+    auth:
+      type: 'api_token'
+      token_env: 'PROXMOX_TOKEN'
+      headers:
+        Authorization: 'PVEAPIToken=${PROXMOX_TOKEN}'
+
+  metrics:
+    interval_seconds: 60
+    entities:
+      - name: 'proxmox_cpu_usage'
+        source: 'node/cpu'
+      - name: 'proxmox_memory_usage'
+        source: 'node/memory'
+
+  home_assistant:
+    url: '${HOME_ASSISTANT_URL}'
+    token: '${HOME_ASSISTANT_TOKEN}'
+
+  alerts:
+    cpu_high:
+      threshold: 90
+      action: 'notify.admin'
+    memory_high:
+      threshold: 85
+      action: 'notify.admin'

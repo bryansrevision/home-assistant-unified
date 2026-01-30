@@ -1,0 +1,259 @@
+---
+# Security Automations
+# Door/window alerts, motion detection using SmartThings integration
+
+- id: 'security_door_open_away'
+  alias: "Security: Door Opened While Away"
+  description: "Alert when door opens while away"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.front_door_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.garage_door_contact
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🚨 Security Alert"
+        message: "{{ trigger.to_state.attributes.friendly_name }} opened while away!"
+        data:
+          priority: high
+          ttl: 0
+          channel: alarm_stream
+          actions:
+            - action: "VIEW_CAMERA"
+              title: "View Camera"
+            - action: "DISARM_ALARM"
+              title: "Disarm Alarm"
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness_pct: 100
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_living_room
+      data:
+        media_content_id: "amzn_sfx_doorbell_chime_02"
+        media_content_type: sound
+
+- id: 'security_window_open_away'
+  alias: "Security: Window Opened While Away"
+  description: "Alert when window opens while away"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_window_contact
+        - binary_sensor.bedroom_window_contact
+        - binary_sensor.kitchen_window_contact
+      to: 'on'
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: zone.home
+          state: '0'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "⚠️ Security Alert"
+        message: "{{ trigger.to_state.attributes.friendly_name }} opened at {{ now().strftime('%I:%M %p') }}"
+        data:
+          priority: high
+
+- id: 'security_motion_detected_away'
+  alias: "Security: Motion Detected While Away"
+  description: "Alert on motion detection when nobody home"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_motion
+        - binary_sensor.hallway_motion
+        - binary_sensor.kitchen_motion
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🚨 Motion Detected"
+        message: "Motion detected: {{ trigger.to_state.attributes.friendly_name }}"
+        data:
+          priority: high
+          image: "/api/camera_proxy/camera.{{ trigger.entity_id.split('.')[1].replace('_motion', '_camera') }}"
+    - service: light.turn_on
+      target:
+        area_id: "{{ state_attr(trigger.entity_id, 'area_id') }}"
+      data:
+        brightness_pct: 100
+
+- id: 'security_garage_door_left_open'
+  alias: "Security: Garage Door Left Open"
+  description: "Notify if garage door left open for 10 minutes"
+  trigger:
+    - platform: state
+      entity_id: cover.garage_door
+      to: 'open'
+      for:
+        minutes: 10
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "Garage Door Open"
+        message: "The garage door has been open for 10 minutes"
+        data:
+          actions:
+            - action: "CLOSE_GARAGE"
+              title: "Close Garage Door"
+    - repeat:
+        while:
+          - condition: state
+            entity_id: cover.garage_door
+            state: 'open'
+        sequence:
+          - delay:
+              minutes: 5
+          - service: notify.mobile_app
+            data:
+              message: "Garage door still open"
+
+- id: 'security_door_unlock_notify'
+  alias: "Security: Door Unlock Notification"
+  description: "Notify when smart lock is unlocked"
+  trigger:
+    - platform: state
+      entity_id:
+        - lock.front_door_lock
+        - lock.back_door_lock
+      to: 'unlocked'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🔓 Door Unlocked"
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} unlocked
+          {% if trigger.to_state.attributes.changed_by %}
+            by {{ trigger.to_state.attributes.changed_by }}
+          {% endif %}
+          at {{ now().strftime('%I:%M %p') }}
+
+- id: 'security_doorbell_press'
+  alias: "Security: Doorbell Pressed"
+  description: "Actions when doorbell is pressed"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.doorbell
+      to: 'on'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🔔 Doorbell"
+        message: "Someone is at the front door"
+        data:
+          image: "/api/camera_proxy/camera.front_door"
+    - service: media_player.play_media
+      target:
+        entity_id:
+          - media_player.alexa_living_room
+          - media_player.alexa_kitchen
+      data:
+        media_content_id: "amzn_sfx_doorbell_chime_01"
+        media_content_type: sound
+    - condition: state
+      entity_id: media_player.xbox_one
+      state: 'playing'
+    - service: media_player.media_pause
+      target:
+        entity_id: media_player.xbox_one
+
+- id: 'security_nightly_check'
+  alias: "Security: Nightly Security Check"
+  description: "Check all doors/windows locked at bedtime"
+  trigger:
+    - platform: time
+      at: '22:00:00'
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: '0'
+      match: none
+  action:
+    - variables:
+        open_sensors: >
+          {% set ns = namespace(sensors=[]) %}
+          {% for sensor in states.binary_sensor | selectattr('attributes.device_class', 'eq', 'door')
+             | selectattr('state', 'eq', 'on') %}
+            {% set ns.sensors = ns.sensors + [sensor.name] %}
+          {% endfor %}
+          {% for sensor in states.binary_sensor | selectattr('attributes.device_class', 'eq', 'window')
+             | selectattr('state', 'eq', 'on') %}
+            {% set ns.sensors = ns.sensors + [sensor.name] %}
+          {% endfor %}
+          {{ ns.sensors }}
+        unlocked_locks: >
+          {{ states.lock | selectattr('state', 'eq', 'unlocked') | map(attribute='name') | list }}
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ open_sensors | length > 0 or unlocked_locks | length > 0 }}"
+          sequence:
+            - service: notify.mobile_app
+              data:
+                title: "🔒 Nightly Security Check"
+                message: >
+                  {% if open_sensors | length > 0 %}
+                  Open: {{ open_sensors | join(', ') }}
+                  {% endif %}
+                  {% if unlocked_locks | length > 0 %}
+                  Unlocked: {{ unlocked_locks | join(', ') }}
+                  {% endif %}
+                data:
+                  actions:
+                    - action: "LOCK_ALL"
+                      title: "Lock All Doors"
+      default:
+        - service: notify.mobile_app
+          data:
+            message: "✅ All doors and windows secure"
+
+- id: 'security_smoke_alarm'
+  alias: "Security: Smoke Alarm Alert"
+  description: "Critical alert for smoke detection"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.smoke_detector_kitchen
+        - binary_sensor.smoke_detector_hallway
+        - binary_sensor.smoke_detector_bedroom
+      to: 'on'
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🔥 SMOKE ALARM"
+        message: "SMOKE DETECTED: {{ trigger.to_state.attributes.friendly_name }}"
+        data:
+          priority: high
+          ttl: 0
+          channel: alarm_stream
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness_pct: 100
+        rgb_color: [255, 0, 0]
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_living_room
+      data:
+        media_content_id: "Smoke detected. Please evacuate immediately."
+        media_content_type: announce

@@ -1,0 +1,92 @@
+---
+# Movie Mode Script
+# Optimizes lighting and climate for movie watching
+
+movie_mode:
+  alias: "Movie Mode"
+  description: "Activate movie watching environment"
+  icon: mdi:movie-open
+  mode: single
+  sequence:
+    - service: notify.mobile_app
+      data:
+        message: "🎬 Activating Movie Mode..."
+    
+    # Dim all lights in living room
+    - service: light.turn_on
+      target:
+        area_id: living_room
+      data:
+        brightness_pct: 5
+        color_temp: 454
+        transition: 3
+    
+    # Turn off unnecessary lights
+    - service: light.turn_off
+      target:
+        area_id:
+          - kitchen
+          - hallway
+          - dining_room
+      data:
+        transition: 2
+    
+    # Enable bias lighting
+    - service: light.turn_on
+      target:
+        entity_id: light.tv_bias_lighting
+      data:
+        brightness_pct: 30
+        rgb_color: [100, 100, 150]
+    
+    # Adjust thermostat for comfort
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.living_room
+      data:
+        temperature: 71
+    
+    # Close blinds/curtains
+    - service: cover.close_cover
+      target:
+        entity_id:
+          - cover.living_room_blinds
+          - cover.living_room_curtains
+    
+    # Set Do Not Disturb
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.do_not_disturb
+    
+    # Mute notifications on Alexa devices
+    - service: notify.alexa_media
+      data:
+        target: media_player.alexa_living_room
+        data:
+          type: announce
+          method: all
+        message: "Movie mode activated. Enjoy your show!"
+    
+    # Pause music if playing
+    - service: media_player.media_pause
+      target:
+        entity_id:
+          - media_player.alexa_kitchen
+          - media_player.alexa_bedroom
+    
+    # Enable cinema scene if available
+    - service: scene.turn_on
+      target:
+        entity_id: scene.cinema_mode
+      continue_on_error: true
+    
+    - delay:
+        seconds: 2
+    
+    - service: notify.mobile_app
+      data:
+        message: "✅ Movie Mode ready!"
+        data:
+          actions:
+            - action: "DISABLE_MOVIE_MODE"
+              title: "Exit Movie Mode"

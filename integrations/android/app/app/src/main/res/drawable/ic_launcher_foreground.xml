@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:translateX="32.4"
+        android:translateY="32.4">
+        <!-- Home icon -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M54,0L0,45L9,45L9,108L45,108L45,72L63,72L63,108L99,108L99,45L108,45L54,0Z"/>
+        <!-- AI brain symbol -->
+        <path
+            android:fillColor="#BBDEFB"
+            android:pathData="M54,27C43.5,27 35,35.5 35,46C35,56.5 43.5,65 54,65C64.5,65 73,56.5 73,46C73,35.5 64.5,27 54,27ZM54,58C47.4,58 42,52.6 42,46C42,39.4 47.4,34 54,34C60.6,34 66,39.4 66,46C66,52.6 60.6,58 54,58Z"/>
+    </group>
+</vector>
