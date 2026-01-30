@@ -1,0 +1,421 @@
+---
+# Unified MCP Server Configuration
+# Consolidated Model Context Protocol configuration for all integrated services
+# Updated: January 30, 2026
+
+################################################################################
+# MCP Servers - Master Configuration
+# Integration with Home Assistant, Proxmox, GitHub, Docker, Filesystem, and AgentStack
+################################################################################
+
+# Home Assistant MCP Server
+mcp_homeassistant:
+  name: "Home Assistant MCP"
+  type: "uvx"
+  command: "homeassistant"
+  enabled: true
+  config:
+    url: "http://192.168.1.201:8123"
+    auth_header: !secret homeassistant_mcp_auth
+    features:
+      - entity_state_retrieval
+      - automation_management
+      - service_execution
+      - sensor_polling
+    polling_interval: 300
+    timeout: 30
+    retry_attempts: 3
+    cache_entities: true
+
+# Proxmox MCP Server
+mcp_proxmox:
+  name: "Proxmox MCP"
+  type: "node"
+  command: "proxmox-mcp"
+  enabled: true
+  config:
+    host: "192.168.1.100"
+    port: 8006
+    username: !secret proxmox_mcp_username
+    password: !secret proxmox_mcp_password
+    verify_ssl: false
+    features:
+      - vm_management
+      - container_monitoring
+      - resource_tracking
+      - network_status
+    polling_interval: 600
+    timeout: 45
+    data_sync: true
+
+# GitHub MCP Server
+mcp_github:
+  name: "GitHub MCP"
+  type: "node"
+  command: "github-mcp"
+  enabled: true
+  config:
+    token: !secret github_mcp_token
+    owner: "bryansrevision"
+    repo: "home-assistant-unified"
+    features:
+      - repository_operations
+      - issue_management
+      - workflow_automation
+      - pull_request_handling
+    auto_sync: true
+    sync_interval: 900
+    timeout: 30
+
+# Docker MCP Server
+mcp_docker:
+  name: "Docker MCP"
+  type: "node"
+  command: "docker-mcp"
+  enabled: true
+  config:
+    socket: "unix:///var/run/docker.sock"
+    features:
+      - container_management
+      - image_operations
+      - network_management
+      - volume_handling
+      - compose_orchestration
+    polling_interval: 300
+    timeout: 30
+    logging: true
+
+# Filesystem MCP Server
+mcp_filesystem:
+  name: "Filesystem MCP"
+  type: "uvx"
+  command: "filesystem"
+  enabled: true
+  config:
+    allowed_directories:
+      - "/home/homeassistant/config"
+      - "/home/homeassistant/automations"
+      - "/home/homeassistant/integrations"
+      - "/home/homeassistant/scripts"
+      - "/home/homeassistant/docs"
+    features:
+      - file_read
+      - file_write
+      - directory_listing
+      - file_search
+    timeout: 30
+    max_file_size: 52428800 # 50MB
+
+# Memory MCP Server
+mcp_memory:
+  name: "Memory MCP"
+  type: "uvx"
+  command: "memory"
+  enabled: true
+  config:
+    features:
+      - conversation_history
+      - context_preservation
+      - state_management
+    timeout: 30
+
+# AgentStack MCP Server
+mcp_agentstack:
+  name: "AgentStack MCP"
+  type: "uvx"
+  command: "agentstack"
+  enabled: true
+  config:
+    features:
+      - agent_orchestration
+      - workflow_execution
+      - tool_management
+    timeout: 60
+
+################################################################################
+# MCP Server Grouping & Routing
+################################################################################
+
+mcp_groups:
+  # Infrastructure Management
+  infrastructure:
+    name: "Infrastructure Management"
+    servers:
+      - mcp_homeassistant
+      - mcp_proxmox
+      - mcp_docker
+    use_case: "VM management, container orchestration, HA monitoring"
+    priority: 1
+    fallback_order:
+      - mcp_homeassistant
+      - mcp_proxmox
+      - mcp_docker
+
+  # Repository & Version Control
+  repository:
+    name: "Repository Management"
+    servers:
+      - mcp_github
+      - mcp_filesystem
+    use_case: "Configuration management, version control, documentation"
+    priority: 2
+    fallback_order:
+      - mcp_github
+      - mcp_filesystem
+
+  # System & Context
+  system:
+    name: "System Context"
+    servers:
+      - mcp_memory
+      - mcp_filesystem
+    use_case: "Conversation history, file access, state management"
+    priority: 3
+    fallback_order:
+      - mcp_memory
+      - mcp_filesystem
+
+  # Agent Coordination
+  agents:
+    name: "Agent Orchestration"
+    servers:
+      - mcp_agentstack
+      - mcp_memory
+    use_case: "Workflow execution, agent management"
+    priority: 4
+    fallback_order:
+      - mcp_agentstack
+      - mcp_memory
+
+################################################################################
+# MCP Server Policies
+################################################################################
+
+policies:
+  # Authentication Policy
+  authentication:
+    enabled: true
+    method: "token_based"
+    token_refresh_interval: 3600
+    token_validation: true
+    fallback_auth: true
+
+  # Error Handling Policy
+  error_handling:
+    retry_strategy: "exponential_backoff"
+    max_retries: 3
+    initial_delay: 1
+    max_delay: 30
+    timeout_handling: "graceful_degradation"
+
+  # Rate Limiting Policy
+  rate_limiting:
+    enabled: true
+    requests_per_minute:
+      homeassistant: 120
+      proxmox: 60
+      github: 60
+      docker: 120
+      filesystem: 300
+    burst_allowance: 1.5
+
+  # Logging Policy
+  logging:
+    enabled: true
+    level: "info"
+    log_operations:
+      - "authentication"
+      - "errors"
+      - "significant_state_changes"
+      - "api_calls"
+    rotation:
+      max_size: "50MB"
+      retention_days: 30
+
+################################################################################
+# MCP Server Dependencies & Sequencing
+################################################################################
+
+dependencies:
+  mcp_docker:
+    requires:
+      - mcp_filesystem
+    startup_order: 1
+
+  mcp_proxmox:
+    requires:
+      - none
+    startup_order: 2
+
+  mcp_homeassistant:
+    requires:
+      - none
+    startup_order: 3
+
+  mcp_github:
+    requires:
+      - mcp_filesystem
+    startup_order: 4
+
+  mcp_memory:
+    requires:
+      - none
+    startup_order: 5
+
+  mcp_agentstack:
+    requires:
+      - mcp_memory
+      - mcp_homeassistant
+    startup_order: 6
+
+################################################################################
+# Health Check Configuration
+################################################################################
+
+health_checks:
+  enabled: true
+  interval: 300
+
+  checks:
+    homeassistant:
+      endpoint: "http://192.168.1.201:8123/api"
+      method: "GET"
+      expected_status: 200
+      timeout: 10
+
+    proxmox:
+      endpoint: "https://192.168.1.100:8006/api2/json/nodes"
+      method: "GET"
+      expected_status: 200
+      timeout: 15
+
+    github:
+      endpoint: "https://api.github.com/repos/bryansrevision/home-assistant-unified"
+      method: "GET"
+      expected_status: 200
+      timeout: 10
+
+    docker:
+      endpoint: "unix:///var/run/docker.sock"
+      method: "GET"
+      timeout: 10
+
+  failure_handling:
+    max_consecutive_failures: 3
+    alert_on_failure: true
+    disable_on_repeated_failure: true
+    alert_service: "notify.mobile_app"
+
+################################################################################
+# MCP Server Metrics & Monitoring
+################################################################################
+
+monitoring:
+  enabled: true
+
+  metrics:
+    - request_count
+    - response_time
+    - error_rate
+    - uptime
+    - last_sync_time
+
+  dashboards:
+    - name: "MCP Server Status"
+      refresh_interval: 60
+      servers:
+        - homeassistant
+        - proxmox
+        - github
+        - docker
+
+  alerts:
+    - condition: "error_rate > 0.05"
+      action: "notify_admin"
+
+    - condition: "response_time > 5000ms"
+      action: "log_performance_warning"
+
+    - condition: "server_uptime < 0.99"
+      action: "investigate_reliability"
+
+################################################################################
+# MCP Server Integration Points
+################################################################################
+
+integrations:
+  ha_automation_triggers:
+    description: "Use MCP state changes to trigger HA automations"
+    enabled: true
+    endpoints:
+      - "/api/webhooks/mcp_state_change"
+
+  github_config_sync:
+    description: "Auto-sync configuration changes to GitHub"
+    enabled: true
+    events:
+      - "automation.file_changed"
+      - "integration.file_changed"
+      - "script.file_changed"
+
+  docker_deployment:
+    description: "Trigger Docker deployments on config changes"
+    enabled: true
+    services:
+      - "docker_compose_restart"
+      - "docker_image_update"
+
+  proxmox_alerts:
+    description: "Route Proxmox alerts through HA"
+    enabled: true
+    notification_targets:
+      - "notify.mobile_app"
+      - "notify.email"
+
+################################################################################
+# MCP Server Connection Pools
+################################################################################
+
+connection_pools:
+  homeassistant:
+    min_connections: 2
+    max_connections: 10
+    timeout: 30
+    idle_timeout: 300
+
+  proxmox:
+    min_connections: 1
+    max_connections: 5
+    timeout: 45
+    idle_timeout: 600
+
+  github:
+    min_connections: 1
+    max_connections: 3
+    timeout: 30
+    idle_timeout: 300
+
+  docker:
+    min_connections: 1
+    max_connections: 10
+    timeout: 30
+    idle_timeout: 300
+
+################################################################################
+# MCP Server Feature Flags
+################################################################################
+
+feature_flags:
+  experimental_features:
+    ai_driven_automation: false
+    predictive_resource_scaling: false
+    autonomous_optimization: false
+
+  beta_features:
+    advanced_mcp_routing: true
+    multi_region_sync: false
+    advanced_health_checks: true
+
+################################################################################
+# END OF UNIFIED MCP CONFIGURATION
+################################################################################

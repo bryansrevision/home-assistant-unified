@@ -1,0 +1,489 @@
+# ================================================
+# UNIFIED MCP SERVER CONFIGURATION
+# ================================================
+# Consolidated MCP configuration for all servers
+# Total: 6 MCP Servers
+# Sources:
+#   - mcp-servers/omi-mcp-config.yaml
+#   - mcp-servers/ha-mcp-config.yaml
+#   - mcp-servers/proxmox-mcp-config.yaml
+#   - Additional: GitHub, Docker, Filesystem, AgentStack
+# ================================================
+# Use with GitHub Copilot MCP configuration
+# Location: C:\Users\Dylan\.copilot\mcp-config.json
+# ================================================
+
+mcpServers:
+  # ================================================
+  # 1. HOME ASSISTANT MCP SERVER
+  # ================================================
+  homeassistant:
+    name: "Home Assistant MCP Server"
+    enabled: true
+    priority: "critical"
+    command: "uvx"
+    args:
+      - "mcp-server-home-assistant"
+    env:
+      HOME_ASSISTANT_URL: "http://192.168.1.201:8123"
+      HOME_ASSISTANT_TOKEN: "${HOME_ASSISTANT_TOKEN}"
+    
+    # Capabilities
+    capabilities:
+      - entity_control
+      - state_monitoring
+      - automation_trigger
+      - service_calls
+      - event_listening
+    
+    # Entity Management
+    entities:
+      sensors:
+        - sensor.indoor_temperature
+        - sensor.outdoor_temperature
+        - sensor.proxmox_cpu_usage
+        - sensor.proxmox_memory_usage
+        - sensor.omi_last_memory
+        - sensor.omi_battery_level
+        - sensor.mobile_app_primary_android_battery_level
+      
+      binary_sensors:
+        - binary_sensor.front_door
+        - binary_sensor.back_door
+        - binary_sensor.omi_connected
+        - binary_sensor.someone_home
+      
+      switches:
+        - switch.ev_charger
+        - switch.living_room_lights
+      
+      climate:
+        - climate.home_thermostat
+      
+      locks:
+        - lock.front_door
+      
+      alarms:
+        - alarm_control_panel.home_security
+    
+    tools: []
+
+  # ================================================
+  # 2. OMI WEARABLE MCP SERVER
+  # ================================================
+  omi:
+    name: "Omi.me MCP Server"
+    enabled: true
+    priority: "critical"
+    type: "event_streaming"
+    command: "docker"
+    args:
+      - "run"
+      - "--rm"
+      - "-i"
+      - "-e"
+      - "OMI_API_KEY=${OMI_MCP_API_TOKEN}"
+      - "omiai/mcp-server:latest"
+    env:
+      OMI_MCP_API_TOKEN: "${OMI_MCP_API_TOKEN}"
+    
+    # Connection Configuration
+    connection:
+      protocol: "https"
+      host: "api.omi.me"
+      port: 443
+      base_url: "https://api.omi.me/v1"
+      sse_endpoint: "https://api.omi.me/v1/mcp/sse"
+      
+      auth:
+        type: "bearer_token"
+        token_env: "OMI_MCP_API_TOKEN"
+    
+    # Event Configuration
+    events:
+      enabled: true
+      types:
+        - "memory_created"
+        - "memory_updated"
+        - "memory_deleted"
+        - "conversation_started"
+        - "conversation_ended"
+        - "transcript_received"
+      
+      # MQTT Routing
+      routing:
+        mqtt:
+          enabled: true
+          topic_prefix: "ha/omi/events"
+          retain: false
+          qos: 1
+        
+        webhook:
+          enabled: true
+          endpoint: "/webhook/omi-mcp"
+          method: "POST"
+        
+        influxdb:
+          enabled: true
+          measurement: "omi_events"
+          tags:
+            source: "omi_mcp"
+    
+    # Health Check
+    health_check:
+      enabled: true
+      interval_seconds: 300
+      endpoint: "https://api.omi.me/v1/health"
+      timeout_seconds: 10
+    
+    tools: []
+
+  # ================================================
+  # 3. PROXMOX VE MCP SERVER
+  # ================================================
+  proxmox:
+    name: "Proxmox VE MCP Server"
+    enabled: true
+    priority: "high"
+    type: "infrastructure_management"
+    command: "node"
+    args:
+      - "C:\\Users\\Dylan\\proxmox-mcp-server\\dist\\index.js"
+    env:
+      PROXMOX_HOST: "192.168.1.185"
+      PROXMOX_PORT: "8006"
+      PROXMOX_USER: "root@pam"
+      PROXMOX_PASSWORD: "${PROXMOX_PASSWORD}"
+      PROXMOX_NODE: "pve"
+      PROXMOX_VERIFY_SSL: "false"
+    
+    # Resource Monitoring
+    monitoring:
+      enabled: true
+      vms:
+        - name: "home-assistant"
+          vmid: 100
+          monitor: true
+        - name: "mosquitto-broker"
+          vmid: 101
+          monitor: true
+        - name: "influxdb-server"
+          vmid: 102
+          monitor: true
+      
+      metrics:
+        - "cpu"
+        - "memory"
+        - "disk"
+        - "network"
+      
+      collection_interval_seconds: 60
+      
+      # Export to InfluxDB
+      export:
+        enabled: true
+        backend: "influxdb"
+        measurement: "proxmox_resources"
+    
+    # Automation Triggers
+    triggers:
+      vm_state_change:
+        enabled: true
+        threshold_memory_percent: 80
+        threshold_cpu_percent: 90
+        threshold_disk_percent: 85
+      
+      resource_shortage:
+        enabled: true
+        actions:
+          - send_notification
+          - trigger_automation
+    
+    tools: []
+
+  # ================================================
+  # 4. GITHUB MCP SERVER
+  # ================================================
+  github:
+    name: "GitHub MCP Server"
+    enabled: true
+    priority: "high"
+    type: "repository_access"
+    command: "npx"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-github"
+    env:
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    
+    # Repository Access
+    repositories:
+      - "bryansrevision/home-assistant-unified"
+      - "bryansrevision/wearables-integration-platform"
+      - "bryansrevision/HOME-AI-AUTOMATION"
+      - "bryansrevision/proxmox-infrastructure-master"
+      - "bryansrevision/CodeSpace-Workspace-Template"
+    
+    # Capabilities
+    capabilities:
+      - repo_read
+      - repo_write
+      - issue_management
+      - pull_requests
+      - actions_workflow
+      - secrets_read
+    
+    # Webhook Configuration
+    webhook:
+      enabled: true
+      endpoint: "/webhook/github-mcp"
+      secret_env: "GITHUB_WEBHOOK_SECRET"
+      events:
+        push:
+          enabled: true
+          branches: ["main", "master", "develop"]
+        pull_request:
+          enabled: true
+          actions: ["opened", "closed", "synchronize"]
+        release:
+          enabled: true
+    
+    tools: []
+
+  # ================================================
+  # 5. FILESYSTEM MCP SERVER
+  # ================================================
+  filesystem:
+    name: "Filesystem MCP Server"
+    enabled: true
+    priority: "medium"
+    command: "npx"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-filesystem"
+      - "C:\\Users\\Dylan"
+      - "C:\\Users\\Dylan\\Dev\\.WorkSpace\\HomeAssistant"
+    env: {}
+    
+    # Allowed Paths
+    allowed_paths:
+      - "C:\\Users\\Dylan\\Dev\\.WorkSpace\\HomeAssistant"
+      - "C:\\Users\\Dylan\\.copilot"
+      - "C:\\Users\\Dylan\\Documents"
+    
+    # Capabilities
+    capabilities:
+      - read_file
+      - write_file
+      - list_directory
+      - create_directory
+      - delete_file
+      - search_files
+    
+    # Safety Settings
+    safety:
+      enable_write: true
+      enable_delete: false
+      max_file_size_mb: 100
+      excluded_patterns:
+        - "*.exe"
+        - "*.dll"
+        - "*.sys"
+    
+    tools: []
+
+  # ================================================
+  # 6. DOCKER MCP SERVER
+  # ================================================
+  docker:
+    name: "Docker MCP Server"
+    enabled: true
+    priority: "medium"
+    type: "container_management"
+    command: "npx"
+    args:
+      - "-y"
+      - "mcp-server-docker"
+    env:
+      DOCKER_HOST: "tcp://localhost:2375"
+    
+    # Container Management
+    containers:
+      monitored:
+        - "ha-mqtt"
+        - "ha-influxdb"
+        - "ha-grafana"
+        - "agentstack"
+        - "mcp-hub"
+    
+    # Capabilities
+    capabilities:
+      - container_list
+      - container_start
+      - container_stop
+      - container_restart
+      - container_logs
+      - container_stats
+      - image_list
+      - network_list
+    
+    # Health Monitoring
+    health_check:
+      enabled: true
+      interval_seconds: 120
+      alert_on_down: true
+    
+    tools: []
+
+# ================================================
+# MQTT BRIDGE CONFIGURATION
+# ================================================
+mqtt:
+  broker: "192.168.1.201"
+  port: 1883
+  username: "${MQTT_USER}"
+  password: "${MQTT_PASSWORD}"
+  keepalive: 60
+  
+  # Topic Structure
+  topics:
+    # Omi Events
+    omi_events: "ha/omi/events/#"
+    omi_memories: "ha/omi/memories"
+    omi_actions: "ha/omi/actions"
+    
+    # Proxmox Metrics
+    proxmox_metrics: "ha/proxmox/metrics/#"
+    proxmox_alerts: "ha/proxmox/alerts"
+    
+    # Home Assistant Control
+    ha_commands: "ha/commands/#"
+    ha_status: "ha/status"
+    
+    # Docker Events
+    docker_events: "ha/docker/events"
+    docker_stats: "ha/docker/stats/#"
+  
+  # Retained Topics
+  retained_topics:
+    - "ha/omi/status"
+    - "ha/proxmox/status"
+    - "ha/system/health"
+    - "ha/docker/status"
+
+# ================================================
+# INFLUXDB STORAGE CONFIGURATION
+# ================================================
+influxdb:
+  enabled: true
+  host: "192.168.1.201"
+  port: 8086
+  database: "home_automation"
+  username: "admin"
+  password: "${INFLUXDB_PASSWORD}"
+  
+  # Measurements
+  measurements:
+    - name: "omi_events"
+      retention: "30d"
+      source: "mqtt"
+    
+    - name: "omi_metrics"
+      retention: "90d"
+      source: "webhook"
+    
+    - name: "proxmox_resources"
+      retention: "30d"
+      source: "proxmox_api"
+    
+    - name: "home_assistant_states"
+      retention: "7d"
+      source: "home_assistant"
+    
+    - name: "docker_stats"
+      retention: "14d"
+      source: "docker_api"
+
+# ================================================
+# LOGGING CONFIGURATION
+# ================================================
+logging:
+  level: "INFO"
+  format: "json"
+  
+  destinations:
+    - type: "file"
+      path: "/var/log/ha-mcp.log"
+      max_size_mb: 100
+      backup_count: 5
+    
+    - type: "syslog"
+      facility: "LOG_LOCAL0"
+
+# ================================================
+# SECURITY CONFIGURATION
+# ================================================
+security:
+  # TLS/SSL
+  tls:
+    enabled: true
+    min_version: "TLSv1.2"
+  
+  # Token Rotation
+  token_rotation:
+    enabled: true
+    rotation_days: 90
+  
+  # Audit Logging
+  audit_logging:
+    enabled: true
+    log_all_api_calls: true
+    sensitive_fields_mask: true
+
+# ================================================
+# PERFORMANCE & LIMITS
+# ================================================
+performance:
+  max_concurrent_connections: 10
+  request_timeout_seconds: 30
+  event_processing_timeout_seconds: 60
+  
+  # Rate Limiting
+  rate_limiting:
+    enabled: true
+    requests_per_second: 100
+    burst_size: 500
+  
+  # Caching
+  cache:
+    enabled: true
+    ttl_seconds: 300
+    max_size_mb: 500
+  
+  # Queue Management
+  event_queue:
+    max_size: 10000
+    overflow_behavior: "drop_oldest"
+
+# ================================================
+# INTEGRATION SUMMARY
+# ================================================
+# Total MCP Servers: 6
+# - Home Assistant (critical)
+# - Omi Wearables (critical)
+# - Proxmox VE (high)
+# - GitHub (high)
+# - Filesystem (medium)
+# - Docker (medium)
+#
+# Data Flows:
+# - Omi → MQTT → HA → InfluxDB
+# - Proxmox → MQTT → HA → InfluxDB
+# - GitHub → Webhooks → HA
+# - Docker → Monitoring → HA
+#
+# Storage:
+# - MQTT: Event bus (real-time)
+# - InfluxDB: Time-series (historical)
+# - Filesystem: Configurations
+# ================================================

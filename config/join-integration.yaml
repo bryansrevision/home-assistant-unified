@@ -1,0 +1,474 @@
+# ================================================
+# JOIN (Joaoapps) INTEGRATION CONFIGURATION
+# ================================================
+# Cross-device messaging and automation platform
+# Integration with Home Assistant
+# ================================================
+# Website: https://joaoapps.com/join/
+# Developer: João Dias (Joaoapps)
+# ================================================
+
+# ================================================
+# CONFIGURATION
+# ================================================
+join:
+  api_key: !secret join_api_key
+  
+  # API Configuration
+  api:
+    base_url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1"
+    device_url: "https://joinjoaomgcd.appspot.com/_ah/api/registration/v1/listDevices"
+    
+  # Registered Devices
+  devices:
+    - name: "primary_android"
+      device_id: !secret join_device_id_primary
+      device_name: "Ulefone Armor"
+      capabilities:
+        - notifications
+        - commands
+        - files
+        - clipboard
+        - sms
+        - phone_calls
+    
+    - name: "tablet"
+      device_id: !secret join_device_id_tablet
+      device_name: "Android Tablet"
+      capabilities:
+        - notifications
+        - commands
+        - files
+        - clipboard
+    
+    - name: "windows_pc"
+      device_id: !secret join_device_id_windows
+      device_name: "Windows Desktop"
+      capabilities:
+        - notifications
+        - commands
+        - files
+        - clipboard
+
+# ================================================
+# NOTIFICATION CONFIGURATIONS
+# ================================================
+notifications:
+  # ------------------------------------------------
+  # Basic Notification
+  # ------------------------------------------------
+  basic:
+    service: "notify.join_primary_android"
+    data:
+      title: "Home Assistant"
+      message: "This is a test notification"
+      data:
+        icon: "https://your-ha-url/local/icons/ha-icon.png"
+        smallicon: "https://your-ha-url/local/icons/ha-small.png"
+  
+  # ------------------------------------------------
+  # Notification with Actions
+  # ------------------------------------------------
+  with_actions:
+    service: "notify.join_primary_android"
+    data:
+      title: "Security Alert"
+      message: "Front door opened while away"
+      data:
+        actions:
+          - action: "ARM_ALARM"
+            title: "Arm Alarm"
+          - action: "VIEW_CAMERA"
+            title: "View Camera"
+          - action: "DISMISS"
+            title: "Dismiss"
+  
+  # ------------------------------------------------
+  # Priority Notification
+  # ------------------------------------------------
+  priority:
+    service: "notify.join_primary_android"
+    data:
+      title: "URGENT"
+      message: "Smoke detector triggered!"
+      data:
+        priority: 2  # High priority
+        sound: "alarm"
+        vibration: "0,1000,500,1000"
+  
+  # ------------------------------------------------
+  # Image Notification
+  # ------------------------------------------------
+  with_image:
+    service: "notify.join_primary_android"
+    data:
+      title: "Camera Motion"
+      message: "Motion detected at front door"
+      data:
+        image: "https://your-ha-url/api/camera_proxy/camera.front_door"
+  
+  # ------------------------------------------------
+  # URL Notification
+  # ------------------------------------------------
+  with_url:
+    service: "notify.join_primary_android"
+    data:
+      title: "Home Assistant"
+      message: "Click to open dashboard"
+      data:
+        url: "https://your-ha-url"
+
+# ================================================
+# COMMAND CONFIGURATIONS
+# ================================================
+commands:
+  # ------------------------------------------------
+  # Execute Tasker Command
+  # ------------------------------------------------
+  tasker_command:
+    description: "Execute a Tasker task on Android device"
+    api_call:
+      url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+      method: "POST"
+      params:
+        apikey: !secret join_api_key
+        deviceId: !secret join_device_id_primary
+        taskername: "HomeAssistantCommand"
+        taskerparam: "lights_on"
+  
+  # ------------------------------------------------
+  # Send SMS
+  # ------------------------------------------------
+  send_sms:
+    description: "Send SMS via Join"
+    api_call:
+      url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+      method: "POST"
+      params:
+        apikey: !secret join_api_key
+        deviceId: !secret join_device_id_primary
+        smsnumber: "+1234567890"
+        smstext: "Alert from Home Assistant"
+  
+  # ------------------------------------------------
+  # Open URL on Device
+  # ------------------------------------------------
+  open_url:
+    description: "Open URL on Android device"
+    api_call:
+      url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+      method: "POST"
+      params:
+        apikey: !secret join_api_key
+        deviceId: !secret join_device_id_primary
+        url: "https://www.home-assistant.io"
+  
+  # ------------------------------------------------
+  # Execute Shell Command
+  # ------------------------------------------------
+  shell_command:
+    description: "Execute shell command on Windows PC"
+    api_call:
+      url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+      method: "POST"
+      params:
+        apikey: !secret join_api_key
+        deviceId: !secret join_device_id_windows
+        shellcommand: "shutdown /s /t 60"
+  
+  # ------------------------------------------------
+  # Set Clipboard
+  # ------------------------------------------------
+  set_clipboard:
+    description: "Copy text to device clipboard"
+    api_call:
+      url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+      method: "POST"
+      params:
+        apikey: !secret join_api_key
+        deviceId: !secret join_device_id_primary
+        clipboard: "Text copied from Home Assistant"
+
+# ================================================
+# HOME ASSISTANT AUTOMATIONS
+# ================================================
+automations:
+  # ------------------------------------------------
+  # Send notification when someone arrives home
+  # ------------------------------------------------
+  - alias: "Join - Welcome Home Notification"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.mobile_app_primary_android
+        to: 'home'
+    action:
+      - service: notify.join_primary_android
+        data:
+          title: "Welcome Home!"
+          message: "Security disarmed. Temperature: {{ states('sensor.indoor_temperature') }}°F"
+          data:
+            icon: "https://your-ha-url/local/icons/home.png"
+  
+  # ------------------------------------------------
+  # Alert when security alarm triggered
+  # ------------------------------------------------
+  - alias: "Join - Security Alert"
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_security
+        to: 'triggered'
+    action:
+      - service: notify.join_primary_android
+        data:
+          title: "🚨 SECURITY ALERT"
+          message: "Alarm triggered at {{ now().strftime('%H:%M') }}"
+          data:
+            priority: 2
+            sound: "alarm"
+            vibration: "0,1000,500,1000,500,1000"
+            actions:
+              - action: "VIEW_CAMERAS"
+                title: "View Cameras"
+              - action: "CALL_POLICE"
+                title: "Call Police"
+  
+  # ------------------------------------------------
+  # Device battery low notification
+  # ------------------------------------------------
+  - alias: "Join - Phone Battery Low"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.mobile_app_primary_android_battery_level
+        below: 20
+    condition:
+      - condition: state
+        entity_id: binary_sensor.mobile_app_primary_android_is_charging
+        state: 'off'
+    action:
+      - service: notify.join_primary_android
+        data:
+          title: "Battery Low"
+          message: "Phone battery is {{ states('sensor.mobile_app_primary_android_battery_level') }}%"
+          data:
+            priority: 1
+  
+  # ------------------------------------------------
+  # Execute Tasker task from HA
+  # ------------------------------------------------
+  - alias: "Join - Execute Tasker Task"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.enable_driving_mode
+        to: 'on'
+    action:
+      - service: rest_command.join_tasker_command
+        data:
+          taskername: "DrivingMode"
+          taskerparam: "enable"
+  
+  # ------------------------------------------------
+  # Send file to device
+  # ------------------------------------------------
+  - alias: "Join - Send Backup File"
+    trigger:
+      - platform: time
+        at: "02:30:00"
+    condition:
+      - condition: state
+        entity_id: binary_sensor.backup_completed
+        state: 'on'
+    action:
+      - service: rest_command.join_send_file
+        data:
+          file: "https://your-ha-url/local/backups/latest.tar.gz"
+          title: "HA Backup Completed"
+          text: "Backup file: {{ now().strftime('%Y-%m-%d') }}"
+  
+  # ------------------------------------------------
+  # Cross-device clipboard sync
+  # ------------------------------------------------
+  - alias: "Join - Sync Clipboard"
+    trigger:
+      - platform: state
+        entity_id: input_text.clipboard_content
+    action:
+      - service: rest_command.join_set_clipboard
+        data:
+          clipboard: "{{ states('input_text.clipboard_content') }}"
+
+# ================================================
+# REST COMMANDS
+# ================================================
+rest_command:
+  # Send basic notification
+  join_notify:
+    url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+    method: POST
+    payload: >
+      {
+        "apikey": "{{ secret_join_api_key }}",
+        "deviceId": "{{ device_id }}",
+        "title": "{{ title }}",
+        "text": "{{ message }}"
+      }
+  
+  # Execute Tasker command
+  join_tasker_command:
+    url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+    method: POST
+    payload: >
+      {
+        "apikey": "{{ secret_join_api_key }}",
+        "deviceId": "{{ device_id_primary }}",
+        "taskername": "{{ taskername }}",
+        "taskerparam": "{{ taskerparam }}"
+      }
+  
+  # Send file
+  join_send_file:
+    url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+    method: POST
+    payload: >
+      {
+        "apikey": "{{ secret_join_api_key }}",
+        "deviceId": "{{ device_id }}",
+        "title": "{{ title }}",
+        "text": "{{ text }}",
+        "file": "{{ file }}"
+      }
+  
+  # Set clipboard
+  join_set_clipboard:
+    url: "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush"
+    method: POST
+    payload: >
+      {
+        "apikey": "{{ secret_join_api_key }}",
+        "deviceId": "group.all",
+        "clipboard": "{{ clipboard }}"
+      }
+
+# ================================================
+# INTEGRATION WITH TASKER
+# ================================================
+tasker_integration:
+  description: |
+    Join works seamlessly with Tasker. Commands sent from Home Assistant
+    can trigger Tasker tasks on your Android device.
+  
+  examples:
+    - name: "Enable Driving Mode"
+      ha_action:
+        service: rest_command.join_tasker_command
+        data:
+          taskername: "DrivingMode"
+          taskerparam: "enable"
+      
+      tasker_profile:
+        name: "Join Command - Driving Mode"
+        context:
+          type: "Event"
+          trigger: "AutoApps Command"
+          command: "DrivingMode"
+        entry_task: "Enable Driving Features"
+    
+    - name: "Toggle Lights"
+      ha_action:
+        service: rest_command.join_tasker_command
+        data:
+          taskername: "ToggleLights"
+          taskerparam: "living_room"
+      
+      tasker_profile:
+        name: "Join Command - Lights"
+        context:
+          type: "Event"
+          trigger: "AutoApps Command"
+          command: "ToggleLights"
+        entry_task: "Toggle Smart Lights"
+
+# ================================================
+# SETUP INSTRUCTIONS
+# ================================================
+setup_instructions: |
+  1. Install Join App:
+     - Android: https://play.google.com/store/apps/details?id=com.joaomgcd.join
+     - Windows: https://joinjoaomgcd.appspot.com/
+     - Browser Extension: Chrome/Firefox
+  
+  2. Get API Key:
+     - Open Join app
+     - Settings → Join API
+     - Copy API Key
+  
+  3. Get Device IDs:
+     - Visit: https://joinjoaomgcd.appspot.com/_ah/api/registration/v1/listDevices?apikey=YOUR_API_KEY
+     - Note down device IDs for each device
+  
+  4. Add to secrets.yaml:
+     join_api_key: YOUR_API_KEY_HERE
+     join_device_id_primary: YOUR_DEVICE_ID_HERE
+     join_device_id_tablet: TABLET_ID_HERE
+     join_device_id_windows: WINDOWS_ID_HERE
+  
+  5. Add to configuration.yaml:
+     notify:
+       - name: join_primary_android
+         platform: joaoapps_join
+         api_key: !secret join_api_key
+         device_id: !secret join_device_id_primary
+       
+       - name: join_all_devices
+         platform: joaoapps_join
+         api_key: !secret join_api_key
+         device_id: group.all
+  
+  6. Restart Home Assistant
+  
+  7. Test notification:
+     Developer Tools → Services
+     Service: notify.join_primary_android
+     Data: {"message": "Test from Home Assistant"}
+
+# ================================================
+# USE CASES
+# ================================================
+use_cases:
+  - name: "Cross-Device Clipboard"
+    description: "Sync clipboard across all devices"
+    example: "Copy text on phone, paste on PC instantly"
+  
+  - name: "Remote Commands"
+    description: "Execute commands on any device from HA"
+    example: "Shutdown PC when leaving home"
+  
+  - name: "SMS from HA"
+    description: "Send SMS using phone from Home Assistant"
+    example: "Security alerts via SMS"
+  
+  - name: "File Transfer"
+    description: "Send files between devices"
+    example: "Send backup files to phone"
+  
+  - name: "Tasker Integration"
+    description: "Trigger Tasker tasks from HA"
+    example: "Enable driving mode, adjust phone settings"
+  
+  - name: "URL Opening"
+    description: "Open URLs on specific devices"
+    example: "Open dashboard on tablet when motion detected"
+
+# ================================================
+# STATISTICS
+# ================================================
+# Supported Devices: 3 (Android, Tablet, Windows)
+# Notification Types: 5 (Basic, Actions, Priority, Image, URL)
+# Command Types: 5 (Tasker, SMS, URL, Shell, Clipboard)
+# Automations: 6
+# REST Commands: 4
+# Integration Points:
+#   - Tasker
+#   - Home Assistant
+#   - Windows Desktop
+#   - Browser extensions
+# ================================================

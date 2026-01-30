@@ -1,0 +1,231 @@
+---
+# IFTTT Webhooks Integration Configuration
+# Webhooks for mobile triggers via IFTTT applets
+# Home Assistant integration with Android/iOS apps
+# Updated: January 30, 2026
+
+################################################################################
+# IFTTT REST Integration - Webhook Receivers
+################################################################################
+
+rest:
+  - resource: !secret ifttt_webhook_url
+    method: GET
+    scan_interval: 300
+    headers:
+      Authorization: !secret ifttt_auth_header
+    json_attributes:
+      - event_type
+      - trigger_status
+    value_template: "{{ value_json.status }}"
+
+################################################################################
+# Webhook Automations from IFTTT
+################################################################################
+
+automation:
+  - id: 'ifttt_mobile_button_pressed'
+    alias: "IFTTT: Mobile Button Event"
+    description: "Handle mobile button presses from IFTTT"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret ifttt_mobile_button_webhook
+    action:
+      - service: "{{ trigger.json.service }}"
+        data: "{{ trigger.json.service_data }}"
+
+  - id: 'ifttt_notification_action'
+    alias: "IFTTT: Handle Notification Actions"
+    description: "Process actions from mobile notifications"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret ifttt_notification_webhook
+    condition:
+      - condition: template
+        value_template: "{{ trigger.json.action is defined }}"
+    action:
+      - service: "{{ trigger.json.action }}"
+        data_template:
+          entity_id: "{{ trigger.json.target }}"
+
+  - id: 'ifttt_tasker_trigger'
+    alias: "IFTTT: Tasker Integration"
+    description: "Receive Tasker automation events"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret ifttt_tasker_webhook
+    condition:
+      - condition: state
+        entity_id: input_boolean.tasker_integration
+        state: 'on'
+    action:
+      - service: python_script.process_tasker_event
+        data_template:
+          event_type: "{{ trigger.json.event_type }}"
+          data: "{{ trigger.json.data }}"
+
+  - id: 'ifttt_scene_activation'
+    alias: "IFTTT: Scene Activation from Mobile"
+    description: "Activate scenes via IFTTT"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret ifttt_scene_webhook
+    action:
+      - service: scene.turn_on
+        target:
+          entity_id: "scene.{{ trigger.json.scene_name }}"
+
+################################################################################
+# IFTTT Applet Configurations
+################################################################################
+
+# Applet 1: "If voice command → Then turn on lights"
+input_boolean:
+  ifttt_voice_lights:
+    name: "IFTTT Voice Lights"
+    initial: off
+    icon: mdi:lightbulb-outline
+
+script:
+  ifttt_voice_activate:
+    description: "Activate voice-triggered scene"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.{{ trigger.json.area }}_lights
+        data:
+          brightness_pct: "{{ trigger.json.brightness | default(80) }}"
+
+# Applet 2: "If motion detected → Then send notification"
+automation:
+  - id: 'ifttt_send_motion_notification'
+    alias: "IFTTT: Send Motion Notification"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.front_door_motion
+        to: 'on'
+    action:
+      - service: webhook.send
+        data:
+          method: POST
+          url: !secret ifttt_webhook_url
+          data:
+            value1: "Motion detected at front door"
+            value2: "{{ now().strftime('%I:%M %p') }}"
+            value3: "{{ states('camera.front_door') }}"
+
+# Applet 3: "If battery low → Then alert user"
+automation:
+  - id: 'ifttt_battery_alert'
+    alias: "IFTTT: Battery Low Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.phone_battery
+        below: 20
+    action:
+      - service: webhook.send
+        data:
+          method: POST
+          url: !secret ifttt_webhook_url
+          data:
+            value1: "Battery Low"
+            value2: "{{ states('sensor.phone_battery') }}%"
+            value3: "Charge your device"
+
+# Applet 4: "If location changed → Then arm/disarm"
+automation:
+  - id: 'ifttt_location_based_arm'
+    alias: "IFTTT: Location-Based Security"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret ifttt_location_webhook
+    condition:
+      - condition: template
+        value_template: "{{ trigger.json.location == 'home' }}"
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        target:
+          entity_id: alarm_control_panel.home_alarm
+        data:
+          code: !secret alarm_code
+
+# Applet 5: "If temperature alert → Then adjust thermostat"
+automation:
+  - id: 'ifttt_temp_adjustment'
+    alias: "IFTTT: Temperature Adjustment"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret ifttt_temperature_webhook
+    action:
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home_thermostat
+        data:
+          temperature: "{{ trigger.json.target_temp }}"
+
+################################################################################
+# Input Helpers for IFTTT Integration
+################################################################################
+
+input_text:
+  ifttt_last_event:
+    name: "IFTTT Last Event"
+    initial: "none"
+    max: 255
+
+input_select:
+  ifttt_mode:
+    name: "IFTTT Integration Mode"
+    options:
+      - "enabled"
+      - "disabled"
+      - "test"
+    initial: "enabled"
+
+input_number:
+  ifttt_timeout:
+    name: "IFTTT Webhook Timeout (seconds)"
+    min: 5
+    max: 60
+    step: 5
+    unit_of_measurement: "s"
+    initial: 30
+
+################################################################################
+# Service Calls for IFTTT Actions
+################################################################################
+
+service:
+  ifttt_send_event:
+    description: "Send custom event to IFTTT"
+    fields:
+      event_value1:
+        description: "IFTTT value 1"
+        example: "Motion detected"
+      event_value2:
+        description: "IFTTT value 2"
+        example: "Front door"
+      event_value3:
+        description: "IFTTT value 3"
+        example: "Low confidence"
+
+################################################################################
+# Template Sensors for IFTTT Status
+################################################################################
+
+template:
+  - sensor:
+      - name: "IFTTT Integration Status"
+        unique_id: ifttt_status
+        state: "{{ state_attr('rest.ifttt_webhook', 'status') }}"
+        availability: "{{ state_attr('rest.ifttt_webhook', 'status') is defined }}"
+        icon: mdi:webhook
+
+      - name: "IFTTT Last Event Type"
+        unique_id: ifttt_last_event_type
+        state: "{{ state_attr('input_text.ifttt_last_event', 'last_triggered') }}"
+        icon: mdi:bell-ring-outline
+
+################################################################################
+# END OF IFTTT WEBHOOKS CONFIGURATION
+################################################################################

@@ -1,0 +1,452 @@
+---
+# Join Integration - Multi-Device Notification & Command Routing
+# Enables cross-device notification delivery and command execution
+# Updated: January 30, 2026
+
+################################################################################
+# Join Integration Configuration
+################################################################################
+
+rest_command:
+  join_send_notification:
+    url: "https://joinjoaomgcd.appspot.com/sendPush?apikey={{ states.input_text.join_api_key.state }}"
+    method: POST
+    payload: >
+      {
+        "deviceId": "{{ device_id }}",
+        "title": "{{ title }}",
+        "text": "{{ message }}",
+        "icon": "{{ icon }}",
+        "priority": {{ priority }},
+        "vibration": {{ vibration }},
+        "lockScreenVisibility": 1
+      }
+    headers:
+      Content-Type: application/json
+
+  join_execute_command:
+    url: "https://joinjoaomgcd.appspot.com/sendPush?apikey={{ states.input_text.join_api_key.state }}"
+    method: POST
+    payload: >
+      {
+        "deviceId": "{{ device_id }}",
+        "command": "{{ command_text }}",
+        "commandId": "{{ command_id }}"
+      }
+    headers:
+      Content-Type: application/json
+
+################################################################################
+# Join Input Helpers
+################################################################################
+
+input_text:
+  join_api_key:
+    name: "Join API Key"
+    max: 255
+    icon: mdi:key
+
+input_select:
+  join_target_device:
+    name: "Join Target Device"
+    options:
+      - "phone_primary"
+      - "phone_secondary"
+      - "tablet"
+      - "all_devices"
+      - "group_home"
+      - "group_mobile"
+    initial: "phone_primary"
+    icon: mdi:devices
+
+  join_notification_priority:
+    name: "Join Notification Priority"
+    options:
+      - "low"
+      - "default"
+      - "high"
+      - "max"
+    initial: "default"
+    icon: mdi:priority-high
+
+################################################################################
+# Join Automation: HA System Alerts
+################################################################################
+
+automation:
+  # Home Assistant Update Available
+  - id: 'join_ha_update_available'
+    alias: "Join: Home Assistant Update Available"
+    trigger:
+      - platform: state
+        entity_id: update.home_assistant_core_update
+        to: "on"
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "{{ states('input_select.join_target_device') }}"
+          title: "🔄 HA Update Available"
+          message: "Home Assistant {{ state_attr('update.home_assistant_core_update', 'latest_version') }} is available"
+          icon: "mdi-update"
+          priority: 1
+          vibration: true
+
+  # Home Assistant Startup
+  - id: 'join_ha_startup'
+    alias: "Join: Home Assistant Startup Notification"
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - delay:
+          seconds: 30
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "all_devices"
+          title: "✅ Home Assistant Started"
+          message: "System is online and operational"
+          icon: "mdi-home-assistant"
+          priority: 0
+          vibration: false
+
+  # Database Backup Completed
+  - id: 'join_backup_completed'
+    alias: "Join: Database Backup Completed"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret backup_complete_webhook
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "💾 Backup Complete"
+          message: "Database backup completed at {{ now().strftime('%I:%M %p') }}"
+          icon: "mdi-backup-restore"
+          priority: 0
+          vibration: false
+
+################################################################################
+# Join Automation: Security Alerts
+################################################################################
+
+automation:
+  # Motion Detection Alert
+  - id: 'join_motion_alert'
+    alias: "Join: Motion Detection Alert"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.front_door_motion
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "{{ states('input_select.join_target_device') }}"
+          title: "🚨 Motion Detected"
+          message: "Front door motion while armed"
+          icon: "mdi-motion-sensor"
+          priority: 1
+          vibration: true
+
+  # Door/Window Breach
+  - id: 'join_door_breach_alert'
+    alias: "Join: Door/Window Breach Alert"
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.front_door_contact
+          - binary_sensor.back_door_contact
+          - binary_sensor.garage_door_contact
+          - binary_sensor.living_room_window
+          - binary_sensor.bedroom_window
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "all_devices"
+          title: "🔴 BREACH DETECTED"
+          message: "{{ trigger.to_state.attributes.friendly_name }} opened while armed!"
+          icon: "mdi-alert-box"
+          priority: 2
+          vibration: true
+
+  # Unauthorized Access Attempt
+  - id: 'join_unauthorized_access'
+    alias: "Join: Unauthorized Access Attempt"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret security_breach_webhook
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "all_devices"
+          title: "🚨 UNAUTHORIZED ACCESS"
+          message: "{{ trigger.json.details }}"
+          icon: "mdi-lock-alert"
+          priority: 2
+          vibration: true
+
+################################################################################
+# Join Automation: Environmental Alerts
+################################################################################
+
+automation:
+  # High Temperature Alert
+  - id: 'join_high_temp_alert'
+    alias: "Join: High Temperature Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.home_temperature
+        above: 80
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "🌡️ High Temperature"
+          message: "Indoor temperature: {{ states('sensor.home_temperature') }}°F"
+          icon: "mdi-thermometer"
+          priority: 1
+          vibration: false
+
+  # Humidity Alert
+  - id: 'join_high_humidity_alert'
+    alias: "Join: High Humidity Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.home_humidity
+        above: 70
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "💧 High Humidity"
+          message: "Home humidity: {{ states('sensor.home_humidity') }}%"
+          icon: "mdi-water-percent"
+          priority: 0
+          vibration: false
+
+  # Air Quality Alert
+  - id: 'join_air_quality_alert'
+    alias: "Join: Air Quality Alert"
+    trigger:
+      - platform: state
+        entity_id: sensor.air_quality_index
+        attribute: quality
+        to: "poor"
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "🌫️ Poor Air Quality"
+          message: "AQI: {{ states('sensor.air_quality_index') }}"
+          icon: "mdi-air-filter"
+          priority: 1
+          vibration: false
+
+################################################################################
+# Join Automation: Energy Alerts
+################################################################################
+
+automation:
+  # High Power Usage
+  - id: 'join_high_power_alert'
+    alias: "Join: High Power Usage Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.home_power_usage
+        above: 5000
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "⚡ High Power Usage"
+          message: "Current usage: {{ states('sensor.home_power_usage') }}W"
+          icon: "mdi-lightning-bolt"
+          priority: 0
+          vibration: false
+
+  # Peak Hour Alert
+  - id: 'join_peak_hour_alert'
+    alias: "Join: Peak Hour Alert"
+    trigger:
+      - platform: time
+        at: "14:00:00"
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "⏱️ Peak Hours Starting"
+          message: "Energy usage optimization active until 18:00"
+          icon: "mdi-clock-alert"
+          priority: 0
+          vibration: false
+
+################################################################################
+# Join Automation: Device Status
+################################################################################
+
+automation:
+  # Low Battery Alert
+  - id: 'join_device_low_battery'
+    alias: "Join: Device Low Battery Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.phone_battery
+          - sensor.tablet_battery
+          - sensor.bluetooth_speaker_battery
+        below: 20
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "{{ trigger.entity_id.split('.')[1] }}"
+          title: "🔋 Low Battery"
+          message: "{{ trigger.to_state.attributes.friendly_name }} battery: {{ states(trigger.entity_id) }}%"
+          icon: "mdi-battery-low"
+          priority: 1
+          vibration: false
+
+  # Device Disconnected
+  - id: 'join_device_disconnected'
+    alias: "Join: Device Disconnected Alert"
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.phone_connected
+          - binary_sensor.tablet_connected
+        to: 'off'
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "📡 Device Offline"
+          message: "{{ trigger.to_state.attributes.friendly_name }} disconnected from network"
+          icon: "mdi-wifi-off"
+          priority: 0
+          vibration: false
+
+################################################################################
+# Join Automation: Presence & Home Status
+################################################################################
+
+automation:
+  # Guest Arrival
+  - id: 'join_guest_arrival'
+    alias: "Join: Guest Arrival Notification"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.guest_presence
+        to: 'on'
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "👥 Guest Arrival"
+          message: "Guest detected - front door unlock enabled"
+          icon: "mdi-account-plus"
+          priority: 0
+          vibration: true
+
+  # Everyone Home
+  - id: 'join_everyone_home'
+    alias: "Join: Everyone Home Notification"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.all_home
+        to: 'on'
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "all_devices"
+          title: "🏠 Everyone Home"
+          message: "All family members arrived home"
+          icon: "mdi-home-heart"
+          priority: 0
+          vibration: false
+
+  # Home Empty
+  - id: 'join_home_empty'
+    alias: "Join: Home Empty Notification"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.all_away
+        to: 'on'
+    action:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "phone_primary"
+          title: "🔒 Home Empty"
+          message: "All occupants away - house secured"
+          icon: "mdi-door-closed"
+          priority: 0
+          vibration: false
+
+################################################################################
+# Join Scripts for Remote Commands
+################################################################################
+
+script:
+  join_lock_all_doors:
+    description: "Lock all doors via Join command"
+    sequence:
+      - service: rest_command.join_execute_command
+        data:
+          device_id: "phone_primary"
+          command_text: "lock_all_doors"
+          command_id: "cmd_lock_all"
+      - service: lock.lock
+        target:
+          entity_id: all
+
+  join_activate_guest_mode:
+    description: "Activate guest mode on mobile devices"
+    sequence:
+      - service: rest_command.join_execute_command
+        data:
+          device_id: "all_devices"
+          command_text: "activate_guest_mode"
+          command_id: "cmd_guest"
+
+  join_emergency_alert:
+    description: "Send emergency alert to all devices"
+    sequence:
+      - service: rest_command.join_send_notification
+        data:
+          device_id: "all_devices"
+          title: "🚨 EMERGENCY ALERT"
+          message: "Emergency contact family immediately"
+          icon: "mdi-alert"
+          priority: 2
+          vibration: true
+
+################################################################################
+# Template Sensors for Join Status
+################################################################################
+
+template:
+  - sensor:
+      - name: "Join Integration Status"
+        unique_id: join_status
+        state: "{{ 'online' if states('input_text.join_api_key') != 'unknown' else 'offline' }}"
+        icon: mdi:connection
+
+      - name: "Join Device Count"
+        unique_id: join_device_count
+        state: "3"
+        icon: mdi:devices
+
+      - name: "Join Last Notification"
+        unique_id: join_last_notification
+        state: "{{ now().strftime('%I:%M %p') }}"
+        icon: mdi:bell-check
+
+################################################################################
+# END OF JOIN INTEGRATION CONFIGURATION
+################################################################################

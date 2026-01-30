@@ -1,0 +1,392 @@
+---
+# Tasker Android Automation Profiles Configuration
+# Task execution flows and variable mappings for Home Assistant integration
+# Updated: January 30, 2026
+
+################################################################################
+# Tasker Integration - Input Booleans for Profile Control
+################################################################################
+
+input_boolean:
+  tasker_profile_active:
+    name: "Tasker Profile Active"
+    initial: on
+    icon: mdi:android
+
+  tasker_geofencing_enabled:
+    name: "Tasker Geofencing"
+    initial: on
+    icon: mdi:map-marker
+
+  tasker_night_mode:
+    name: "Tasker Night Mode"
+    initial: off
+    icon: mdi:moon-waning-crescent
+
+  tasker_work_mode:
+    name: "Tasker Work Mode"
+    initial: off
+    icon: mdi:briefcase
+
+  tasker_vacation_mode:
+    name: "Tasker Vacation Mode"
+    initial: off
+    icon: mdi:beach
+
+################################################################################
+# Tasker Input Selectors for Profile Selection
+################################################################################
+
+input_select:
+  tasker_active_profile:
+    name: "Active Tasker Profile"
+    options:
+      - "Home"
+      - "Work"
+      - "Commute"
+      - "Night"
+      - "Vacation"
+      - "Away"
+      - "Custom"
+    initial: "Home"
+    icon: mdi:selection-multiple
+
+  tasker_notification_mode:
+    name: "Tasker Notification Mode"
+    options:
+      - "silent"
+      - "vibrate"
+      - "ring"
+      - "custom"
+    initial: "ring"
+    icon: mdi:bell-circle
+
+  tasker_automation_level:
+    name: "Tasker Automation Level"
+    options:
+      - "off"
+      - "light"
+      - "medium"
+      - "full"
+    initial: "full"
+    icon: mdi:auto-mode
+
+################################################################################
+# Tasker REST Webhook Automations
+################################################################################
+
+automation:
+  # Profile: Home Mode
+  - id: 'tasker_profile_home'
+    alias: "Tasker: Home Profile Activated"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_home_profile_webhook
+    action:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.tasker_active_profile
+        data:
+          option: "Home"
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.entryway
+            - light.living_room
+        data:
+          brightness_pct: 80
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home_thermostat
+        data:
+          temperature: 72
+
+  # Profile: Work Mode
+  - id: 'tasker_profile_work'
+    alias: "Tasker: Work Profile Activated"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_work_profile_webhook
+    action:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.tasker_active_profile
+        data:
+          option: "Work"
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.tasker_work_mode
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home_thermostat
+        data:
+          temperature: 68
+
+  # Profile: Night Mode
+  - id: 'tasker_profile_night'
+    alias: "Tasker: Night Profile Activated"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_night_profile_webhook
+    action:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.tasker_active_profile
+        data:
+          option: "Night"
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.tasker_night_mode
+      - service: light.turn_off
+        target:
+          entity_id: all
+      - service: alarm_control_panel.alarm_arm_night
+        target:
+          entity_id: alarm_control_panel.home_alarm
+
+  # Profile: Vacation Mode
+  - id: 'tasker_profile_vacation'
+    alias: "Tasker: Vacation Profile Activated"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_vacation_profile_webhook
+    action:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.tasker_vacation_mode
+      - service: script.turn_on
+        target:
+          entity_id: script.vacation_mode
+
+################################################################################
+# Tasker Geofence Actions
+################################################################################
+
+automation:
+  # Geofence: Arriving Home
+  - id: 'tasker_geofence_arrive_home'
+    alias: "Tasker: Geofence - Arriving Home"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_geofence_arrival_webhook
+    condition:
+      - condition: state
+        entity_id: input_boolean.tasker_geofencing_enabled
+        state: 'on'
+    action:
+      - service: python_script.tasker_arrival_sequence
+        data:
+          latitude: "{{ trigger.json.latitude }}"
+          longitude: "{{ trigger.json.longitude }}"
+          timestamp: "{{ now().isoformat() }}"
+      - service: notify.mobile_app_phone
+        data:
+          title: "Welcome Home"
+          message: "Arrival detected at {{ trigger.json.location_name }}"
+
+  # Geofence: Leaving Home
+  - id: 'tasker_geofence_leave_home'
+    alias: "Tasker: Geofence - Leaving Home"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_geofence_departure_webhook
+    condition:
+      - condition: state
+        entity_id: input_boolean.tasker_geofencing_enabled
+        state: 'on'
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: all
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.home_alarm
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home_thermostat
+        data:
+          temperature: 66
+
+################################################################################
+# Tasker Task Execution Flows
+################################################################################
+
+script:
+  # Task: Morning Routine via Tasker
+  tasker_morning_routine:
+    description: "Execute morning routine from Tasker trigger"
+    sequence:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.morning_routine_active
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.bedroom
+            - light.bathroom
+        data:
+          brightness_pct: 30
+          color_temp: 370
+          transition: 300
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.alexa_kitchen
+        data:
+          media_content_id: "playlist:Morning Mix"
+          media_content_type: playlist
+      - delay:
+          minutes: 5
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.morning_routine_active
+
+  # Task: Commute Reminder
+  tasker_commute_reminder:
+    description: "Trigger commute reminder sequence"
+    sequence:
+      - service: notify.mobile_app_phone
+        data:
+          title: "Commute Alert"
+          message: "Time to leave for work. Traffic: {{ states('sensor.commute_time') }} minutes"
+          data:
+            actions:
+              - action: "NAVIGATE_TO_WORK"
+                title: "Navigate"
+
+  # Task: Lunch Break
+  tasker_lunch_break:
+    description: "Lunch break automation"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.kitchen
+        data:
+          brightness_pct: 100
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.alexa_kitchen
+        data:
+          media_content_id: "playlist:Lunch Time"
+          media_content_type: playlist
+
+  # Task: Evening Routine
+  tasker_evening_routine:
+    description: "Execute evening routine from Tasker"
+    sequence:
+      - service: cover.close_cover
+        target:
+          entity_id: all
+      - service: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          brightness_pct: 40
+          color_temp: 500
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home_thermostat
+        data:
+          temperature: 70
+
+################################################################################
+# Tasker Variable Mappings
+################################################################################
+
+input_text:
+  tasker_last_location:
+    name: "Tasker Last Location"
+    initial: "unknown"
+    max: 255
+    icon: mdi:map-marker
+
+  tasker_current_task:
+    name: "Tasker Current Task"
+    initial: "idle"
+    max: 255
+    icon: mdi:format-list-checks
+
+  tasker_device_info:
+    name: "Tasker Device Info"
+    initial: "unknown"
+    max: 255
+    icon: mdi:cellphone
+
+input_number:
+  tasker_battery_level:
+    name: "Tasker Device Battery"
+    min: 0
+    max: 100
+    unit_of_measurement: "%"
+    icon: mdi:battery
+
+  tasker_screen_brightness:
+    name: "Tasker Screen Brightness"
+    min: 0
+    max: 255
+    step: 5
+    icon: mdi:brightness-7
+
+  tasker_volume_level:
+    name: "Tasker Volume Level"
+    min: 0
+    max: 15
+    step: 1
+    icon: mdi:volume-high
+
+################################################################################
+# Tasker Notification Automations
+################################################################################
+
+automation:
+  # Device Battery Low
+  - id: 'tasker_battery_alert'
+    alias: "Tasker: Battery Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id: input_number.tasker_battery_level
+        below: 20
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "🔋 Low Battery"
+          message: "Device battery at {{ states('input_number.tasker_battery_level') }}%"
+          data:
+            priority: high
+
+  # Task Completion Notification
+  - id: 'tasker_task_completion'
+    alias: "Tasker: Task Completion Notification"
+    trigger:
+      - platform: webhook
+        webhook_id: !secret tasker_task_completion_webhook
+    action:
+      - service: notify.mobile_app_phone
+        data_template:
+          title: "✅ Task Completed"
+          message: "{{ trigger.json.task_name }} completed at {{ now().strftime('%I:%M %p') }}"
+
+################################################################################
+# Template Sensors for Tasker Status
+################################################################################
+
+template:
+  - sensor:
+      - name: "Tasker Profile Status"
+        unique_id: tasker_profile_status
+        state: "{{ states('input_select.tasker_active_profile') }}"
+        icon: mdi:android
+
+      - name: "Tasker Device Battery Status"
+        unique_id: tasker_device_battery
+        state: "{{ states('input_number.tasker_battery_level') | int }}%"
+        unit_of_measurement: "%"
+        icon: mdi:battery
+
+      - name: "Tasker Integration Health"
+        unique_id: tasker_health
+        state: "{{ 'online' if states('input_boolean.tasker_profile_active') == 'on' else 'offline' }}"
+        icon: mdi:heart-pulse
+
+################################################################################
+# END OF TASKER PROFILES CONFIGURATION
+################################################################################

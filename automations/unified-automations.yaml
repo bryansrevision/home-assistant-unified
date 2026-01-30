@@ -1,0 +1,726 @@
+---
+# Home Assistant Unified Automations
+# Master consolidation of all automation rules across subsystems
+# Last Updated: January 30, 2026
+# Categories: Security, Presence, Routines, Energy, Entertainment, Wearables/AI, Infrastructure
+
+################################################################################
+# SECURITY AUTOMATIONS - Door/Window/Motion detection
+################################################################################
+
+- id: "security_door_open_away"
+  alias: "Security: Door Opened While Away"
+  description: "Alert when door opens while away"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.front_door_contact
+        - binary_sensor.back_door_contact
+        - binary_sensor.garage_door_contact
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🚨 Security Alert"
+        message: "{{ trigger.to_state.attributes.friendly_name }} opened while away!"
+        data:
+          priority: high
+          ttl: 0
+          channel: alarm_stream
+          actions:
+            - action: "VIEW_CAMERA"
+              title: "View Camera"
+            - action: "DISARM_ALARM"
+              title: "Disarm Alarm"
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness_pct: 100
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_living_room
+      data:
+        media_content_id: "amzn_sfx_doorbell_chime_02"
+        media_content_type: sound
+
+- id: "security_window_open_away"
+  alias: "Security: Window Opened While Away"
+  description: "Alert when window opens while away"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_window_contact
+        - binary_sensor.bedroom_window_contact
+        - binary_sensor.kitchen_window_contact
+      to: "on"
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: zone.home
+          state: "0"
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "⚠️ Security Alert"
+        message: "{{ trigger.to_state.attributes.friendly_name }} opened at {{ now().strftime('%I:%M %p') }}"
+        data:
+          priority: high
+
+- id: "security_motion_detected_away"
+  alias: "Security: Motion Detected While Away"
+  description: "Alert on motion detection when nobody home"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_motion
+        - binary_sensor.hallway_motion
+        - binary_sensor.kitchen_motion
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: "0"
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: "off"
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "🚨 Motion Detected"
+        message: "Motion detected: {{ trigger.to_state.attributes.friendly_name }}"
+        data:
+          priority: high
+          image: "/api/camera_proxy/camera.{{ trigger.entity_id.split('.')[1].replace('_motion', '_camera') }}"
+    - service: light.turn_on
+      target:
+        area_id: "{{ state_attr(trigger.entity_id, 'area_id') }}"
+      data:
+        brightness_pct: 100
+
+################################################################################
+# PRESENCE DETECTION AUTOMATIONS - Arrival/Departure with iCloud tracking
+################################################################################
+
+- id: "presence_arrival_home"
+  alias: "Arrival: Welcome Home"
+  description: "Trigger actions when someone arrives home"
+  trigger:
+    - platform: state
+      entity_id:
+        - person.dylan
+        - person.family_member
+      from: "not_home"
+      to: "home"
+  condition:
+    - condition: sun
+      after: sunset
+      after_offset: "-00:30:00"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.entryway
+          - light.living_room
+      data:
+        brightness_pct: 80
+        color_temp: 370
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+        hvac_mode: auto
+    - service: notify.mobile_app
+      data:
+        title: "Welcome Home"
+        message: "{{ trigger.to_state.attributes.friendly_name }} arrived home at {{ now().strftime('%I:%M %p') }}"
+    - service: script.turn_on
+      target:
+        entity_id: script.alexa_welcome_home
+
+- id: "presence_departure_home"
+  alias: "Departure: Goodbye"
+  description: "Trigger actions when everyone leaves home"
+  trigger:
+    - platform: state
+      entity_id: zone.home
+      to: "0"
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: "off"
+  action:
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 68
+        hvac_mode: auto
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: media_player.turn_off
+      target:
+        entity_id:
+          - media_player.living_room_tv
+          - media_player.bedroom_tv
+    - service: script.turn_on
+      target:
+        entity_id: script.security_arm
+    - service: notify.mobile_app
+      data:
+        title: "Goodbye"
+        message: "Everyone has left home. Security armed and lights off."
+
+- id: "presence_first_person_home"
+  alias: "Arrival: First Person Home"
+  description: "Special actions when first person arrives"
+  trigger:
+    - platform: numeric_state
+      entity_id: zone.home
+      above: 0
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: "0"
+      for:
+        hours: 1
+  action:
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        preset_mode: home
+    - service: script.turn_on
+      target:
+        entity_id: script.security_disarm
+
+################################################################################
+# DAILY ROUTINE AUTOMATIONS - Morning and Evening sequences
+################################################################################
+
+- id: "routine_good_morning"
+  alias: "Routine: Good Morning"
+  description: "Morning routine when waking up"
+  trigger:
+    - platform: time
+      at: "06:30:00"
+    - platform: state
+      entity_id: binary_sensor.bedroom_motion
+      to: "on"
+  condition:
+    - condition: time
+      after: "05:00:00"
+      before: "09:00:00"
+    - condition: state
+      entity_id: input_boolean.morning_routine_complete
+      state: "off"
+    - condition: state
+      entity_id: zone.home
+      state: "0"
+      match: none
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.morning_routine_complete
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.bedroom
+          - light.bathroom
+      data:
+        brightness_pct: 30
+        color_temp: 370
+        transition: 300
+    - delay:
+        seconds: 30
+    - service: cover.open_cover
+      target:
+        entity_id:
+          - cover.bedroom_blinds
+          - cover.living_room_blinds
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 72
+    - service: switch.turn_on
+      target:
+        entity_id: switch.coffee_maker
+    - delay:
+        minutes: 2
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_kitchen
+      data:
+        media_content_id: "Good morning! It's {{ now().strftime('%A, %B %d') }}. The temperature is {{ states('sensor.outdoor_temperature') }} degrees. Your first calendar event is at {{ state_attr('calendar.personal', 'start_time') }}."
+        media_content_type: announce
+    - service: notify.mobile_app
+      data:
+        title: "☀️ Good Morning"
+        message: "Morning routine started. Coffee is brewing!"
+
+- id: "routine_workday_morning"
+  alias: "Routine: Workday Morning Prep"
+  description: "Additional morning routine for workdays"
+  trigger:
+    - platform: time
+      at: "07:00:00"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: "on"
+    - condition: state
+      entity_id: zone.home
+      state: "0"
+      match: none
+  action:
+    - service: media_player.play_media
+      target:
+        entity_id: media_player.alexa_bathroom
+      data:
+        media_content_id: "playlist:Morning Motivation"
+        media_content_type: playlist
+    - service: light.turn_on
+      target:
+        entity_id: light.closet
+      data:
+        brightness_pct: 100
+    - service: notify.mobile_app
+      data:
+        title: "Work Day Prep"
+        message: "Leave in 30 minutes to arrive on time. Traffic: {{ states('sensor.work_commute_time') }} minutes."
+
+- id: "routine_good_night"
+  alias: "Routine: Good Night"
+  description: "Evening routine when going to bed"
+  trigger:
+    - platform: time
+      at: "22:00:00"
+    - platform: state
+      entity_id: binary_sensor.bedroom_occupancy
+      to: "on"
+  condition:
+    - condition: time
+      after: "20:00:00"
+      before: "23:59:59"
+    - condition: state
+      entity_id: input_boolean.night_routine_complete
+      state: "off"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.night_routine_complete
+    - service: cover.close_cover
+      target:
+        entity_id: all
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: light.turn_on
+      target:
+        entity_id: light.bedroom
+      data:
+        brightness_pct: 10
+        color_temp: 500
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 68
+        hvac_mode: auto
+    - service: alarm_control_panel.alarm_arm_night
+      target:
+        entity_id: alarm_control_panel.home_alarm
+
+################################################################################
+# ENERGY SAVING AUTOMATIONS - Smart power management
+################################################################################
+
+- id: "energy_lights_off_no_motion"
+  alias: "Energy: Turn Off Lights After No Motion"
+  description: "Turn off lights when no motion detected for 10 minutes"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.living_room_motion
+        - binary_sensor.kitchen_motion
+        - binary_sensor.bedroom_motion
+        - binary_sensor.bathroom_motion
+      to: "off"
+      for:
+        minutes: 10
+  action:
+    - service: light.turn_off
+      target:
+        area_id: "{{ state_attr(trigger.entity_id, 'area_id') }}"
+      data:
+        transition: 5
+
+- id: "energy_ac_optimization"
+  alias: "Energy: AC Temperature Optimization"
+  description: "Adjust AC based on presence and outdoor temperature"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.outdoor_temperature
+      above: 85
+  condition:
+    - condition: state
+      entity_id: zone.home
+      state: "0"
+    - condition: state
+      entity_id: climate.home_thermostat
+      state: "cool"
+  action:
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.home_thermostat
+      data:
+        temperature: 78
+
+- id: "energy_peak_hours_notification"
+  alias: "Energy: Peak Hours Notification"
+  description: "Notify during peak energy hours"
+  trigger:
+    - platform: time
+      at: "14:00:00"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.workday
+      state: "on"
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "⚡ Peak Energy Hours"
+        message: "Peak energy rates from 2-7 PM. Consider reducing usage."
+        data:
+          actions:
+            - action: "ENABLE_ENERGY_SAVER"
+              title: "Enable Energy Saver Mode"
+
+- id: "energy_standby_devices_off"
+  alias: "Energy: Turn Off Standby Devices"
+  description: "Turn off devices in standby when leaving"
+  trigger:
+    - platform: state
+      entity_id: zone.home
+      to: "0"
+      for:
+        minutes: 15
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.tv_power
+          - switch.game_console_power
+          - switch.coffee_maker
+          - switch.desktop_computer
+
+################################################################################
+# ENTERTAINMENT AUTOMATIONS - Movie/Gaming modes, media control
+################################################################################
+
+- id: "entertainment_movie_mode_activate"
+  alias: "Entertainment: Movie Mode On"
+  description: "Activate movie mode when streaming starts"
+  trigger:
+    - platform: state
+      entity_id:
+        - media_player.living_room_tv
+        - media_player.jellyfin
+      to: "playing"
+  condition:
+    - condition: sun
+      after: sunset
+    - condition: state
+      entity_id: input_boolean.movie_mode
+      state: "off"
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.movie_mode
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.movie_mode
+
+- id: "entertainment_movie_mode_deactivate"
+  alias: "Entertainment: Movie Mode Off"
+  description: "Deactivate movie mode when streaming stops"
+  trigger:
+    - platform: state
+      entity_id:
+        - media_player.living_room_tv
+        - media_player.jellyfin
+      from: "playing"
+      to: "idle"
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: input_boolean.movie_mode
+      state: "on"
+  action:
+    - service: light.turn_on
+      target:
+        area_id: living_room
+      data:
+        brightness_pct: 50
+        transition: 5
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.movie_mode
+
+- id: "entertainment_gaming_mode"
+  alias: "Entertainment: Gaming Mode"
+  description: "Activate gaming mode when Xbox is on"
+  trigger:
+    - platform: state
+      entity_id: media_player.xbox_one
+      to: "playing"
+  condition:
+    - condition: state
+      entity_id: input_boolean.gaming_mode
+      state: "off"
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.gaming_mode
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.gaming_mode
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.gaming_room_led
+          - light.bias_lighting
+      data:
+        brightness_pct: 80
+        rgb_color: [0, 255, 0]
+
+- id: "entertainment_jellyfin_pause_notification"
+  alias: "Entertainment: Jellyfin Pause Notification"
+  description: "Notify when Jellyfin is paused for extended time"
+  trigger:
+    - platform: state
+      entity_id: media_player.jellyfin
+      to: "paused"
+      for:
+        minutes: 30
+  action:
+    - service: notify.mobile_app
+      data:
+        title: "📺 Jellyfin Paused"
+        message: "Jellyfin has been paused for 30 minutes"
+        data:
+          actions:
+            - action: "RESUME_JELLYFIN"
+              title: "Resume"
+            - action: "STOP_JELLYFIN"
+              title: "Stop"
+
+- id: "entertainment_alexa_music_timer"
+  alias: "Entertainment: Music Auto-Off Timer"
+  description: "Turn off music after specified time"
+  trigger:
+    - platform: state
+      entity_id:
+        - media_player.alexa_living_room
+        - media_player.alexa_bedroom
+      to: "playing"
+      for:
+        hours: 2
+  condition:
+    - condition: time
+      after: "22:00:00"
+      before: "06:00:00"
+  action:
+    - service: media_player.media_stop
+      target:
+        entity_id: "{{ trigger.entity_id }}"
+
+################################################################################
+# WEARABLES & AI AUTOMATIONS - Omi device integration and AI analysis
+################################################################################
+
+- id: "wearables_process_omi_memory"
+  alias: "Wearables: Process Omi Memory Events"
+  description: "Process newly created Omi memories through AI analysis"
+  trigger:
+    - platform: "mqtt"
+      topic: "ha/omi/events/memory_created"
+  condition:
+    - condition: "state"
+      entity_id: "binary_sensor.omi_connected"
+      state: "on"
+  action:
+    - service: "python_script.process_omi_memory"
+      data:
+        source: "mqtt"
+        action: "analyze"
+    - service: "influxdb.write_points"
+      data:
+        measurement: "omi_memory_received"
+        tags:
+          source: "mqtt_trigger"
+        fields:
+          count: 1
+    - service: "notify.mobile_app"
+      data:
+        message: "New Omi memory received and queued for processing"
+
+- id: "wearables_extract_action_items"
+  alias: "Wearables: Extract Action Items from Omi Conversations"
+  description: "Extract action items when conversation ends"
+  trigger:
+    - platform: "mqtt"
+      topic: "ha/omi/events/conversation_ended"
+  condition:
+    - condition: "numeric_state"
+      entity_id: "sensor.omi_last_conversation_duration"
+      above: 30
+  action:
+    - service: "webhook.send"
+      data:
+        method: "POST"
+        url: "http://agentstack:8001/api/analyze"
+        data:
+          event_type: "conversation_ended"
+          action: "extract_items"
+    - delay:
+        seconds: 5
+    - service: "todo.add_item"
+      target:
+        entity_id: "todo.home_assistant_tasks"
+      data:
+        item: "{{ state_attr('sensor.omi_extracted_tasks', 'items')[0] }}"
+        description: "From Omi conversation analysis"
+
+- id: "wearables_monitor_health_metrics"
+  alias: "Wearables: Monitor Omi Health Metrics"
+  description: "Track health metrics from wearable conversations"
+  trigger:
+    - platform: "mqtt"
+      topic: "ha/omi/events/transcript_received"
+  action:
+    - service: "python_script.analyze_health_metrics"
+      data_template:
+        transcript: "{{ trigger.payload_json.transcript }}"
+        timestamp: "{{ now() }}"
+    - service: "influxdb.write_points"
+      data_template:
+        measurement: "omi_health_metrics"
+        tags:
+          metric_type: "{{ state_attr('sensor.omi_health_metrics', 'type') }}"
+        fields:
+          value: "{{ state_attr('sensor.omi_health_metrics', 'value') }}"
+          confidence: "{{ state_attr('sensor.omi_health_metrics', 'confidence') }}"
+    - condition: "template"
+      value_template: "{{ state_attr('sensor.omi_health_metrics', 'severity') == 'high' }}"
+    - service: "notify.mobile_app_phone"
+      data_template:
+        title: "Health Alert from Omi"
+        message: "{{ state_attr('sensor.omi_health_metrics', 'alert_message') }}"
+
+- id: "wearables_create_tasks_from_ai"
+  alias: "Wearables: Create Home Assistant Tasks from Omi"
+  description: "Automatically create tasks detected by AI analysis"
+  trigger:
+    - platform: "mqtt"
+      topic: "ha/agentstack/tasks"
+  condition:
+    - condition: "template"
+      value_template: "{{ trigger.payload_json.tasks | length > 0 }}"
+  action:
+    - repeat:
+        for_each: "{{ trigger.payload_json.tasks }}"
+        sequence:
+          - service: "todo.add_item"
+            target:
+              entity_id: "todo.home_assistant_tasks"
+            data_template:
+              item: "{{ repeat.item.title }}"
+              description: "{{ repeat.item.description }}"
+              due_date: "{{ repeat.item.due_date }}"
+          - service: "influxdb.write_points"
+            data:
+              measurement: "omi_task_created"
+              tags:
+                priority: "{{ repeat.item.priority }}"
+              fields:
+                count: 1
+
+- id: "wearables_monitor_omi_connection"
+  alias: "Wearables: Monitor Omi MCP Connection"
+  description: "Track Omi MCP server connection status"
+  trigger:
+    - platform: "state"
+      entity_id: "binary_sensor.omi_connected"
+  action:
+    - service: "influxdb.write_points"
+      data_template:
+        measurement: "omi_connection_status"
+        tags:
+          connection_type: "mcp_sse"
+        fields:
+          connected: "{{ 1 if states('binary_sensor.omi_connected') == 'on' else 0 }}"
+
+################################################################################
+# INFRASTRUCTURE AUTOMATIONS - Proxmox monitoring and alerting
+################################################################################
+
+- id: "infrastructure_proxmox_cpu_alert"
+  alias: "Infrastructure: Proxmox CPU Usage Alert"
+  description: "Alert when Proxmox CPU usage exceeds threshold"
+  trigger:
+    - platform: "numeric_state"
+      entity_id: "sensor.proxmox_cpu_usage"
+      above: 90
+      for:
+        minutes: 5
+  action:
+    - service: "notify.mobile_app"
+      data:
+        title: "⚠️ Proxmox CPU Alert"
+        message: "CPU usage is {{ states('sensor.proxmox_cpu_usage') }}%"
+    - service: "influxdb.write_points"
+      data:
+        measurement: "proxmox_alerts"
+        tags:
+          alert_type: "cpu_high"
+          severity: "warning"
+        fields:
+          value: "{{ states('sensor.proxmox_cpu_usage') | float }}"
+
+- id: "infrastructure_proxmox_memory_alert"
+  alias: "Infrastructure: Proxmox Memory Usage Alert"
+  description: "Alert when Proxmox memory usage exceeds threshold"
+  trigger:
+    - platform: "numeric_state"
+      entity_id: "sensor.proxmox_memory_usage"
+      above: 85
+      for:
+        minutes: 5
+  action:
+    - service: "notify.mobile_app"
+      data:
+        title: "⚠️ Proxmox Memory Alert"
+        message: "Memory usage is {{ states('sensor.proxmox_memory_usage') }}%"
+    - service: "influxdb.write_points"
+      data:
+        measurement: "proxmox_alerts"
+        tags:
+          alert_type: "memory_high"
+          severity: "warning"
+        fields:
+          value: "{{ states('sensor.proxmox_memory_usage') | float }}"
+################################################################################
+# END OF UNIFIED AUTOMATIONS
+################################################################################

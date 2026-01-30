@@ -1,0 +1,515 @@
+# ================================================
+# TASKER PROFILES CONFIGURATION
+# ================================================
+# Complete Tasker integration for Home Assistant
+# Android automation profiles and tasks
+# ================================================
+# Required Tasker Plugins:
+# - AutoLocation
+# - AutoNotification  
+# - AutoInput
+# - AutoTools
+# ================================================
+
+# ================================================
+# WEBHOOK ENDPOINTS
+# ================================================
+webhooks:
+  base_url: "http://192.168.1.201:8123/api/webhook"
+  
+  endpoints:
+    - id: "tasker_home_wifi"
+      url: "http://192.168.1.201:8123/api/webhook/tasker_home_wifi"
+      description: "Home WiFi connected/disconnected"
+    
+    - id: "tasker_entering_home"
+      url: "http://192.168.1.201:8123/api/webhook/tasker_entering_home"
+      description: "Entering home zone (GPS/Cell)"
+    
+    - id: "tasker_leaving_home"
+      url: "http://192.168.1.201:8123/api/webhook/tasker_leaving_home"
+      description: "Leaving home zone"
+    
+    - id: "tasker_driving"
+      url: "http://192.168.1.201:8123/api/webhook/tasker_driving"
+      description: "Driving mode detected"
+    
+    - id: "nfc_scanned"
+      url: "http://192.168.1.201:8123/api/webhook/nfc_scanned"
+      description: "NFC tag scanned"
+    
+    - id: "tasker_activity"
+      url: "http://192.168.1.201:8123/api/webhook/tasker_activity"
+      description: "Activity recognition (walking, running, etc)"
+    
+    - id: "tasker_voice_command"
+      url: "http://192.168.1.201:8123/api/webhook/tasker_voice_command"
+      description: "Voice command processed"
+
+# ================================================
+# TASKER PROFILES
+# ================================================
+
+profiles:
+  # ------------------------------------------------
+  # PROFILE 1: Home WiFi Connected
+  # ------------------------------------------------
+  - name: "Home WiFi Actions"
+    id: "profile_home_wifi"
+    description: "Detect home WiFi connection"
+    
+    context:
+      type: "State"
+      trigger: "WiFi Connected"
+      ssid: "YourHomeSSID"  # Replace with your home WiFi name
+    
+    entry_task:
+      name: "WiFi Connected - Home"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_home_wifi"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "action": "wifi_connected",
+                "ssid": "%WIFII",
+                "timestamp": "%DATE %TIME",
+                "battery_level": "%BATT"
+              }
+        
+        - action: "Set Variable"
+          config:
+            name: "%HOME_WIFI"
+            to: "true"
+        
+        - action: "Flash"
+          config:
+            text: "Connected to home WiFi"
+    
+    exit_task:
+      name: "WiFi Disconnected - Home"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_home_wifi"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "action": "wifi_disconnected",
+                "ssid": "%WIFII",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Set Variable"
+          config:
+            name: "%HOME_WIFI"
+            to: "false"
+  
+  # ------------------------------------------------
+  # PROFILE 2: Location - Home Zone
+  # ------------------------------------------------
+  - name: "Home Location Trigger"
+    id: "profile_home_location"
+    description: "GPS/Cell-based home detection"
+    
+    context:
+      type: "State"
+      trigger: "Location"
+      method: "Cell Near"  # Or "GPS" for more accuracy
+      latitude: "YOUR_HOME_LAT"  # Replace with actual coordinates
+      longitude: "YOUR_HOME_LON"
+      radius: "100"  # meters
+    
+    entry_task:
+      name: "Entering Home Zone"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_entering_home"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "event": "entering_home",
+                "location": {
+                  "latitude": "%LOC",
+                  "longitude": "%LON",
+                  "accuracy": "%LOCACC"
+                },
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Set Variable"
+          config:
+            name: "%AT_HOME"
+            to: "true"
+        
+        - action: "Flash"
+          config:
+            text: "Welcome Home!"
+        
+        - action: "Vibrate Pattern"
+          config:
+            pattern: "0,100,100,100"
+        
+        - action: "Launch App"
+          config:
+            app: "Home Assistant"
+    
+    exit_task:
+      name: "Leaving Home Zone"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_leaving_home"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "event": "leaving_home",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Set Variable"
+          config:
+            name: "%AT_HOME"
+            to: "false"
+        
+        - action: "If"
+          condition: "%AUTOLOCK ~ true"
+          actions:
+            - action: "HTTP Post"
+              config:
+                url: "http://192.168.1.201:8123/api/services/lock/lock"
+                body: |
+                  {
+                    "entity_id": "lock.front_door"
+                  }
+        
+        - action: "Notify"
+          config:
+            title: "Leaving Home"
+            text: "Don't forget to lock the doors!"
+  
+  # ------------------------------------------------
+  # PROFILE 3: Driving Mode Detection
+  # ------------------------------------------------
+  - name: "Driving Mode"
+    id: "profile_driving"
+    description: "Detect when driving"
+    
+    context:
+      type: "State"
+      trigger: "Variable Value"
+      variable: "%ACTIVITY"
+      matches: "in_vehicle"
+    
+    entry_task:
+      name: "Enable Driving Mode"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_driving"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "activity": "driving",
+                "status": "started",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Set Variable"
+          config:
+            name: "%DRIVING_MODE"
+            to: "true"
+        
+        - action: "Set Media Volume"
+          config:
+            level: "8"
+        
+        - action: "Auto-Rotate"
+          config:
+            state: "Off"
+        
+        - action: "Display Brightness"
+          config:
+            level: "255"
+    
+    exit_task:
+      name: "Disable Driving Mode"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_driving"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "activity": "driving",
+                "status": "stopped",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Set Variable"
+          config:
+            name: "%DRIVING_MODE"
+            to: "false"
+  
+  # ------------------------------------------------
+  # PROFILE 4: NFC Tag Scanning
+  # ------------------------------------------------
+  - name: "NFC Tag Actions"
+    id: "profile_nfc"
+    description: "Trigger actions from NFC tags"
+    
+    context:
+      type: "Event"
+      trigger: "NFC Tag"
+      tag_id: "*"  # Any NFC tag
+    
+    entry_task:
+      name: "Process NFC Tag"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/nfc_scanned"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "tag_id": "%nfc_id",
+                "tag_content": "%nfc_contents",
+                "location": {
+                  "latitude": "%LOC",
+                  "longitude": "%LON"
+                },
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Flash"
+          config:
+            text: "NFC Tag: %nfc_id"
+        
+        - action: "Vibrate"
+          config:
+            duration: "100"
+  
+  # ------------------------------------------------
+  # PROFILE 5: Battery Level Monitoring
+  # ------------------------------------------------
+  - name: "Battery Level Actions"
+    id: "profile_battery"
+    description: "Monitor and respond to battery levels"
+    
+    context:
+      type: "State"
+      trigger: "Battery Level"
+      from: "0"
+      to: "20"
+    
+    entry_task:
+      name: "Battery Low Actions"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_battery"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "event": "battery_low",
+                "level": "%BATT",
+                "is_charging": "%ISCHARGING",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Display Brightness"
+          config:
+            level: "50"
+        
+        - action: "Mobile Data"
+          config:
+            state: "Off"
+  
+  # ------------------------------------------------
+  # PROFILE 6: Night Mode
+  # ------------------------------------------------
+  - name: "Night Mode"
+    id: "profile_night"
+    description: "Automatic night mode based on time"
+    
+    context:
+      type: "Time"
+      from: "22:00"
+      to: "06:00"
+    
+    entry_task:
+      name: "Enable Night Mode"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_night_mode"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "mode": "night",
+                "status": "enabled",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Display Brightness"
+          config:
+            level: "30"
+        
+        - action: "Do Not Disturb"
+          config:
+            mode: "Priority"
+        
+        - action: "Night Mode"
+          config:
+            state: "On"
+    
+    exit_task:
+      name: "Disable Night Mode"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_night_mode"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "mode": "night",
+                "status": "disabled",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Display Brightness"
+          config:
+            level: "Auto"
+        
+        - action: "Do Not Disturb"
+          config:
+            mode: "Off"
+  
+  # ------------------------------------------------
+  # PROFILE 7: Voice Command Processing
+  # ------------------------------------------------
+  - name: "Voice Commands"
+    id: "profile_voice"
+    description: "Process custom voice commands"
+    
+    context:
+      type: "Event"
+      trigger: "AutoVoice Recognized"
+      command: "*"
+    
+    entry_task:
+      name: "Process Voice Command"
+      actions:
+        - action: "HTTP Post"
+          config:
+            url: "http://192.168.1.201:8123/api/webhook/tasker_voice_command"
+            content_type: "application/json"
+            body: |
+              {
+                "device": "%DEVICENAME",
+                "command": "%avcommnofilter",
+                "confidence": "%avconfidence",
+                "timestamp": "%DATE %TIME"
+              }
+        
+        - action: "Say"
+          config:
+            text: "Processing command: %avcommnofilter"
+
+# ================================================
+# TASKER VARIABLES
+# ================================================
+variables:
+  - name: "%HOME_WIFI"
+    description: "Boolean - Connected to home WiFi"
+    default: "false"
+  
+  - name: "%AT_HOME"
+    description: "Boolean - Currently at home"
+    default: "false"
+  
+  - name: "%DRIVING_MODE"
+    description: "Boolean - Driving mode active"
+    default: "false"
+  
+  - name: "%ACTIVITY"
+    description: "Current activity (walking, driving, etc)"
+    default: "unknown"
+  
+  - name: "%AUTOLOCK"
+    description: "Boolean - Auto-lock doors when leaving"
+    default: "true"
+
+# ================================================
+# SETUP INSTRUCTIONS
+# ================================================
+setup_instructions: |
+  1. Install Tasker from Play Store ($3.49)
+  
+  2. Install Required Plugins:
+     - AutoLocation
+     - AutoNotification
+     - AutoInput
+     - AutoTools
+     - AutoVoice (optional, for voice commands)
+  
+  3. Grant Permissions:
+     - Accessibility (for AutoInput)
+     - Location (always-on for GPS tracking)
+     - Notification access
+     - Device admin (optional)
+  
+  4. Import Profiles:
+     - Open Tasker
+     - Long press on Profiles tab
+     - Import → Select XML file
+  
+  5. Configure Variables:
+     - Replace "YOUR_HOME_LAT/LON" with your coordinates
+     - Replace "YourHomeSSID" with your WiFi name
+     - Set %AUTOLOCK to true/false based on preference
+  
+  6. Test Webhooks:
+     - Use each profile's test action
+     - Verify Home Assistant receives webhooks
+     - Check Developer Tools → Events
+
+# ================================================
+# EXPORT/IMPORT
+# ================================================
+export:
+  format: "Tasker XML"
+  filename: "HomeAssistant_Profiles.xml"
+  includes:
+    - all_profiles
+    - all_tasks
+    - variables
+    - scenes
+
+# ================================================
+# STATISTICS
+# ================================================
+# Total Profiles: 7
+# - Home WiFi detection
+# - Location-based (GPS/Cell)
+# - Driving mode
+# - NFC tag actions
+# - Battery monitoring
+# - Night mode
+# - Voice commands
+#
+# Total Webhooks: 7
+# Total Variables: 5
+# ================================================
