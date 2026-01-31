@@ -1,0 +1,130 @@
+# IFTTT Configuration - Secure Setup Instructions
+# ⚠️ SENSITIVE - DO NOT COMMIT TO GIT
+
+## Your IFTTT Webhook Configuration
+
+**Service Name**: bryansrevision_ulefone
+**Status**: Active
+**Webhook Key**: bP_UORzOKD-9wjLYvfWanHbCuwIgaDXSxv2NfAtLM5Y
+
+---
+
+## Step 1: Add to Local Secrets (NOT in Git)
+
+Add this line to your LOCAL `config/secrets.yaml` file:
+
+```yaml
+ifttt_webhook_key: "bP_UORzOKD-9wjLYvfWanHbCuwIgaDXSxv2NfAtLM5Y"
+```
+
+**IMPORTANT**: This file should be in `.gitignore` and never committed!
+
+---
+
+## Step 2: Verify Configuration
+
+Restart Home Assistant after adding the key:
+```
+Configuration > Server Controls > Restart Home Assistant
+```
+
+---
+
+## Step 3: Test Your Webhook
+
+### Option 1: Using curl (simplest)
+```bash
+curl -X POST "https://maker.ifttt.com/trigger/test/with/key/bP_UORzOKD-9wjLYvfWanHbCuwIgaDXSxv2NfAtLM5Y" \
+  -H "Content-Type: application/json" \
+  -d '{"value1":"Hello","value2":"from","value3":"Home Assistant"}'
+```
+
+Expected response: `Congratulations! You've fired the test event`
+
+### Option 2: Using Home Assistant Developer Tools
+
+1. Go to **Developer Tools > Services**
+2. Select service: `ifttt.trigger`
+3. Fill in:
+   ```yaml
+   event: test
+   value1: Hello
+   value2: from
+   value3: Home Assistant
+   ```
+4. Click **Call Service**
+
+### Option 3: Check IFTTT Activity
+
+1. Visit: https://ifttt.com/activity
+2. You should see your test event received
+
+---
+
+## Available Test Commands
+
+### Send Motion Alert
+```yaml
+service: ifttt.trigger
+data:
+  event: motion_detected
+  value1: "Motion at front door"
+  value2: "{{ now().strftime('%I:%M %p') }}"
+  value3: "High confidence"
+```
+
+### Send Battery Alert
+```yaml
+service: ifttt.trigger
+data:
+  event: battery_low
+  value1: "Device Battery Low"
+  value2: "15%"
+  value3: "Charge immediately"
+```
+
+### Send Emergency Alert
+```yaml
+service: script.ifttt_emergency_notify
+data:
+  message: "This is a test emergency notification"
+```
+
+---
+
+## Webhook URL Format
+
+Use this format for external services sending webhooks to Home Assistant:
+
+```
+https://YOUR_HA_URL/api/webhook/ifttt_ENDPOINT_NAME
+```
+
+Example:
+```
+https://192.168.1.201:8123/api/webhook/ifttt_mobile_button
+```
+
+Available endpoints:
+- `ifttt_mobile_button` - Mobile widget buttons
+- `ifttt_notification_action` - Notification actions
+- `ifttt_voice` - Voice commands
+- `ifttt_location` - Location triggers
+- `ifttt_scene` - Scene activation
+- `ifttt_tasker` - Tasker integration
+
+---
+
+## Configuration Status
+
+✅ Integration file: `integrations/ifttt-webhooks.yaml`
+✅ Main config includes: `core/configuration.yaml`
+✅ Documentation: `docs/IFTTT-SETUP-GUIDE.md`
+✅ Secrets template: `config/secrets.yaml.template`
+
+**Next**: Add your key to `config/secrets.yaml` and test!
+
+---
+
+**Date Created**: January 31, 2026
+**IFTTT Service**: bryansrevision_ulefone

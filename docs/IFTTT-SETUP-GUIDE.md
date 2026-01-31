@@ -6,13 +6,14 @@
 
 IFTTT (If This Then That) integration allows Home Assistant to:
 - **Send events TO IFTTT** (trigger IFTTT applets from HA)
-- **Receive webhooks FROM IFTTT** (trigger HA automations from mobile apps/services)
+- **Receive webhooks FROM IFTTT** (trigger HA automations from mobile
+  apps/services)
 - Create powerful mobile automations
 - Integrate with 600+ services (Google, Alexa, iOS shortcuts, Android, etc.)
 
 **Integration File**: `integrations/ifttt-webhooks.yaml`
 
----
+
 
 ## 🔧 Setup Instructions
 
@@ -47,7 +48,7 @@ https://maker.ifttt.com/trigger/test/with/key/YOUR_KEY
 
 You should see: "Congratulations! You've fired the test event"
 
----
+
 
 ## 📱 Creating IFTTT Applets
 
@@ -102,7 +103,7 @@ You should see: "Congratulations! You've fired the test event"
    ```
    https://YOUR_HA_URL/api/webhook/ifttt_mobile_button
    ```
-   
+     
    Available webhook IDs (already configured):
    - `ifttt_mobile_button` - Mobile button presses
    - `ifttt_notification_action` - Notification actions
@@ -111,7 +112,7 @@ You should see: "Congratulations! You've fired the test event"
    - `ifttt_voice` - Voice commands
    - `ifttt_location` - Location triggers
 
----
+
 
 ## 🎯 Pre-Configured Automations
 
@@ -135,7 +136,7 @@ You should see: "Congratulations! You've fired the test event"
 | `ifttt_scene` | Scene activation | Activate movie mode |
 | `ifttt_tasker` | Android automation | Tasker profile triggers |
 
----
+
 
 ## 🛠️ Usage Examples
 
@@ -186,7 +187,7 @@ Create IFTTT applet:
   }
   ```
 
----
+
 
 ## 📊 Available Services
 
@@ -251,7 +252,7 @@ data:
   message: "Emergency situation"
 ```
 
----
+
 
 ## 🔐 Security Best Practices
 
@@ -259,7 +260,8 @@ data:
 2. **Secret Webhook IDs**: Use unique, hard-to-guess webhook IDs
 3. **Firewall**: Consider IP whitelisting for IFTTT webhooks
 4. **Rate Limiting**: Enable rate limiting in HA configuration
-5. **Authentication**: IFTTT webhooks require your HA URL but use webhook IDs for security
+5. **Authentication**: IFTTT webhooks require your HA URL but use webhook IDs
+   for security
 
 ### IFTTT IP Addresses
 
@@ -273,7 +275,7 @@ IFTTT webhooks come from these IP ranges:
 54.210.139.167
 ```
 
----
+
 
 ## 🧪 Testing
 
@@ -315,7 +317,7 @@ IFTTT webhooks come from these IP ranges:
    # Should show: "mobile_button_lights_on"
    ```
 
----
+
 
 ## 📱 Popular IFTTT Applet Ideas
 
@@ -361,7 +363,7 @@ THEN: Webhooks → POST to your HA notification webhook
 Body: {"title": "{{EntryTitle}}", "message": "{{EntryContent}}"}
 ```
 
----
+
 
 ## 🔧 Configuration Options
 
@@ -394,7 +396,7 @@ sensor.ifttt_last_event_time      # Timestamp of last event
 input_text.ifttt_last_event       # Name of last triggered event
 ```
 
----
+
 
 ## ❌ Troubleshooting
 
@@ -457,17 +459,18 @@ automation:
 - Upgrade to IFTTT Pro ($5/month) for instant triggers
 - Or use direct webhooks without IFTTT as middleman
 
----
+
 
 ## 📚 Additional Resources
 
 - **IFTTT Platform**: https://ifttt.com
 - **IFTTT Webhooks**: https://ifttt.com/maker_webhooks
 - **IFTTT Documentation**: https://help.ifttt.com
-- **Home Assistant IFTTT Docs**: https://www.home-assistant.io/integrations/ifttt/
+- **Home Assistant IFTTT Docs**:
+  https://www.home-assistant.io/integrations/ifttt/
 - **Webhook Integration**: https://www.home-assistant.io/integrations/webhook/
 
----
+
 
 ## ✅ Quick Start Checklist
 
@@ -485,7 +488,7 @@ automation:
 - [ ] Test voice commands
 - [ ] Configure location triggers
 
----
+
 
 **Last Updated**: January 31, 2026  
 **Integration Version**: 2.0  
