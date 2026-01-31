@@ -277,6 +277,10 @@ icloud: !include ../integrations/apple-homekit-integration.yaml
 input_boolean: !include_dir_merge_named ../integrations/tasker-profiles.yaml
 rest_command: !include ../integrations/join-integration.yaml
 
+# IFTTT Webhooks Integration
+ifttt: !include ../integrations/ifttt-webhooks.yaml
+automation ifttt: !include ../integrations/ifttt-webhooks.yaml
+
 # Logger configuration
 logger:
   default: info
@@ -292,3 +296,5 @@ logger:
     homeassistant.components.smartthings: info
     homeassistant.components.homekit: info
     homeassistant.components.icloud: info
+    homeassistant.components.ifttt: info
+    homeassistant.components.webhook: info

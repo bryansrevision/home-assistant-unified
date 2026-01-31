@@ -2,22 +2,46 @@
 # IFTTT Webhooks Integration Configuration
 # Webhooks for mobile triggers via IFTTT applets
 # Home Assistant integration with Android/iOS apps
-# Updated: January 30, 2026
+# Updated: January 31, 2026
 
 ################################################################################
-# IFTTT REST Integration - Webhook Receivers
+# IFTTT WEBHOOK SERVICE (Outgoing)
 ################################################################################
 
-rest:
-  - resource: !secret ifttt_webhook_url
-    method: GET
-    scan_interval: 300
+# IFTTT Notification Service - Send events TO IFTTT
+ifttt:
+  key: !secret ifttt_webhook_key
+
+################################################################################
+# REST COMMANDS - Send data TO IFTTT
+################################################################################
+
+rest_command:
+  # Send custom event to IFTTT
+  ifttt_trigger_event:
+    url: "https://maker.ifttt.com/trigger/{{ event }}/with/key/!secret ifttt_webhook_key"
+    method: POST
     headers:
-      Authorization: !secret ifttt_auth_header
-    json_attributes:
-      - event_type
-      - trigger_status
-    value_template: "{{ value_json.status }}"
+      Content-Type: application/json
+    payload: >
+      {
+        "value1": "{{ value1 }}",
+        "value2": "{{ value2 }}",
+        "value3": "{{ value3 }}"
+      }
+  
+  # Notify via IFTTT (for iOS/Android)
+  ifttt_notify:
+    url: "https://maker.ifttt.com/trigger/notify/with/key/!secret ifttt_webhook_key"
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: >
+      {
+        "value1": "{{ title }}",
+        "value2": "{{ message }}",
+        "value3": "{{ priority | default('normal') }}"
+      }
 
 ################################################################################
 # Webhook Automations from IFTTT
