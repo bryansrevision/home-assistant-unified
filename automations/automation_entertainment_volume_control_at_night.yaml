@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Entertainment: Volume Control at Night'
+  id: entertainment_volume_control_night
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01YA90RQMR6E7J1VPCKS
+  parent_id: null
+  user_id: null
+entity_id: automation.entertainment_volume_control_at_night
+last_changed: '2026-01-29T00:38:34.186731+00:00'
+last_reported: '2026-01-29T00:38:34.186731+00:00'
+last_updated: '2026-01-29T00:38:34.186731+00:00'
+state: 'on'

@@ -1,0 +1,38 @@
+{
+  "server": {
+    "host": "192.168.1.201",
+    "port": 8123,
+    "connected": true
+  },
+  "integration": {
+    "ha_version": "2025.12.5",
+    "entities_count": 328,
+    "domains": [
+      "ai_task",
+      "automation",
+      "binary_sensor",
+      "calendar",
+      "conversation",
+      "device_tracker",
+      "event",
+      "image",
+      "media_player",
+      "notify",
+      "person",
+      "remote",
+      "script",
+      "sensor",
+      "stt",
+      "sun",
+      "switch",
+      "todo",
+      "tts",
+      "weather",
+      "zone"
+    ],
+    "baseline_export": "c:\\Users\\Dylan\\Dev\\.WorkSpace\\HomeAssistant\\home-assistant-unified\\backups\\state-exports\\baseline.json",
+    "initialized": true,
+    "timestamp": "2026-01-31T08:56:17.479205"
+  },
+  "timestamp": "2026-01-31T08:56:17.479219"
+}

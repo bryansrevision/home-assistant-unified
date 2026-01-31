@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Departure: Leaving Work'
+  id: presence_leaving_work
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01Y9CNM17MHAPCP9DQ97
+  parent_id: null
+  user_id: null
+entity_id: automation.departure_leaving_work
+last_changed: '2026-01-29T00:38:34.185051+00:00'
+last_reported: '2026-01-29T00:38:34.185051+00:00'
+last_updated: '2026-01-29T00:38:34.185051+00:00'
+state: 'on'

@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Entertainment: Movie Mode Off'
+  id: entertainment_movie_mode_deactivate
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01Y9TKW1ZDNWGRVE121Y
+  parent_id: null
+  user_id: null
+entity_id: automation.entertainment_movie_mode_off
+last_changed: '2026-01-29T00:38:34.185608+00:00'
+last_reported: '2026-01-29T00:38:34.185608+00:00'
+last_updated: '2026-01-29T00:38:34.185608+00:00'
+state: 'on'

@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Entertainment: Jellyfin Pause Notification'
+  id: entertainment_jellyfin_pause_notification
+  last_triggered: '2026-01-30T20:18:32.271125+00:00'
+  mode: single
+context:
+  id: 01KG88XBPER22K87R0HH7KA6GA
+  parent_id: 01KG876DWD6R0QKQHMD0HPVGEG
+  user_id: null
+entity_id: automation.entertainment_jellyfin_pause_notification
+last_changed: '2026-01-29T00:38:34.186369+00:00'
+last_reported: '2026-01-30T20:18:32.271835+00:00'
+last_updated: '2026-01-30T20:18:32.271835+00:00'
+state: 'on'

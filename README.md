@@ -1,6 +1,7 @@
 # 🏠 Home Assistant Unified
 
-**A comprehensive, production-ready Home Assistant configuration integrating AI automation, Android devices, Proxmox infrastructure, and wearable technology.**
+**A comprehensive, production-ready Home Assistant configuration integrating AI
+automation, Android devices, Proxmox infrastructure, and wearable technology.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.1-blue.svg)](https://www.home-assistant.io/)
@@ -8,9 +9,11 @@
 
 ## 🌟 Overview
 
-This repository consolidates multiple Home Assistant integrations into a unified, well-organized system:
+This repository consolidates multiple Home Assistant integrations into a
+unified, well-organized system:
 
-- **🤖 AI-Powered Automation**: Natural language control with OpenAI, Gemini, and Grok
+- **🤖 AI-Powered Automation**: Natural language control with OpenAI, Gemini,
+  and Grok
 - **📱 Android Integration**: Native app with full device control
 - **🖥️ Proxmox Management**: VM/LXC control and monitoring
 - **⌚ Wearables Integration**: Omi Device Kit 2 with MCP protocol
@@ -30,9 +33,18 @@ This repository consolidates multiple Home Assistant integrations into a unified
 
 ## 🚀 Quick Start
 
-> **⚡ New to this repo?** Check out our [**5-Minute Quick Start Guide**](./QUICKSTART.md) for the fastest setup!
+> **⚡ New to this repo?** Check out our
+> [**5-Minute Quick Start Guide**](./QUICKSTART.md) for the fastest setup!
 
-For repository synchronization with source repos, see [**Sync Guide**](./SYNC_GUIDE.md).
+> **🔗 NEW:** MCP integration with live server! See
+> [**MCP Live Server Integration**](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md)
+> for real-time sync.
+
+For repository synchronization with source repos, see
+[**Sync Guide**](./SYNC_GUIDE.md).
+
+For server alignment and deployment, see
+[**Server Update Guide**](./SERVER-UPDATE.md).
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -149,7 +161,8 @@ pytest tests/test_android_integration.py
 
 ## 🤝 Contributing
 
-Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for
+guidelines.
 
 ## 📝 License
 
@@ -166,7 +179,8 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 
 - 📧 Email: support@example.com
 - 💬 Discord: [Join Server](https://discord.gg/example)
-- 🐛 Issues: [GitHub Issues](https://github.com/bryansrevision/home-assistant-unified/issues)
+- 🐛 Issues:
+  [GitHub Issues](https://github.com/bryansrevision/home-assistant-unified/issues)
 
 ## 🗺️ Roadmap
 
@@ -176,6 +190,6 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 - [ ] Multi-location support
 - [ ] Mobile app iOS version
 
----
+
 
 **Built with ❤️ for the smart home community**

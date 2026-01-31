@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Energy: EV/Device Charging During Off-Peak'
+  id: energy_charging_optimization
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01YC3MH0C6NJRXKBTVFA
+  parent_id: null
+  user_id: null
+entity_id: automation.energy_ev_device_charging_during_off_peak
+last_changed: '2026-01-29T00:38:34.188403+00:00'
+last_reported: '2026-01-29T00:38:34.188403+00:00'
+last_updated: '2026-01-29T00:38:34.188403+00:00'
+state: 'on'

@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Presence: Extended Away Mode'
+  id: presence_extended_away
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01Y878AG0SW7Q467CYHH
+  parent_id: null
+  user_id: null
+entity_id: automation.presence_extended_away_mode
+last_changed: '2026-01-29T00:38:34.184721+00:00'
+last_reported: '2026-01-29T00:38:34.184721+00:00'
+last_updated: '2026-01-29T00:38:34.184721+00:00'
+state: 'on'

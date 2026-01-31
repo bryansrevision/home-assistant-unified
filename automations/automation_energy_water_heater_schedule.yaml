@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Energy: Water Heater Schedule'
+  id: energy_water_heater_schedule
+  last_triggered: '2026-01-31T00:00:00.336620+00:00'
+  mode: single
+context:
+  id: 01KG8NJWAGEDPH31YH1MSNNCEK
+  parent_id: null
+  user_id: null
+entity_id: automation.energy_water_heater_schedule
+last_changed: '2026-01-29T00:38:34.188218+00:00'
+last_reported: '2026-01-31T00:00:00.337954+00:00'
+last_updated: '2026-01-31T00:00:00.337954+00:00'
+state: 'on'

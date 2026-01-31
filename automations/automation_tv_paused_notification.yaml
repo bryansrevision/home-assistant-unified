@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: TV Paused Notification
+  id: 09738ab9-10e5-4090-ba01-c802ab41a5c1
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01Y8Z9DN5TEKDMT9ZRZV
+  parent_id: null
+  user_id: null
+entity_id: automation.tv_paused_notification
+last_changed: '2026-01-29T00:38:34.184178+00:00'
+last_reported: '2026-01-29T00:38:34.184178+00:00'
+last_updated: '2026-01-29T00:38:34.184178+00:00'
+state: 'on'

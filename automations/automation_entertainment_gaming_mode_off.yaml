@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Entertainment: Gaming Mode Off'
+  id: entertainment_gaming_mode_off
+  last_triggered: '2026-01-29T16:01:41.232295+00:00'
+  mode: single
+context:
+  id: 01KG57TAVGKGJ0GPSKQMP7T4Z0
+  parent_id: 01KG57PNNEJV1PXRNX7Q9KKYXP
+  user_id: null
+entity_id: automation.entertainment_gaming_mode_off
+last_changed: '2026-01-29T00:38:34.185796+00:00'
+last_reported: '2026-01-29T16:01:41.233468+00:00'
+last_updated: '2026-01-29T16:01:41.233468+00:00'
+state: 'on'

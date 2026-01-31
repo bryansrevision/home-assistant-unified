@@ -1,0 +1,298 @@
+# Home Assistant Live Server MCP Configuration
+# Real-time bidirectional connection to live Home Assistant server
+# Last Updated: 2026-01-31
+
+mcp_servers:
+  home_assistant_live:
+    name: "Home Assistant Live Server (MCP Bridge)"
+    enabled: true
+    priority: "critical"
+    type: "bidirectional_streaming"
+
+    # Server Connection Details
+    connection:
+      protocol: "http"
+      host: "192.168.1.201"
+      port: 8123
+      base_url: "http://192.168.1.201:8123/api"
+      timeout: 30
+      retry_attempts: 5
+
+      # Authentication
+      auth:
+        type: "bearer_token"
+        token_env: "HOME_ASSISTANT_TOKEN"
+        headers:
+          Authorization: "Bearer ${HOME_ASSISTANT_TOKEN}"
+          Content-Type: "application/json"
+
+    # Entity State Streaming
+    entities:
+      enabled: true
+      sync_interval: 5 # seconds
+      domains:
+        - "automation"
+        - "binary_sensor"
+        - "switch"
+        - "light"
+        - "climate"
+        - "cover"
+        - "lock"
+        - "sensor"
+        - "device_tracker"
+
+      state_tracking:
+        enabled: true
+        log_changes: true
+        cache_size: 1000
+
+    # Event System Integration
+    events:
+      enabled: true
+      types:
+        - "state_changed"
+        - "automation_triggered"
+        - "service_called"
+        - "platform_discovered"
+        - "call_service"
+        - "scene_activated"
+        - "device_registry_updated"
+
+      # Event routing to external systems
+      routing:
+        mqtt:
+          enabled: true
+          topic_prefix: "ha/events"
+          retain: false
+          qos: 1
+
+        influxdb:
+          enabled: true
+          measurement: "ha_events"
+          tags:
+            source: "home_assistant_live"
+            server: "main"
+
+        webhook:
+          enabled: true
+          endpoint: "/webhook/ha-state-change"
+          method: "POST"
+          retry_on_failure: true
+
+        postgresql:
+          enabled: false
+          connection_string: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/homeassistant"
+
+    # Service Call Interface
+    services:
+      enabled: true
+      allowed_domains:
+        - "light"
+        - "switch"
+        - "climate"
+        - "cover"
+        - "media_player"
+        - "scene"
+        - "automation"
+
+      # Service call logging
+      audit_log:
+        enabled: true
+        storage: "influxdb"
+        retention: 90 # days
+
+    # Automations Sync
+    automations:
+      enabled: true
+      sync_direction: "bidirectional"
+
+      # Watch repository for changes
+      watch_paths:
+        - "./automations/**/*.yaml"
+        - "./core/configuration.yaml"
+
+      # Auto-reload on change
+      auto_reload: true
+
+      # Conflict resolution
+      conflict_strategy: "repo_wins" # Options: repo_wins, server_wins, manual
+
+    # Secrets Management
+    secrets:
+      enabled: true
+      file: "core/secrets.yaml"
+      env_override: true
+      rotate_period_days: 90
+
+      required_secrets:
+        - "home_latitude"
+        - "home_longitude"
+        - "home_elevation"
+        - "timezone"
+        - "external_url"
+
+    # Health Monitoring
+    health_check:
+      enabled: true
+      interval_seconds: 60
+      endpoints:
+        - method: "GET"
+          path: "/api/"
+          expected_status: 200
+
+        - method: "GET"
+          path: "/api/states"
+          expected_status: 200
+
+        - method: "GET"
+          path: "/api/config"
+          expected_status: 200
+
+      failure_action: "reconnect"
+      max_failures: 3
+
+    # Reconnection Strategy
+    reconnection:
+      enabled: true
+      strategy: "exponential_backoff"
+      initial_delay_seconds: 2
+      max_delay_seconds: 60
+      max_retries: -1 # Unlimited retries
+      backoff_factor: 2.0
+
+    # Performance Metrics
+    metrics:
+      enabled: true
+      collection_interval: 300 # seconds
+      storage: "influxdb"
+
+      tracked_metrics:
+        - "connection_uptime"
+        - "event_throughput"
+        - "api_response_time"
+        - "state_sync_latency"
+        - "error_count"
+
+    # Sync Configuration
+    sync:
+      enabled: true
+
+      # Repository synchronization
+      repository_sync:
+        enabled: true
+        source_paths:
+          automations: "./automations"
+          core: "./core"
+          mcp_servers: "./mcp-servers"
+          integrations: "./integrations"
+
+        # Conflict detection
+        conflict_detection: true
+        backup_on_sync: true
+        backup_location: "./backups/sync-backups"
+
+      # State export
+      state_export:
+        enabled: true
+        format: "json"
+        interval_hours: 24
+        compression: "gzip"
+        retention_days: 30
+
+        export_location: "./backups/state-exports"
+
+  # Proxmox Integration via Home Assistant
+  proxmox_via_ha:
+    name: "Proxmox Management via HA"
+    enabled: true
+    priority: "high"
+    type: "api_gateway"
+
+    connection:
+      protocol: "http"
+      # Access Proxmox through HA API
+      base_url: "http://192.168.1.201:8123/api/services"
+
+    # Proxmox API calls routed through HA
+    integration:
+      vm_control:
+        enabled: true
+        service_domain: "proxmox"
+
+      monitoring:
+        enabled: true
+        sensors:
+          - "proxmox_cpu_usage"
+          - "proxmox_memory_usage"
+          - "proxmox_storage_usage"
+          - "proxmox_vm_status"
+
+# MCP Connection Pool Configuration
+connection_pool:
+  enabled: true
+  min_connections: 2
+  max_connections: 10
+  connection_timeout: 30
+  idle_timeout: 300
+
+  # Queue management
+  request_queue:
+    enabled: true
+    max_size: 1000
+    priority_levels: 3
+
+# Error Handling & Logging
+error_handling:
+  enabled: true
+  log_level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+  retry_policies:
+    - status_codes: [408, 429, 500, 502, 503, 504]
+      strategy: "exponential_backoff"
+      max_retries: 5
+
+    - status_codes: [401, 403, 404]
+      strategy: "no_retry"
+
+# Security Configuration
+security:
+  enabled: true
+
+  # SSL/TLS
+  ssl:
+    enabled: false
+    verify_certificate: true
+    certificate_path: "/etc/ssl/certs/ca-bundle.crt"
+
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_second: 10
+    burst_size: 20
+
+  # IP whitelist (optional)
+  ip_whitelist:
+    enabled: false
+    ips:
+      - "192.168.1.0/24"
+      - "127.0.0.1"
+
+# Logging Configuration
+logging:
+  enabled: true
+  level: "INFO"
+
+  outputs:
+    - type: "file"
+      path: "./logs/mcp-server.log"
+      rotation:
+        max_size: "100MB"
+        backup_count: 10
+        compression: "gzip"
+
+    - type: "console"
+      format: "json"
+
+    - type: "influxdb"
+      measurement: "mcp_logs"
+      level: "WARNING" # Only log warnings and above to InfluxDB

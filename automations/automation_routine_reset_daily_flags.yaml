@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Routine: Reset Daily Flags'
+  id: routine_reset_daily_flags
+  last_triggered: '2026-01-31T05:00:00.312926+00:00'
+  mode: single
+context:
+  id: 01KG96R6DRTCXTYQNDCYCZW2T1
+  parent_id: null
+  user_id: null
+entity_id: automation.routine_reset_daily_flags
+last_changed: '2026-01-29T00:38:34.185240+00:00'
+last_reported: '2026-01-31T05:00:00.314149+00:00'
+last_updated: '2026-01-31T05:00:00.314149+00:00'
+state: 'on'

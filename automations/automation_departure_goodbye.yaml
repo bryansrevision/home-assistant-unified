@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Departure: Goodbye'
+  id: presence_departure_home
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01Y8ZRE8N0S7ZZH9242G
+  parent_id: null
+  user_id: null
+entity_id: automation.departure_goodbye
+last_changed: '2026-01-29T00:38:34.184539+00:00'
+last_reported: '2026-01-29T00:38:34.184539+00:00'
+last_updated: '2026-01-29T00:38:34.184539+00:00'
+state: 'on'

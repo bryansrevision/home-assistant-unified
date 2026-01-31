@@ -1,0 +1,5993 @@
+{
+  "timestamp": "2026-01-31T08:56:17.454917",
+  "server": {
+    "host": "192.168.1.201",
+    "port": 8123
+  },
+  "stats": {
+    "total_entities": 328
+  },
+  "states": [
+    {
+      "entity_id": "conversation.home_assistant",
+      "state": "2026-01-28T00:39:07.976550+00:00",
+      "attributes": {
+        "friendly_name": "Home Assistant",
+        "supported_features": 1
+      },
+      "last_changed": "2026-01-29T00:37:52.189399+00:00",
+      "last_reported": "2026-01-29T00:37:52.189399+00:00",
+      "last_updated": "2026-01-29T00:37:52.189399+00:00",
+      "context": {
+        "id": "01KG3JYRXX7KEN6BN331X6HWJV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "event.backup_automatic_backup",
+      "state": "2026-01-30T10:35:34.298+00:00",
+      "attributes": {
+        "event_types": [
+          "completed",
+          "failed",
+          "in_progress"
+        ],
+        "event_type": "completed",
+        "backup_stage": null,
+        "failed_reason": null,
+        "friendly_name": "Backup Automatic backup"
+      },
+      "last_changed": "2026-01-30T10:35:34.298352+00:00",
+      "last_reported": "2026-01-30T10:35:34.298352+00:00",
+      "last_updated": "2026-01-30T10:35:34.298352+00:00",
+      "context": {
+        "id": "01KG77HXGTNC9MWCZS3RAXC9Z0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.backup_backup_manager_state",
+      "state": "idle",
+      "attributes": {
+        "options": [
+          "idle",
+          "create_backup",
+          "blocked",
+          "receive_backup",
+          "restore_backup"
+        ],
+        "device_class": "enum",
+        "friendly_name": "Backup Backup Manager state"
+      },
+      "last_changed": "2026-01-30T10:35:34.298728+00:00",
+      "last_reported": "2026-01-30T10:35:34.298728+00:00",
+      "last_updated": "2026-01-30T10:35:34.298728+00:00",
+      "context": {
+        "id": "01KG77HXGT8CAWCBYJ4F2AMKHD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.backup_next_scheduled_automatic_backup",
+      "state": "2026-01-31T09:54:37+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Backup Next scheduled automatic backup"
+      },
+      "last_changed": "2026-01-30T10:35:33.001505+00:00",
+      "last_reported": "2026-01-30T10:35:34.298797+00:00",
+      "last_updated": "2026-01-30T10:35:33.001505+00:00",
+      "context": {
+        "id": "01KG77HW89VHSMHHSAK41NTANG",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.backup_last_successful_automatic_backup",
+      "state": "2026-01-30T10:35:34+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Backup Last successful automatic backup"
+      },
+      "last_changed": "2026-01-30T10:35:34.298559+00:00",
+      "last_reported": "2026-01-30T10:35:34.298846+00:00",
+      "last_updated": "2026-01-30T10:35:34.298559+00:00",
+      "context": {
+        "id": "01KG77HXGTNR69CJ8J94ZN7TFA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.backup_last_attempted_automatic_backup",
+      "state": "2026-01-30T10:35:33+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Backup Last attempted automatic backup"
+      },
+      "last_changed": "2026-01-30T10:35:33.001625+00:00",
+      "last_reported": "2026-01-30T10:35:34.298893+00:00",
+      "last_updated": "2026-01-30T10:35:33.001625+00:00",
+      "context": {
+        "id": "01KG77HW89JQJQA4RARDK38PYW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.remote_ui",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "connectivity",
+        "friendly_name": "Remote UI"
+      },
+      "last_changed": "2026-01-29T00:38:27.835499+00:00",
+      "last_reported": "2026-01-29T00:38:27.835499+00:00",
+      "last_updated": "2026-01-29T00:38:27.835499+00:00",
+      "context": {
+        "id": "01KG3JZVQV0NH6C73FE6SB019E",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "stt.home_assistant_cloud",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Home Assistant Cloud"
+      },
+      "last_changed": "2026-01-29T00:38:27.836024+00:00",
+      "last_reported": "2026-01-29T00:38:27.836024+00:00",
+      "last_updated": "2026-01-29T00:38:27.836024+00:00",
+      "context": {
+        "id": "01KG3JZVQWXWZ7RMAMVRNWHXK1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "tts.home_assistant_cloud",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Home Assistant Cloud"
+      },
+      "last_changed": "2026-01-29T00:38:27.836443+00:00",
+      "last_reported": "2026-01-29T00:38:27.836443+00:00",
+      "last_updated": "2026-01-29T00:38:27.836443+00:00",
+      "context": {
+        "id": "01KG3JZVQWM2M8Z8J1ZC0GP4T1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "zone.home",
+      "state": "1",
+      "attributes": {
+        "latitude": 40.8124257,
+        "longitude": -72.9754372,
+        "radius": 100,
+        "passive": false,
+        "persons": [
+          "person.dylan"
+        ],
+        "editable": true,
+        "icon": "mdi:home",
+        "friendly_name": "Home"
+      },
+      "last_changed": "2026-01-31T02:44:02.301550+00:00",
+      "last_reported": "2026-01-31T02:44:02.301550+00:00",
+      "last_updated": "2026-01-31T02:44:02.301550+00:00",
+      "context": {
+        "id": "01KG8YZ7KXCDRZVC2NNG0SQ7HB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "script.goodnight",
+      "state": "off",
+      "attributes": {
+        "last_triggered": "2026-01-27T15:52:26.861593+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Goodnight Routine"
+      },
+      "last_changed": "2026-01-29T00:38:28.196761+00:00",
+      "last_reported": "2026-01-29T00:38:28.196761+00:00",
+      "last_updated": "2026-01-29T00:38:28.196761+00:00",
+      "context": {
+        "id": "01KG3JZW34VAQ9C8EJ5Z9AX7E9",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "script.movie_night",
+      "state": "off",
+      "attributes": {
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Movie Night Mode"
+      },
+      "last_changed": "2026-01-29T00:38:28.196975+00:00",
+      "last_reported": "2026-01-29T00:38:28.196975+00:00",
+      "last_updated": "2026-01-29T00:38:28.196975+00:00",
+      "context": {
+        "id": "01KG3JZW34ND2F5BWXV7MGHBS1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "script.start_all_media",
+      "state": "off",
+      "attributes": {
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Start All Media"
+      },
+      "last_changed": "2026-01-29T00:38:28.197130+00:00",
+      "last_reported": "2026-01-29T00:38:28.197130+00:00",
+      "last_updated": "2026-01-29T00:38:28.197130+00:00",
+      "context": {
+        "id": "01KG3JZW35V10J3MWERKRDB8JQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "script.send_test_notification",
+      "state": "off",
+      "attributes": {
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Send Test Notification"
+      },
+      "last_changed": "2026-01-29T00:38:28.197349+00:00",
+      "last_reported": "2026-01-29T00:38:28.197349+00:00",
+      "last_updated": "2026-01-29T00:38:28.197349+00:00",
+      "context": {
+        "id": "01KG3JZW35M9J6ZP555XDPXF8Y",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "script.announce_weather",
+      "state": "off",
+      "attributes": {
+        "last_triggered": "2026-01-27T16:47:41.001542+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Announce Weather"
+      },
+      "last_changed": "2026-01-29T00:38:28.197562+00:00",
+      "last_reported": "2026-01-29T00:38:28.197562+00:00",
+      "last_updated": "2026-01-29T00:38:28.197562+00:00",
+      "context": {
+        "id": "01KG3JZW35NW584GW0ASYE4VB3",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "person.dylan",
+      "state": "home",
+      "attributes": {
+        "editable": true,
+        "id": "dylan",
+        "device_trackers": [
+          "device_tracker.armor_27t_pro",
+          "device_tracker.armor_27t_pro_2",
+          "device_tracker.iphone_f9n9mv5m07"
+        ],
+        "latitude": 40.8124189016905,
+        "longitude": -72.97545624816533,
+        "gps_accuracy": 18,
+        "source": "device_tracker.iphone_f9n9mv5m07",
+        "user_id": "118744ab0ffe4a40b212b7afd62276b3",
+        "friendly_name": "Dylan"
+      },
+      "last_changed": "2026-01-31T02:44:02.301379+00:00",
+      "last_reported": "2026-01-31T02:53:28.026120+00:00",
+      "last_updated": "2026-01-31T02:53:28.026120+00:00",
+      "context": {
+        "id": "01KG8ZGG2T0TFHTS9FAGBXVMWG",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sun.sun",
+      "state": "below_horizon",
+      "attributes": {
+        "next_dawn": "2026-01-31T11:33:36.761992+00:00",
+        "next_dusk": "2026-01-31T22:37:36.165510+00:00",
+        "next_midnight": "2026-02-01T05:05:30+00:00",
+        "next_noon": "2026-01-31T17:05:16+00:00",
+        "next_rising": "2026-01-31T12:03:13.139339+00:00",
+        "next_setting": "2026-01-31T22:07:58.558541+00:00",
+        "elevation": -37.51,
+        "azimuth": 80.4,
+        "rising": true,
+        "friendly_name": "Sun"
+      },
+      "last_changed": "2026-01-30T22:08:44.184784+00:00",
+      "last_reported": "2026-01-31T08:55:50.443941+00:00",
+      "last_updated": "2026-01-31T08:45:22.022217+00:00",
+      "context": {
+        "id": "01KG9KMV7680BH601RA0FKHCCN",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.sun_next_dawn",
+      "state": "2026-01-31T11:33:36+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Sun Next dawn"
+      },
+      "last_changed": "2026-01-30T11:34:28.319985+00:00",
+      "last_reported": "2026-01-30T23:41:24.576262+00:00",
+      "last_updated": "2026-01-30T11:34:28.319985+00:00",
+      "context": {
+        "id": "01KG7AXRPZHE8BDAX4TDPMEFYK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.sun_next_dusk",
+      "state": "2026-01-31T22:37:36+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Sun Next dusk"
+      },
+      "last_changed": "2026-01-30T22:36:26.077859+00:00",
+      "last_reported": "2026-01-30T23:41:24.576366+00:00",
+      "last_updated": "2026-01-30T22:36:26.077859+00:00",
+      "context": {
+        "id": "01KG8GSVJXBBWC2G4CRFSBC78Z",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.sun_next_midnight",
+      "state": "2026-02-01T05:05:30+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Sun Next midnight"
+      },
+      "last_changed": "2026-01-31T05:05:22.003654+00:00",
+      "last_reported": "2026-01-31T05:05:22.003654+00:00",
+      "last_updated": "2026-01-31T05:05:22.003654+00:00",
+      "context": {
+        "id": "01KG9720JKBBV1QMW4RX8S3ZZW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.sun_next_noon",
+      "state": "2026-01-31T17:05:16+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Sun Next noon"
+      },
+      "last_changed": "2026-01-30T17:05:06.002727+00:00",
+      "last_reported": "2026-01-30T23:41:24.576622+00:00",
+      "last_updated": "2026-01-30T17:05:06.002727+00:00",
+      "context": {
+        "id": "01KG7XV5EJK4PJWTRZ5SCAXKN4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.sun_next_rising",
+      "state": "2026-01-31T12:03:13+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Sun Next rising"
+      },
+      "last_changed": "2026-01-30T12:04:09.025749+00:00",
+      "last_reported": "2026-01-30T23:41:24.576743+00:00",
+      "last_updated": "2026-01-30T12:04:09.025749+00:00",
+      "context": {
+        "id": "01KG7CM3P14924MCCZNNEFEMC0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.sun_next_setting",
+      "state": "2026-01-31T22:07:58+00:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Sun Next setting"
+      },
+      "last_changed": "2026-01-30T22:06:44.184119+00:00",
+      "last_reported": "2026-01-30T23:41:24.576832+00:00",
+      "last_updated": "2026-01-30T22:06:44.184119+00:00",
+      "context": {
+        "id": "01KG8F3FERJ3PB843356GGJBDW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "device_tracker.armor_27t_pro",
+      "state": "unknown",
+      "attributes": {
+        "source_type": "gps",
+        "friendly_name": "Armor 27T Pro"
+      },
+      "last_changed": "2026-01-29T00:38:33.963303+00:00",
+      "last_reported": "2026-01-29T00:38:33.963303+00:00",
+      "last_updated": "2026-01-29T00:38:33.963303+00:00",
+      "context": {
+        "id": "01KG3K01QB266F8WG410Q0Y6RK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.armor_27t_pro_battery_level",
+      "state": "17",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-charging-10",
+        "friendly_name": "Armor 27T Pro Battery level"
+      },
+      "last_changed": "2026-01-29T00:38:33.964241+00:00",
+      "last_reported": "2026-01-29T00:38:33.964241+00:00",
+      "last_updated": "2026-01-29T00:38:33.964241+00:00",
+      "context": {
+        "id": "01KG3K01QC0HRY6R2S6452XXFX",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.armor_27t_pro_battery_state",
+      "state": "charging",
+      "attributes": {
+        "options": [
+          "charging",
+          "discharging",
+          "full",
+          "not_charging"
+        ],
+        "device_class": "enum",
+        "icon": "mdi:battery-plus",
+        "friendly_name": "Armor 27T Pro Battery state"
+      },
+      "last_changed": "2026-01-29T00:38:33.964532+00:00",
+      "last_reported": "2026-01-29T00:38:33.964532+00:00",
+      "last_updated": "2026-01-29T00:38:33.964532+00:00",
+      "context": {
+        "id": "01KG3K01QCARZMA0KZEZHXFNXA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.armor_27t_pro_charger_type",
+      "state": "usb",
+      "attributes": {
+        "options": [
+          "ac",
+          "usb",
+          "wireless",
+          "dock",
+          "none"
+        ],
+        "device_class": "enum",
+        "icon": "mdi:usb-port",
+        "friendly_name": "Armor 27T Pro Charger type"
+      },
+      "last_changed": "2026-01-29T00:38:33.965336+00:00",
+      "last_reported": "2026-01-29T00:38:33.965336+00:00",
+      "last_updated": "2026-01-29T00:38:33.965336+00:00",
+      "context": {
+        "id": "01KG3K01QDD8KNJPDTFCSXJGWK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "device_tracker.armor_27t_pro_2",
+      "state": "unknown",
+      "attributes": {
+        "source_type": "gps",
+        "friendly_name": "Armor 27T Pro"
+      },
+      "last_changed": "2026-01-29T00:38:33.966448+00:00",
+      "last_reported": "2026-01-29T00:38:33.966448+00:00",
+      "last_updated": "2026-01-29T00:38:33.966448+00:00",
+      "context": {
+        "id": "01KG3K01QEQ9A1FFS9STRBK9M8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.armor_27t_pro_battery_level_2",
+      "state": "72",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-70",
+        "friendly_name": "Armor 27T Pro Battery level"
+      },
+      "last_changed": "2026-01-29T01:32:33.880109+00:00",
+      "last_reported": "2026-01-29T01:32:34.200978+00:00",
+      "last_updated": "2026-01-29T01:32:33.880109+00:00",
+      "context": {
+        "id": "01KG3P2XPRPQGMSZXTAFKMTRGQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.armor_27t_pro_battery_state_2",
+      "state": "discharging",
+      "attributes": {
+        "options": [
+          "charging",
+          "discharging",
+          "full",
+          "not_charging"
+        ],
+        "device_class": "enum",
+        "icon": "mdi:battery-minus",
+        "friendly_name": "Armor 27T Pro Battery state"
+      },
+      "last_changed": "2026-01-29T00:38:33.967441+00:00",
+      "last_reported": "2026-01-29T00:38:33.967441+00:00",
+      "last_updated": "2026-01-29T00:38:33.967441+00:00",
+      "context": {
+        "id": "01KG3K01QFZ5RD2D5D2PR4JZW7",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.armor_27t_pro_charger_type_2",
+      "state": "none",
+      "attributes": {
+        "options": [
+          "ac",
+          "usb",
+          "wireless",
+          "dock",
+          "none"
+        ],
+        "device_class": "enum",
+        "icon": "mdi:battery",
+        "friendly_name": "Armor 27T Pro Charger type"
+      },
+      "last_changed": "2026-01-29T00:38:33.967751+00:00",
+      "last_reported": "2026-01-29T00:38:33.967751+00:00",
+      "last_updated": "2026-01-29T00:38:33.967751+00:00",
+      "context": {
+        "id": "01KG3K01QFG0ZJ2CMSR2QV2NYV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "todo.shopping_list",
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Shopping List",
+        "supported_features": 15
+      },
+      "last_changed": "2026-01-29T00:38:34.019133+00:00",
+      "last_reported": "2026-01-29T00:38:34.019133+00:00",
+      "last_updated": "2026-01-29T00:38:34.019133+00:00",
+      "context": {
+        "id": "01KG3K01S3R7GPY77P95Z1MVSC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryan_family_media_center_active_clients",
+      "state": "0",
+      "attributes": {
+        "unit_of_measurement": "clients",
+        "friendly_name": "Bryan-Family-Media-Center Active clients"
+      },
+      "last_changed": "2026-01-29T00:38:34.051208+00:00",
+      "last_reported": "2026-01-29T08:45:03.794584+00:00",
+      "last_updated": "2026-01-29T00:38:34.051208+00:00",
+      "context": {
+        "id": "01KG3K01T36AEEEPCE2Z88Z8F9",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "tts.google_translate_en_com",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Google Translate en com"
+      },
+      "last_changed": "2026-01-29T00:38:34.080294+00:00",
+      "last_reported": "2026-01-29T00:38:34.080294+00:00",
+      "last_updated": "2026-01-29T00:38:34.080294+00:00",
+      "context": {
+        "id": "01KG3K01V0DR9T3Q0SGHN1DYDG",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "conversation.openai_conversation",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "OpenAI Conversation",
+        "supported_features": 1
+      },
+      "last_changed": "2026-01-29T00:38:34.104138+00:00",
+      "last_reported": "2026-01-29T00:38:34.104138+00:00",
+      "last_updated": "2026-01-29T00:38:34.104138+00:00",
+      "context": {
+        "id": "01KG3K01VR5K8EQ976H08XKF1F",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "conversation.openai_conversation_2",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "OpenAI Conversation",
+        "supported_features": 1
+      },
+      "last_changed": "2026-01-29T00:38:34.104441+00:00",
+      "last_reported": "2026-01-29T00:38:34.104441+00:00",
+      "last_updated": "2026-01-29T00:38:34.104441+00:00",
+      "context": {
+        "id": "01KG3K01VRRBGFEFPT3KWTJFQ5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "ai_task.openai_ai_task",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "OpenAI AI Task",
+        "supported_features": 7
+      },
+      "last_changed": "2026-01-29T00:38:34.110589+00:00",
+      "last_reported": "2026-01-29T00:38:34.110589+00:00",
+      "last_updated": "2026-01-29T00:38:34.110589+00:00",
+      "context": {
+        "id": "01KG3K01VY0VGBZQF5F4N2YGJT",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "ai_task.openai_ai_task_2",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "OpenAI AI Task",
+        "supported_features": 7
+      },
+      "last_changed": "2026-01-29T00:38:34.110890+00:00",
+      "last_reported": "2026-01-29T00:38:34.110890+00:00",
+      "last_updated": "2026-01-29T00:38:34.110890+00:00",
+      "context": {
+        "id": "01KG3K01VYPCDYGNCQB9A2P853",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.living_room_tv",
+      "state": "paused",
+      "attributes": {
+        "volume_level": 1.0,
+        "is_volume_muted": false,
+        "media_content_id": "",
+        "media_content_type": "video",
+        "media_duration": 6952.533,
+        "media_position": 210.016,
+        "media_position_updated_at": "2026-01-31T08:47:43.648993+00:00",
+        "media_title": "Not Without My Daughter (1991)",
+        "app_id": "AndroidNativeApp",
+        "app_name": "Stremio",
+        "entity_picture_local": "/api/media_player_proxy/media_player.living_room_tv?token=7bce38218baccc102ab8ab96be650be238671aefa70d1e5dbd9fec7d8d1a3a37&cache=63597510358a077c",
+        "entity_picture": "https://images.metahub.space/poster/small/tt0102555/img",
+        "friendly_name": "Living Room TV",
+        "supported_features": 152451
+      },
+      "last_changed": "2026-01-30T19:48:32.269654+00:00",
+      "last_reported": "2026-01-31T08:47:43.649385+00:00",
+      "last_updated": "2026-01-31T08:47:43.649385+00:00",
+      "context": {
+        "id": "01KG9KS5H170E0VJ3159VNZV5C",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.welcome_home",
+      "state": "on",
+      "attributes": {
+        "id": "541ae650-7ace-40c5-ab29-ce154473059b",
+        "last_triggered": "2026-01-31T02:44:02.301900+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Welcome Home"
+      },
+      "last_changed": "2026-01-29T00:38:34.182664+00:00",
+      "last_reported": "2026-01-31T02:44:22.305964+00:00",
+      "last_updated": "2026-01-31T02:44:22.305964+00:00",
+      "context": {
+        "id": "01KG8YZV51RD1WS86NNC617MJR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.away_mode",
+      "state": "on",
+      "attributes": {
+        "id": "544fc03a-7af4-4df6-8532-1d6a1fa12e93",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Away Mode"
+      },
+      "last_changed": "2026-01-29T00:38:34.183435+00:00",
+      "last_reported": "2026-01-29T00:38:34.183435+00:00",
+      "last_updated": "2026-01-29T00:38:34.183435+00:00",
+      "context": {
+        "id": "01KG3K01Y7JEBDKCEKEHCZCV5D",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.phone_low_battery",
+      "state": "on",
+      "attributes": {
+        "id": "ee3344d1-1dde-4d91-b951-72dca5c6a61a",
+        "last_triggered": "2026-01-25T17:16:09.779026+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Phone Low Battery"
+      },
+      "last_changed": "2026-01-29T00:38:34.183637+00:00",
+      "last_reported": "2026-01-29T00:38:34.183637+00:00",
+      "last_updated": "2026-01-29T00:38:34.183637+00:00",
+      "context": {
+        "id": "01KG3K01Y7FPVTWJYZW1M98GXZ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.morning_briefing",
+      "state": "on",
+      "attributes": {
+        "id": "5950dc83-7e94-4713-ba3b-b0c847d5e79d",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Morning Briefing"
+      },
+      "last_changed": "2026-01-29T00:38:34.183815+00:00",
+      "last_reported": "2026-01-29T00:38:34.183815+00:00",
+      "last_updated": "2026-01-29T00:38:34.183815+00:00",
+      "context": {
+        "id": "01KG3K01Y7Y2H80VBC9YZ885MS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.xbox_gaming_mode",
+      "state": "on",
+      "attributes": {
+        "id": "14e5c1ea-310c-4557-bb18-d809fb3169e2",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Xbox Gaming Mode"
+      },
+      "last_changed": "2026-01-29T00:38:34.184011+00:00",
+      "last_reported": "2026-01-29T00:38:34.184011+00:00",
+      "last_updated": "2026-01-29T00:38:34.184011+00:00",
+      "context": {
+        "id": "01KG3K01Y860FQM9AA2J3EX2MK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.tv_paused_notification",
+      "state": "on",
+      "attributes": {
+        "id": "09738ab9-10e5-4090-ba01-c802ab41a5c1",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "TV Paused Notification"
+      },
+      "last_changed": "2026-01-29T00:38:34.184178+00:00",
+      "last_reported": "2026-01-29T00:38:34.184178+00:00",
+      "last_updated": "2026-01-29T00:38:34.184178+00:00",
+      "context": {
+        "id": "01KG3K01Y8Z9DN5TEKDMT9ZRZV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.nightly_status_report",
+      "state": "on",
+      "attributes": {
+        "id": "988a70b1-2ffa-4155-9600-11c3e4f50f75",
+        "last_triggered": "2026-01-31T04:00:00.428305+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Nightly Status Report"
+      },
+      "last_changed": "2026-01-29T00:38:34.184355+00:00",
+      "last_reported": "2026-01-31T04:00:20.431727+00:00",
+      "last_updated": "2026-01-31T04:00:20.431727+00:00",
+      "context": {
+        "id": "01KG93AYEFK7MMB1ZMG0P3C608",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.departure_goodbye",
+      "state": "on",
+      "attributes": {
+        "id": "presence_departure_home",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Departure: Goodbye"
+      },
+      "last_changed": "2026-01-29T00:38:34.184539+00:00",
+      "last_reported": "2026-01-29T00:38:34.184539+00:00",
+      "last_updated": "2026-01-29T00:38:34.184539+00:00",
+      "context": {
+        "id": "01KG3K01Y8ZRE8N0S7ZZH9242G",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.presence_extended_away_mode",
+      "state": "on",
+      "attributes": {
+        "id": "presence_extended_away",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Presence: Extended Away Mode"
+      },
+      "last_changed": "2026-01-29T00:38:34.184721+00:00",
+      "last_reported": "2026-01-29T00:38:34.184721+00:00",
+      "last_updated": "2026-01-29T00:38:34.184721+00:00",
+      "context": {
+        "id": "01KG3K01Y878AG0SW7Q467CYHH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.arrival_arrived_at_work",
+      "state": "on",
+      "attributes": {
+        "id": "presence_arrive_work",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Arrival: Arrived at Work"
+      },
+      "last_changed": "2026-01-29T00:38:34.184884+00:00",
+      "last_reported": "2026-01-29T00:38:34.184884+00:00",
+      "last_updated": "2026-01-29T00:38:34.184884+00:00",
+      "context": {
+        "id": "01KG3K01Y88B2SD4140E6225R1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.departure_leaving_work",
+      "state": "on",
+      "attributes": {
+        "id": "presence_leaving_work",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Departure: Leaving Work"
+      },
+      "last_changed": "2026-01-29T00:38:34.185051+00:00",
+      "last_reported": "2026-01-29T00:38:34.185051+00:00",
+      "last_updated": "2026-01-29T00:38:34.185051+00:00",
+      "context": {
+        "id": "01KG3K01Y9CNM17MHAPCP9DQ97",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.routine_reset_daily_flags",
+      "state": "on",
+      "attributes": {
+        "id": "routine_reset_daily_flags",
+        "last_triggered": "2026-01-31T05:00:00.312926+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Routine: Reset Daily Flags"
+      },
+      "last_changed": "2026-01-29T00:38:34.185240+00:00",
+      "last_reported": "2026-01-31T05:00:00.314149+00:00",
+      "last_updated": "2026-01-31T05:00:00.314149+00:00",
+      "context": {
+        "id": "01KG96R6DRTCXTYQNDCYCZW2T1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_movie_mode_on",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_movie_mode_activate",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Movie Mode On"
+      },
+      "last_changed": "2026-01-29T00:38:34.185405+00:00",
+      "last_reported": "2026-01-29T00:38:34.185405+00:00",
+      "last_updated": "2026-01-29T00:38:34.185405+00:00",
+      "context": {
+        "id": "01KG3K01Y9DGSHES2VV3D0WTK9",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_movie_mode_off",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_movie_mode_deactivate",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Movie Mode Off"
+      },
+      "last_changed": "2026-01-29T00:38:34.185608+00:00",
+      "last_reported": "2026-01-29T00:38:34.185608+00:00",
+      "last_updated": "2026-01-29T00:38:34.185608+00:00",
+      "context": {
+        "id": "01KG3K01Y9TKW1ZDNWGRVE121Y",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_gaming_mode_off",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_gaming_mode_off",
+        "last_triggered": "2026-01-29T16:01:41.232295+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Gaming Mode Off"
+      },
+      "last_changed": "2026-01-29T00:38:34.185796+00:00",
+      "last_reported": "2026-01-29T16:01:41.233468+00:00",
+      "last_updated": "2026-01-29T16:01:41.233468+00:00",
+      "context": {
+        "id": "01KG57TAVGKGJ0GPSKQMP7T4Z0",
+        "parent_id": "01KG57PNNEJV1PXRNX7Q9KKYXP",
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_jellyfin_pause_notification",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_jellyfin_pause_notification",
+        "last_triggered": "2026-01-30T20:18:32.271125+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Jellyfin Pause Notification"
+      },
+      "last_changed": "2026-01-29T00:38:34.186369+00:00",
+      "last_reported": "2026-01-30T20:18:32.271835+00:00",
+      "last_updated": "2026-01-30T20:18:32.271835+00:00",
+      "context": {
+        "id": "01KG88XBPER22K87R0HH7KA6GA",
+        "parent_id": "01KG876DWD6R0QKQHMD0HPVGEG",
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_music_auto_off_timer",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_alexa_music_timer",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Music Auto-Off Timer"
+      },
+      "last_changed": "2026-01-29T00:38:34.186545+00:00",
+      "last_reported": "2026-01-29T00:38:34.186545+00:00",
+      "last_updated": "2026-01-29T00:38:34.186545+00:00",
+      "context": {
+        "id": "01KG3K01YAG9W5GKS9DEDQ1KB0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_volume_control_at_night",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_volume_control_night",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Volume Control at Night"
+      },
+      "last_changed": "2026-01-29T00:38:34.186731+00:00",
+      "last_reported": "2026-01-29T00:38:34.186731+00:00",
+      "last_updated": "2026-01-29T00:38:34.186731+00:00",
+      "context": {
+        "id": "01KG3K01YA90RQMR6E7J1VPCKS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_sync_lights_to_media",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_sync_lights_to_media",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Sync Lights to Media"
+      },
+      "last_changed": "2026-01-29T00:38:34.186929+00:00",
+      "last_reported": "2026-01-29T00:38:34.186929+00:00",
+      "last_updated": "2026-01-29T00:38:34.186929+00:00",
+      "context": {
+        "id": "01KG3K01YAJD5XK99PKN2QCK3Z",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_party_mode",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_party_mode",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Party Mode"
+      },
+      "last_changed": "2026-01-29T00:38:34.187096+00:00",
+      "last_reported": "2026-01-29T00:38:34.187096+00:00",
+      "last_updated": "2026-01-29T00:38:34.187096+00:00",
+      "context": {
+        "id": "01KG3K01YBEK22C6A0AF1SJCHA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_music_follows_you",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_music_follows_you",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Music Follows You"
+      },
+      "last_changed": "2026-01-29T00:38:34.187452+00:00",
+      "last_reported": "2026-01-29T00:38:34.187452+00:00",
+      "last_updated": "2026-01-29T00:38:34.187452+00:00",
+      "context": {
+        "id": "01KG3K01YBCRGC68BNHE8QRD9C",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.entertainment_adjust_streaming_quality",
+      "state": "on",
+      "attributes": {
+        "id": "entertainment_streaming_quality_adjust",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Entertainment: Adjust Streaming Quality"
+      },
+      "last_changed": "2026-01-29T00:38:34.187670+00:00",
+      "last_reported": "2026-01-29T00:38:34.187670+00:00",
+      "last_updated": "2026-01-29T00:38:34.187670+00:00",
+      "context": {
+        "id": "01KG3K01YB2RN3TJ3EYN51QZX3",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.energy_turn_off_lights_after_no_motion",
+      "state": "on",
+      "attributes": {
+        "id": "energy_lights_off_no_motion",
+        "last_triggered": "2026-01-28T06:37:39.800131+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Energy: Turn Off Lights After No Motion"
+      },
+      "last_changed": "2026-01-29T00:38:34.187844+00:00",
+      "last_reported": "2026-01-29T00:38:34.187844+00:00",
+      "last_updated": "2026-01-29T00:38:34.187844+00:00",
+      "context": {
+        "id": "01KG3K01YBF3K07KCEN30N6TKP",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.energy_peak_hours_notification",
+      "state": "on",
+      "attributes": {
+        "id": "energy_peak_hours_notification",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Energy: Peak Hours Notification"
+      },
+      "last_changed": "2026-01-29T00:38:34.188035+00:00",
+      "last_reported": "2026-01-29T00:38:34.188035+00:00",
+      "last_updated": "2026-01-29T00:38:34.188035+00:00",
+      "context": {
+        "id": "01KG3K01YCZZZSK3JJ4EQHHS7Q",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.energy_water_heater_schedule",
+      "state": "on",
+      "attributes": {
+        "id": "energy_water_heater_schedule",
+        "last_triggered": "2026-01-31T00:00:00.336620+00:00",
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Energy: Water Heater Schedule"
+      },
+      "last_changed": "2026-01-29T00:38:34.188218+00:00",
+      "last_reported": "2026-01-31T00:00:00.337954+00:00",
+      "last_updated": "2026-01-31T00:00:00.337954+00:00",
+      "context": {
+        "id": "01KG8NJWAGEDPH31YH1MSNNCEK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.energy_ev_device_charging_during_off_peak",
+      "state": "on",
+      "attributes": {
+        "id": "energy_charging_optimization",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Energy: EV/Device Charging During Off-Peak"
+      },
+      "last_changed": "2026-01-29T00:38:34.188403+00:00",
+      "last_reported": "2026-01-29T00:38:34.188403+00:00",
+      "last_updated": "2026-01-29T00:38:34.188403+00:00",
+      "context": {
+        "id": "01KG3K01YC3MH0C6NJRXKBTVFA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "automation.security_motion_detected_while_away",
+      "state": "on",
+      "attributes": {
+        "id": "security_motion_detected_away",
+        "last_triggered": null,
+        "mode": "single",
+        "current": 0,
+        "friendly_name": "Security: Motion Detected While Away"
+      },
+      "last_changed": "2026-01-29T00:38:34.188568+00:00",
+      "last_reported": "2026-01-29T00:38:34.188568+00:00",
+      "last_updated": "2026-01-29T00:38:34.188568+00:00",
+      "context": {
+        "id": "01KG3K01YCDVR4RZ5FV6D79JMB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.lg_webos_tv_ut7570pub",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "[LG] webOS TV UT7570PUB",
+        "supported_features": 152461
+      },
+      "last_changed": "2026-01-31T08:48:06.838185+00:00",
+      "last_reported": "2026-01-31T08:48:06.838185+00:00",
+      "last_updated": "2026-01-31T08:48:06.838185+00:00",
+      "context": {
+        "id": "01KG9KSW5PVWM2W8F2PE2ARX22",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.shield",
+      "state": "off",
+      "attributes": {
+        "friendly_name": "SHIELD",
+        "supported_features": 152461
+      },
+      "last_changed": "2026-01-29T15:59:41.230686+00:00",
+      "last_reported": "2026-01-29T23:53:53.889788+00:00",
+      "last_updated": "2026-01-29T15:59:41.230686+00:00",
+      "context": {
+        "id": "01KG57PNNEJV1PXRNX7Q9KKYXP",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.bedroom_speaker",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "speaker",
+        "supported_features": 131968
+      },
+      "last_changed": "2026-01-29T00:38:48.886547+00:00",
+      "last_reported": "2026-01-29T00:38:48.886547+00:00",
+      "last_updated": "2026-01-29T00:38:48.886547+00:00",
+      "context": {
+        "id": "01KG3K0G9PVFN285S8KD6EM5X5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.living_room",
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Living Room",
+        "supported_features": 152461
+      },
+      "last_changed": "2026-01-29T13:59:32.938734+00:00",
+      "last_reported": "2026-01-29T14:03:26.035194+00:00",
+      "last_updated": "2026-01-29T13:59:32.987571+00:00",
+      "context": {
+        "id": "01KG50TPBVX5QPW0RJH8ZP0J1V",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "weather.forecast_home",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Home",
+        "supported_features": 3
+      },
+      "last_changed": "2026-01-29T00:38:48.886610+00:00",
+      "last_reported": "2026-01-29T00:38:48.886610+00:00",
+      "last_updated": "2026-01-29T00:38:48.886610+00:00",
+      "context": {
+        "id": "01KG3K0G9P7PFBJXMYZ7HGA413",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "ai_task.google_ai_task",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Google AI Task",
+        "supported_features": 7
+      },
+      "last_changed": "2026-01-29T00:38:48.886673+00:00",
+      "last_reported": "2026-01-29T00:38:48.886673+00:00",
+      "last_updated": "2026-01-29T00:38:48.886673+00:00",
+      "context": {
+        "id": "01KG3K0G9P1DRT9344SF646NDH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "conversation.google_ai_conversation",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Google AI Conversation",
+        "supported_features": 1
+      },
+      "last_changed": "2026-01-29T00:38:48.886696+00:00",
+      "last_reported": "2026-01-29T00:38:48.886696+00:00",
+      "last_updated": "2026-01-29T00:38:48.886696+00:00",
+      "context": {
+        "id": "01KG3K0G9PRXC6W6KH7R6V6CA6",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "stt.google_ai_stt",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Google AI STT",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886715+00:00",
+      "last_reported": "2026-01-29T00:38:48.886715+00:00",
+      "last_updated": "2026-01-29T00:38:48.886715+00:00",
+      "context": {
+        "id": "01KG3K0G9P9CBSHWWJZ21SBM3Q",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "tts.google_ai_tts",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Google AI TTS",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886733+00:00",
+      "last_reported": "2026-01-29T00:38:48.886733+00:00",
+      "last_updated": "2026-01-29T00:38:48.886733+00:00",
+      "context": {
+        "id": "01KG3K0G9P1D5HC4WC1BEA0W04",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.eliana_s_room_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886751+00:00",
+      "last_reported": "2026-01-29T00:38:48.886751+00:00",
+      "last_updated": "2026-01-29T00:38:48.886751+00:00",
+      "context": {
+        "id": "01KG3K0G9P1E404574SY17G3G9",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.dylan_s_echo_dot_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886776+00:00",
+      "last_reported": "2026-01-29T00:38:48.886776+00:00",
+      "last_updated": "2026-01-29T00:38:48.886776+00:00",
+      "context": {
+        "id": "01KG3K0G9PYTB44NS6NMH7XHPK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.nathan_s_room_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886798+00:00",
+      "last_reported": "2026-01-29T00:38:48.886798+00:00",
+      "last_updated": "2026-01-29T00:38:48.886798+00:00",
+      "context": {
+        "id": "01KG3K0G9PA3HEK629956BYJZD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.dylan_s_2nd_fire_tv_stick_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886820+00:00",
+      "last_reported": "2026-01-29T00:38:48.886820+00:00",
+      "last_updated": "2026-01-29T00:38:48.886820+00:00",
+      "context": {
+        "id": "01KG3K0G9PVQVEQQ5X0846C5TR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.family_room_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886858+00:00",
+      "last_reported": "2026-01-29T00:38:48.886858+00:00",
+      "last_updated": "2026-01-29T00:38:48.886858+00:00",
+      "context": {
+        "id": "01KG3K0G9PXVM4TRQMDGZ9VD4F",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamilytab_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886885+00:00",
+      "last_reported": "2026-01-29T00:38:48.886885+00:00",
+      "last_updated": "2026-01-29T00:38:48.886885+00:00",
+      "context": {
+        "id": "01KG3K0G9P7S9YBVHHQ9APSRMF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.master_bedroom_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886907+00:00",
+      "last_reported": "2026-01-29T00:38:48.886907+00:00",
+      "last_updated": "2026-01-29T00:38:48.886907+00:00",
+      "context": {
+        "id": "01KG3K0G9PP8S1MW6D38RC2P59",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.everywhere_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886928+00:00",
+      "last_reported": "2026-01-29T00:38:48.886928+00:00",
+      "last_updated": "2026-01-29T00:38:48.886928+00:00",
+      "context": {
+        "id": "01KG3K0G9PB28EBBJKWHZCS7GJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.dylan_s_fire_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886948+00:00",
+      "last_reported": "2026-01-29T00:38:48.886948+00:00",
+      "last_updated": "2026-01-29T00:38:48.886948+00:00",
+      "context": {
+        "id": "01KG3K0G9P51PWBXWNV34W80ME",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.eliana_s_bedroom_connectivity",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "connectivity",
+        "friendly_name": "Connectivity",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886971+00:00",
+      "last_reported": "2026-01-29T00:38:48.886971+00:00",
+      "last_updated": "2026-01-29T00:38:48.886971+00:00",
+      "context": {
+        "id": "01KG3K0G9P8ETFWGY47HBD4XF8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.family_room_motion",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "motion",
+        "friendly_name": "Motion",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.886993+00:00",
+      "last_reported": "2026-01-29T00:38:48.886993+00:00",
+      "last_updated": "2026-01-29T00:38:48.886993+00:00",
+      "context": {
+        "id": "01KG3K0G9PGQH3RP6WEZSEQYXA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.master_bedroom_motion",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "motion",
+        "friendly_name": "Motion",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887017+00:00",
+      "last_reported": "2026-01-29T00:38:48.887017+00:00",
+      "last_updated": "2026-01-29T00:38:48.887017+00:00",
+      "context": {
+        "id": "01KG3K0G9QZM5TW93DCJH6X1T4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.eliana_s_room_speak",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Speak",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887034+00:00",
+      "last_reported": "2026-01-29T00:38:48.887034+00:00",
+      "last_updated": "2026-01-29T00:38:48.887034+00:00",
+      "context": {
+        "id": "01KG3K0G9Q7037P26FM5TAX6M4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.dylan_s_echo_dot_speak",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Speak",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887075+00:00",
+      "last_reported": "2026-01-29T00:38:48.887075+00:00",
+      "last_updated": "2026-01-29T00:38:48.887075+00:00",
+      "context": {
+        "id": "01KG3K0G9QEDAMCWNE6V7S6VMQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.nathan_s_room_speak",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Speak",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887094+00:00",
+      "last_reported": "2026-01-29T00:38:48.887094+00:00",
+      "last_updated": "2026-01-29T00:38:48.887094+00:00",
+      "context": {
+        "id": "01KG3K0G9Q6T7AQJ42FA7KV4PC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.family_room_speak",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Speak",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887111+00:00",
+      "last_reported": "2026-01-29T00:38:48.887111+00:00",
+      "last_updated": "2026-01-29T00:38:48.887111+00:00",
+      "context": {
+        "id": "01KG3K0G9Q0SXZRAN6HTZWSC4Z",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.master_bedroom_speak",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Speak",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887128+00:00",
+      "last_reported": "2026-01-29T00:38:48.887128+00:00",
+      "last_updated": "2026-01-29T00:38:48.887128+00:00",
+      "context": {
+        "id": "01KG3K0G9QPPR56ZY8AC10ZP8C",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.eliana_s_room_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887145+00:00",
+      "last_reported": "2026-01-29T00:38:48.887145+00:00",
+      "last_updated": "2026-01-29T00:38:48.887145+00:00",
+      "context": {
+        "id": "01KG3K0G9QE4XG16RVN0RRWDRJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.dylan_s_echo_dot_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887174+00:00",
+      "last_reported": "2026-01-29T00:38:48.887174+00:00",
+      "last_updated": "2026-01-29T00:38:48.887174+00:00",
+      "context": {
+        "id": "01KG3K0G9Q85EAEMKWDWG1BJS0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.nathan_s_room_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887195+00:00",
+      "last_reported": "2026-01-29T00:38:48.887195+00:00",
+      "last_updated": "2026-01-29T00:38:48.887195+00:00",
+      "context": {
+        "id": "01KG3K0G9QATBN9NZZW9CGDDHE",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.family_room_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887230+00:00",
+      "last_reported": "2026-01-29T00:38:48.887230+00:00",
+      "last_updated": "2026-01-29T00:38:48.887230+00:00",
+      "context": {
+        "id": "01KG3K0G9Q3RZQCYSSWF9KM0K5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.master_bedroom_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887250+00:00",
+      "last_reported": "2026-01-29T00:38:48.887250+00:00",
+      "last_updated": "2026-01-29T00:38:48.887250+00:00",
+      "context": {
+        "id": "01KG3K0G9QFVNQJ3TMJ5H0XA9R",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.everywhere_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887267+00:00",
+      "last_reported": "2026-01-29T00:38:48.887267+00:00",
+      "last_updated": "2026-01-29T00:38:48.887267+00:00",
+      "context": {
+        "id": "01KG3K0G9QSD9SZ2PEQC31QV9J",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "notify.eliana_s_bedroom_announce",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Announce",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887286+00:00",
+      "last_reported": "2026-01-29T00:38:48.887286+00:00",
+      "last_updated": "2026-01-29T00:38:48.887286+00:00",
+      "context": {
+        "id": "01KG3K0G9Q5BE8TXBGMEN6D3YY",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.family_room_temperature",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "device_class": "temperature",
+        "friendly_name": "Temperature",
+        "supported_features": 0,
+        "unit_of_measurement": "\u00b0F"
+      },
+      "last_changed": "2026-01-29T00:38:48.887305+00:00",
+      "last_reported": "2026-01-29T00:38:48.887305+00:00",
+      "last_updated": "2026-01-29T00:38:48.887305+00:00",
+      "context": {
+        "id": "01KG3K0G9Q0WGCDJD94SEC5Z4B",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.family_room_illuminance",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "device_class": "illuminance",
+        "friendly_name": "Illuminance",
+        "supported_features": 0,
+        "unit_of_measurement": "lx"
+      },
+      "last_changed": "2026-01-29T00:38:48.887331+00:00",
+      "last_reported": "2026-01-29T00:38:48.887331+00:00",
+      "last_updated": "2026-01-29T00:38:48.887331+00:00",
+      "context": {
+        "id": "01KG3K0G9Q0VCQ2M49J57N4GHS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.master_bedroom_illuminance",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "device_class": "illuminance",
+        "friendly_name": "Illuminance",
+        "supported_features": 0,
+        "unit_of_measurement": "lx"
+      },
+      "last_changed": "2026-01-29T00:38:48.887354+00:00",
+      "last_reported": "2026-01-29T00:38:48.887354+00:00",
+      "last_updated": "2026-01-29T00:38:48.887354+00:00",
+      "context": {
+        "id": "01KG3K0G9QM4HCD8RXTHYG1VXV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.eliana_s_room_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887375+00:00",
+      "last_reported": "2026-01-29T00:38:48.887375+00:00",
+      "last_updated": "2026-01-29T00:38:48.887375+00:00",
+      "context": {
+        "id": "01KG3K0G9QHMTMMF3NGQ0J38MJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_echo_dot_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887443+00:00",
+      "last_reported": "2026-01-29T00:38:48.887443+00:00",
+      "last_updated": "2026-01-29T00:38:48.887443+00:00",
+      "context": {
+        "id": "01KG3K0G9QKJW8FGYB0NCJ0EQ1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.nathan_s_room_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887491+00:00",
+      "last_reported": "2026-01-29T00:38:48.887491+00:00",
+      "last_updated": "2026-01-29T00:38:48.887491+00:00",
+      "context": {
+        "id": "01KG3K0G9QKQ7BWCGE5CNWWGWS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_2nd_fire_tv_stick_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887516+00:00",
+      "last_reported": "2026-01-29T00:38:48.887516+00:00",
+      "last_updated": "2026-01-29T00:38:48.887516+00:00",
+      "context": {
+        "id": "01KG3K0G9QE575WVM5VPT2ZYGB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.family_room_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887538+00:00",
+      "last_reported": "2026-01-29T00:38:48.887538+00:00",
+      "last_updated": "2026-01-29T00:38:48.887538+00:00",
+      "context": {
+        "id": "01KG3K0G9QG6AW286YV3F21Y3J",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamilytab_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887558+00:00",
+      "last_reported": "2026-01-29T00:38:48.887558+00:00",
+      "last_updated": "2026-01-29T00:38:48.887558+00:00",
+      "context": {
+        "id": "01KG3K0G9QPQMHPS1VRTN3M6PE",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.master_bedroom_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887579+00:00",
+      "last_reported": "2026-01-29T00:38:48.887579+00:00",
+      "last_updated": "2026-01-29T00:38:48.887579+00:00",
+      "context": {
+        "id": "01KG3K0G9QWH314EMQ9BDMAKQ5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.everywhere_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887616+00:00",
+      "last_reported": "2026-01-29T00:38:48.887616+00:00",
+      "last_updated": "2026-01-29T00:38:48.887616+00:00",
+      "context": {
+        "id": "01KG3K0G9QG9H0HW54G6V7E04M",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_fire_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887638+00:00",
+      "last_reported": "2026-01-29T00:38:48.887638+00:00",
+      "last_updated": "2026-01-29T00:38:48.887638+00:00",
+      "context": {
+        "id": "01KG3K0G9QB6M5G7Q6CBKZATTT",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.eliana_s_bedroom_next_alarm",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next alarm",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887659+00:00",
+      "last_reported": "2026-01-29T00:38:48.887659+00:00",
+      "last_updated": "2026-01-29T00:38:48.887659+00:00",
+      "context": {
+        "id": "01KG3K0G9Q1YB6BWHW549BFSGW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.eliana_s_room_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887693+00:00",
+      "last_reported": "2026-01-29T00:38:48.887693+00:00",
+      "last_updated": "2026-01-29T00:38:48.887693+00:00",
+      "context": {
+        "id": "01KG3K0G9Q6QZ724JA175ZN4NQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_echo_dot_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887717+00:00",
+      "last_reported": "2026-01-29T00:38:48.887717+00:00",
+      "last_updated": "2026-01-29T00:38:48.887717+00:00",
+      "context": {
+        "id": "01KG3K0G9QM0N7HTBDRAY0QE90",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.nathan_s_room_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887753+00:00",
+      "last_reported": "2026-01-29T00:38:48.887753+00:00",
+      "last_updated": "2026-01-29T00:38:48.887753+00:00",
+      "context": {
+        "id": "01KG3K0G9QT2YM5FVA0VNC4S2G",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_2nd_fire_tv_stick_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887779+00:00",
+      "last_reported": "2026-01-29T00:38:48.887779+00:00",
+      "last_updated": "2026-01-29T00:38:48.887779+00:00",
+      "context": {
+        "id": "01KG3K0G9Q4AH1KJ492HNPS6ZD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.family_room_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887801+00:00",
+      "last_reported": "2026-01-29T00:38:48.887801+00:00",
+      "last_updated": "2026-01-29T00:38:48.887801+00:00",
+      "context": {
+        "id": "01KG3K0G9QW25E1TVD20EDYJYP",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamilytab_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887835+00:00",
+      "last_reported": "2026-01-29T00:38:48.887835+00:00",
+      "last_updated": "2026-01-29T00:38:48.887835+00:00",
+      "context": {
+        "id": "01KG3K0G9QD5HXSBH6R8ANPMQK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.master_bedroom_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887887+00:00",
+      "last_reported": "2026-01-29T00:38:48.887887+00:00",
+      "last_updated": "2026-01-29T00:38:48.887887+00:00",
+      "context": {
+        "id": "01KG3K0G9QMWMNQWE79QM5XHTD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.everywhere_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887937+00:00",
+      "last_reported": "2026-01-29T00:38:48.887937+00:00",
+      "last_updated": "2026-01-29T00:38:48.887937+00:00",
+      "context": {
+        "id": "01KG3K0G9QQX00V13ASF9HGC4Z",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_fire_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.887997+00:00",
+      "last_reported": "2026-01-29T00:38:48.887997+00:00",
+      "last_updated": "2026-01-29T00:38:48.887997+00:00",
+      "context": {
+        "id": "01KG3K0G9QXYTM075WP58EEZPB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.eliana_s_bedroom_next_reminder",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next reminder",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888057+00:00",
+      "last_reported": "2026-01-29T00:38:48.888057+00:00",
+      "last_updated": "2026-01-29T00:38:48.888057+00:00",
+      "context": {
+        "id": "01KG3K0G9R730TK3W53Q4SQ3GV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.eliana_s_room_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888105+00:00",
+      "last_reported": "2026-01-29T00:38:48.888105+00:00",
+      "last_updated": "2026-01-29T00:38:48.888105+00:00",
+      "context": {
+        "id": "01KG3K0G9R970MH8THP33KR47Y",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_echo_dot_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888151+00:00",
+      "last_reported": "2026-01-29T00:38:48.888151+00:00",
+      "last_updated": "2026-01-29T00:38:48.888151+00:00",
+      "context": {
+        "id": "01KG3K0G9RHJEPQED1C7J25Q33",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.nathan_s_room_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888207+00:00",
+      "last_reported": "2026-01-29T00:38:48.888207+00:00",
+      "last_updated": "2026-01-29T00:38:48.888207+00:00",
+      "context": {
+        "id": "01KG3K0G9R2J2A6JGNTSW797TK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_2nd_fire_tv_stick_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888260+00:00",
+      "last_reported": "2026-01-29T00:38:48.888260+00:00",
+      "last_updated": "2026-01-29T00:38:48.888260+00:00",
+      "context": {
+        "id": "01KG3K0G9RB8BX9VD9DYAHQBXQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.family_room_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888307+00:00",
+      "last_reported": "2026-01-29T00:38:48.888307+00:00",
+      "last_updated": "2026-01-29T00:38:48.888307+00:00",
+      "context": {
+        "id": "01KG3K0G9RGKQHGZ2WT82YJ0FS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamilytab_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888354+00:00",
+      "last_reported": "2026-01-29T00:38:48.888354+00:00",
+      "last_updated": "2026-01-29T00:38:48.888354+00:00",
+      "context": {
+        "id": "01KG3K0G9R77W6AWVJ1BAH2EFS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.master_bedroom_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888433+00:00",
+      "last_reported": "2026-01-29T00:38:48.888433+00:00",
+      "last_updated": "2026-01-29T00:38:48.888433+00:00",
+      "context": {
+        "id": "01KG3K0G9RDZKG7BVN8CW0M2Z6",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.everywhere_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888487+00:00",
+      "last_reported": "2026-01-29T00:38:48.888487+00:00",
+      "last_updated": "2026-01-29T00:38:48.888487+00:00",
+      "context": {
+        "id": "01KG3K0G9R1HPA3JXSSEM99ZWM",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.dylan_s_fire_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888512+00:00",
+      "last_reported": "2026-01-29T00:38:48.888512+00:00",
+      "last_updated": "2026-01-29T00:38:48.888512+00:00",
+      "context": {
+        "id": "01KG3K0G9RM3ZQ7PHD01PD4YKM",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.eliana_s_bedroom_next_timer",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Next timer",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888533+00:00",
+      "last_reported": "2026-01-29T00:38:48.888533+00:00",
+      "last_updated": "2026-01-29T00:38:48.888533+00:00",
+      "context": {
+        "id": "01KG3K0G9RMGDYPRT5YVZEHATF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.eliana_s_room_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888553+00:00",
+      "last_reported": "2026-01-29T00:38:48.888553+00:00",
+      "last_updated": "2026-01-29T00:38:48.888553+00:00",
+      "context": {
+        "id": "01KG3K0G9R7C32P88RKMH2Q5RH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.dylan_s_echo_dot_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888574+00:00",
+      "last_reported": "2026-01-29T00:38:48.888574+00:00",
+      "last_updated": "2026-01-29T00:38:48.888574+00:00",
+      "context": {
+        "id": "01KG3K0G9R7WTCHRGGRZ7GZM39",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.nathan_s_room_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888614+00:00",
+      "last_reported": "2026-01-29T00:38:48.888614+00:00",
+      "last_updated": "2026-01-29T00:38:48.888614+00:00",
+      "context": {
+        "id": "01KG3K0G9R9D8CZMD4AJEMER34",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.dylan_s_2nd_fire_tv_stick_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888651+00:00",
+      "last_reported": "2026-01-29T00:38:48.888651+00:00",
+      "last_updated": "2026-01-29T00:38:48.888651+00:00",
+      "context": {
+        "id": "01KG3K0G9R37CTW8ZJJVMZ2V63",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.family_room_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888690+00:00",
+      "last_reported": "2026-01-29T00:38:48.888690+00:00",
+      "last_updated": "2026-01-29T00:38:48.888690+00:00",
+      "context": {
+        "id": "01KG3K0G9RN03NJ5G42XNHJQVG",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.bryanfamilytab_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888712+00:00",
+      "last_reported": "2026-01-29T00:38:48.888712+00:00",
+      "last_updated": "2026-01-29T00:38:48.888712+00:00",
+      "context": {
+        "id": "01KG3K0G9RCE2AGPQEY1KTK4ZH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.master_bedroom_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888733+00:00",
+      "last_reported": "2026-01-29T00:38:48.888733+00:00",
+      "last_updated": "2026-01-29T00:38:48.888733+00:00",
+      "context": {
+        "id": "01KG3K0G9RDGRMTYMKNMJEP9FF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "switch.dylan_s_fire_do_not_disturb",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Do not disturb",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888753+00:00",
+      "last_reported": "2026-01-29T00:38:48.888753+00:00",
+      "last_updated": "2026-01-29T00:38:48.888753+00:00",
+      "context": {
+        "id": "01KG3K0G9RFKK9MJA0XPSYR6YR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "device_tracker.iphone_work",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "icon": "mdi:cellphone",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888773+00:00",
+      "last_reported": "2026-01-29T00:38:48.888773+00:00",
+      "last_updated": "2026-01-29T00:38:48.888773+00:00",
+      "context": {
+        "id": "01KG3K0G9RFWX843W8PSTNJ1QM",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_work_battery",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "battery",
+        "icon": "mdi:battery-30",
+        "friendly_name": "Battery",
+        "supported_features": 0,
+        "unit_of_measurement": "%"
+      },
+      "last_changed": "2026-01-29T00:38:48.888802+00:00",
+      "last_reported": "2026-01-29T00:38:48.888802+00:00",
+      "last_updated": "2026-01-29T00:38:48.888802+00:00",
+      "context": {
+        "id": "01KG3K0G9R47G9XPV8V95WJAWF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.automateitall",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888824+00:00",
+      "last_reported": "2026-01-29T00:38:48.888824+00:00",
+      "last_updated": "2026-01-29T00:38:48.888824+00:00",
+      "context": {
+        "id": "01KG3K0G9RVPYXKF7DRRS05HWS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.automateitall_in_game",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "In game",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888845+00:00",
+      "last_reported": "2026-01-29T00:38:48.888845+00:00",
+      "last_updated": "2026-01-29T00:38:48.888845+00:00",
+      "context": {
+        "id": "01KG3K0G9RYAYCVF79ATC7Q47T",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.automateitall_subscribed_to_xbox_game_pass",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Subscribed to Xbox Game Pass",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888880+00:00",
+      "last_reported": "2026-01-29T00:38:48.888880+00:00",
+      "last_updated": "2026-01-29T00:38:48.888880+00:00",
+      "context": {
+        "id": "01KG3K0G9RY65P140B21QX7JT4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "image.automateitall_gamerpic",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Gamerpic",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888919+00:00",
+      "last_reported": "2026-01-29T00:38:48.888919+00:00",
+      "last_updated": "2026-01-29T00:38:48.888919+00:00",
+      "context": {
+        "id": "01KG3K0G9RP630NGQSBQDQRP49",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "image.automateitall_now_playing",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Now playing",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888956+00:00",
+      "last_reported": "2026-01-29T00:38:48.888956+00:00",
+      "last_updated": "2026-01-29T00:38:48.888956+00:00",
+      "context": {
+        "id": "01KG3K0G9RWQ1MS53RJ6D801PJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "image.automateitall_avatar",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Avatar",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.888981+00:00",
+      "last_reported": "2026-01-29T00:38:48.888981+00:00",
+      "last_updated": "2026-01-29T00:38:48.888981+00:00",
+      "context": {
+        "id": "01KG3K0G9RX3EA3068NY21GJ89",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_status",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Status",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889002+00:00",
+      "last_reported": "2026-01-29T00:38:48.889002+00:00",
+      "last_updated": "2026-01-29T00:38:48.889002+00:00",
+      "context": {
+        "id": "01KG3K0G9S59XNH6JG5QWT82GW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_gamerscore",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Gamerscore",
+        "supported_features": 0,
+        "unit_of_measurement": "points"
+      },
+      "last_changed": "2026-01-29T00:38:48.889033+00:00",
+      "last_reported": "2026-01-29T00:38:48.889033+00:00",
+      "last_updated": "2026-01-29T00:38:48.889033+00:00",
+      "context": {
+        "id": "01KG3K0G9S4TWN006GN0S4GBNT",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_last_online",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last online",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889059+00:00",
+      "last_reported": "2026-01-29T00:38:48.889059+00:00",
+      "last_updated": "2026-01-29T00:38:48.889059+00:00",
+      "context": {
+        "id": "01KG3K0G9SA9XW25M38NR5GZRV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_following",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Following",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.889080+00:00",
+      "last_reported": "2026-01-29T00:38:48.889080+00:00",
+      "last_updated": "2026-01-29T00:38:48.889080+00:00",
+      "context": {
+        "id": "01KG3K0G9SSXJK0FN211RFXJZT",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_follower",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Follower",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.889115+00:00",
+      "last_reported": "2026-01-29T00:38:48.889115+00:00",
+      "last_updated": "2026-01-29T00:38:48.889115+00:00",
+      "context": {
+        "id": "01KG3K0G9SK8XCV57E1HFRHW4C",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_now_playing",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Now playing",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889151+00:00",
+      "last_reported": "2026-01-29T00:38:48.889151+00:00",
+      "last_updated": "2026-01-29T00:38:48.889151+00:00",
+      "context": {
+        "id": "01KG3K0G9S09VGFFX4P3D0QXAC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_friends",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Friends",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.889175+00:00",
+      "last_reported": "2026-01-29T00:38:48.889175+00:00",
+      "last_updated": "2026-01-29T00:38:48.889175+00:00",
+      "context": {
+        "id": "01KG3K0G9SK3G1BFJETTP8M92F",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_in_party",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "In party",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.889202+00:00",
+      "last_reported": "2026-01-29T00:38:48.889202+00:00",
+      "last_updated": "2026-01-29T00:38:48.889202+00:00",
+      "context": {
+        "id": "01KG3K0G9S0A9V79CYXPS7ZRDV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.automateitall_party_join_restrictions",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "options": [
+          "invite_only",
+          "joinable"
+        ],
+        "device_class": "enum",
+        "friendly_name": "Party join restrictions",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889232+00:00",
+      "last_reported": "2026-01-29T00:38:48.889232+00:00",
+      "last_updated": "2026-01-29T00:38:48.889232+00:00",
+      "context": {
+        "id": "01KG3K0G9SJP286AYDA5GHV78M",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "calendar.epic_games_store_free_games",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Free games",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889254+00:00",
+      "last_reported": "2026-01-29T00:38:48.889254+00:00",
+      "last_updated": "2026-01-29T00:38:48.889254+00:00",
+      "context": {
+        "id": "01KG3K0G9SSANR6YK0FTXZ8PX4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "calendar.epic_games_store_discount_games",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Discount games",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889276+00:00",
+      "last_reported": "2026-01-29T00:38:48.889276+00:00",
+      "last_updated": "2026-01-29T00:38:48.889276+00:00",
+      "context": {
+        "id": "01KG3K0G9S2N33160T1Z22Y9AF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.edge_chromium",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Edge Chromium",
+        "supported_features": 4346379
+      },
+      "last_changed": "2026-01-29T00:38:48.889317+00:00",
+      "last_reported": "2026-01-29T00:38:48.889317+00:00",
+      "last_updated": "2026-01-29T00:38:48.889317+00:00",
+      "context": {
+        "id": "01KG3K0G9SN337G4WN1NBG4967",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.pve",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889344+00:00",
+      "last_reported": "2026-01-29T00:38:48.889344+00:00",
+      "last_updated": "2026-01-29T00:38:48.889344+00:00",
+      "context": {
+        "id": "01KG3K0G9S73RFN5RXWTPDG3GS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "media_player.living_room_tv_2",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889382+00:00",
+      "last_reported": "2026-01-29T00:38:48.889382+00:00",
+      "last_updated": "2026-01-29T00:38:48.889382+00:00",
+      "context": {
+        "id": "01KG3K0G9SJ2S655YA9NC0VCEY",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "remote.edge_chromium",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Edge Chromium",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889407+00:00",
+      "last_reported": "2026-01-29T00:38:48.889407+00:00",
+      "last_updated": "2026-01-29T00:38:48.889407+00:00",
+      "context": {
+        "id": "01KG3K0G9S0XYAVEQ7MRHK3DWK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.steam_76561198864974278",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "icon": "mdi:steam",
+        "friendly_name": "steam_76561198864974278",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889429+00:00",
+      "last_reported": "2026-01-29T00:38:48.889429+00:00",
+      "last_updated": "2026-01-29T00:38:48.889429+00:00",
+      "context": {
+        "id": "01KG3K0G9SDW2E4WB18R8V6X81",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889450+00:00",
+      "last_reported": "2026-01-29T00:38:48.889450+00:00",
+      "last_updated": "2026-01-29T00:38:48.889450+00:00",
+      "context": {
+        "id": "01KG3K0G9S0TMWRKAZH3NP7M0J",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889471+00:00",
+      "last_reported": "2026-01-29T00:38:48.889471+00:00",
+      "last_updated": "2026-01-29T00:38:48.889471+00:00",
+      "context": {
+        "id": "01KG3K0G9SZE2FEWWVZ0ECMAZD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889492+00:00",
+      "last_reported": "2026-01-29T00:38:48.889492+00:00",
+      "last_updated": "2026-01-29T00:38:48.889492+00:00",
+      "context": {
+        "id": "01KG3K0G9SQ241KYME5Z4N910D",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889534+00:00",
+      "last_reported": "2026-01-29T00:38:48.889534+00:00",
+      "last_updated": "2026-01-29T00:38:48.889534+00:00",
+      "context": {
+        "id": "01KG3K0G9SN1YCM584EDMPCD0Y",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889561+00:00",
+      "last_reported": "2026-01-29T00:38:48.889561+00:00",
+      "last_updated": "2026-01-29T00:38:48.889561+00:00",
+      "context": {
+        "id": "01KG3K0G9STGF108AKRY5TADHX",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889582+00:00",
+      "last_reported": "2026-01-29T00:38:48.889582+00:00",
+      "last_updated": "2026-01-29T00:38:48.889582+00:00",
+      "context": {
+        "id": "01KG3K0G9SHEPZQ0448RYE64F7",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889605+00:00",
+      "last_reported": "2026-01-29T00:38:48.889605+00:00",
+      "last_updated": "2026-01-29T00:38:48.889605+00:00",
+      "context": {
+        "id": "01KG3K0G9SX5XCX44G1ATXAF4S",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.amazon_kftuwi_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889647+00:00",
+      "last_reported": "2026-01-29T00:38:48.889647+00:00",
+      "last_updated": "2026-01-29T00:38:48.889647+00:00",
+      "context": {
+        "id": "01KG3K0G9SYCAWSBHT7D7FWK4P",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889673+00:00",
+      "last_reported": "2026-01-29T00:38:48.889673+00:00",
+      "last_updated": "2026-01-29T00:38:48.889673+00:00",
+      "context": {
+        "id": "01KG3K0G9SB4Z4A0FRMEJQXDQD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889694+00:00",
+      "last_reported": "2026-01-29T00:38:48.889694+00:00",
+      "last_updated": "2026-01-29T00:38:48.889694+00:00",
+      "context": {
+        "id": "01KG3K0G9SGG4APMEYFB980Q28",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889715+00:00",
+      "last_reported": "2026-01-29T00:38:48.889715+00:00",
+      "last_updated": "2026-01-29T00:38:48.889715+00:00",
+      "context": {
+        "id": "01KG3K0G9S4YDFQQYX1MFVETCS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889749+00:00",
+      "last_reported": "2026-01-29T00:38:48.889749+00:00",
+      "last_updated": "2026-01-29T00:38:48.889749+00:00",
+      "context": {
+        "id": "01KG3K0G9SZ2XN70M8TYWX2JY5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889775+00:00",
+      "last_reported": "2026-01-29T00:38:48.889775+00:00",
+      "last_updated": "2026-01-29T00:38:48.889775+00:00",
+      "context": {
+        "id": "01KG3K0G9SFGY9JT0JDNK0PN9Q",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889795+00:00",
+      "last_reported": "2026-01-29T00:38:48.889795+00:00",
+      "last_updated": "2026-01-29T00:38:48.889795+00:00",
+      "context": {
+        "id": "01KG3K0G9SMJRT6KGFPQQXCJX2",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889816+00:00",
+      "last_reported": "2026-01-29T00:38:48.889816+00:00",
+      "last_updated": "2026-01-29T00:38:48.889816+00:00",
+      "context": {
+        "id": "01KG3K0G9S5GJ60KFWNQ7MFGS8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryan_family_01_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889848+00:00",
+      "last_reported": "2026-01-29T00:38:48.889848+00:00",
+      "last_updated": "2026-01-29T00:38:48.889848+00:00",
+      "context": {
+        "id": "01KG3K0G9SQKZPH9G8D0EV0XN4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889874+00:00",
+      "last_reported": "2026-01-29T00:38:48.889874+00:00",
+      "last_updated": "2026-01-29T00:38:48.889874+00:00",
+      "context": {
+        "id": "01KG3K0G9S0KWRHMMXHWAP0BH8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889895+00:00",
+      "last_reported": "2026-01-29T00:38:48.889895+00:00",
+      "last_updated": "2026-01-29T00:38:48.889895+00:00",
+      "context": {
+        "id": "01KG3K0G9SSFA6HVSMG4S76PT0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889917+00:00",
+      "last_reported": "2026-01-29T00:38:48.889917+00:00",
+      "last_updated": "2026-01-29T00:38:48.889917+00:00",
+      "context": {
+        "id": "01KG3K0G9S7W94QSPM0BRDBC16",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889952+00:00",
+      "last_reported": "2026-01-29T00:38:48.889952+00:00",
+      "last_updated": "2026-01-29T00:38:48.889952+00:00",
+      "context": {
+        "id": "01KG3K0G9SHXWD1CG30DKNG2V1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.889992+00:00",
+      "last_reported": "2026-01-29T00:38:48.889992+00:00",
+      "last_updated": "2026-01-29T00:38:48.889992+00:00",
+      "context": {
+        "id": "01KG3K0G9S8P1H5J9GZ4FFJTT7",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890017+00:00",
+      "last_reported": "2026-01-29T00:38:48.890017+00:00",
+      "last_updated": "2026-01-29T00:38:48.890017+00:00",
+      "context": {
+        "id": "01KG3K0G9T8VXRB2CBH2MAFKZM",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890038+00:00",
+      "last_reported": "2026-01-29T00:38:48.890038+00:00",
+      "last_updated": "2026-01-29T00:38:48.890038+00:00",
+      "context": {
+        "id": "01KG3K0G9TK9Q23C3E4T0WMHB8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_desktop_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890059+00:00",
+      "last_reported": "2026-01-29T00:38:48.890059+00:00",
+      "last_updated": "2026-01-29T00:38:48.890059+00:00",
+      "context": {
+        "id": "01KG3K0G9TZXSVW5QD44ZC3JN1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890079+00:00",
+      "last_reported": "2026-01-29T00:38:48.890079+00:00",
+      "last_updated": "2026-01-29T00:38:48.890079+00:00",
+      "context": {
+        "id": "01KG3K0G9TJYNAS52KQQS74BAR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890099+00:00",
+      "last_reported": "2026-01-29T00:38:48.890099+00:00",
+      "last_updated": "2026-01-29T00:38:48.890099+00:00",
+      "context": {
+        "id": "01KG3K0G9T205QSEH15CG83RN3",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890119+00:00",
+      "last_reported": "2026-01-29T00:38:48.890119+00:00",
+      "last_updated": "2026-01-29T00:38:48.890119+00:00",
+      "context": {
+        "id": "01KG3K0G9T855CAH6TR06N25C5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890156+00:00",
+      "last_reported": "2026-01-29T00:38:48.890156+00:00",
+      "last_updated": "2026-01-29T00:38:48.890156+00:00",
+      "context": {
+        "id": "01KG3K0G9T5C83FHYZXMB47JS1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890192+00:00",
+      "last_reported": "2026-01-29T00:38:48.890192+00:00",
+      "last_updated": "2026-01-29T00:38:48.890192+00:00",
+      "context": {
+        "id": "01KG3K0G9TZNVKPK4SD81GCE36",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890217+00:00",
+      "last_reported": "2026-01-29T00:38:48.890217+00:00",
+      "last_updated": "2026-01-29T00:38:48.890217+00:00",
+      "context": {
+        "id": "01KG3K0G9TNV3FD7KFYGSXXQMR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890237+00:00",
+      "last_reported": "2026-01-29T00:38:48.890237+00:00",
+      "last_updated": "2026-01-29T00:38:48.890237+00:00",
+      "context": {
+        "id": "01KG3K0G9T0YF1YNJNS249DN9E",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryanfamily_pc_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890258+00:00",
+      "last_reported": "2026-01-29T00:38:48.890258+00:00",
+      "last_updated": "2026-01-29T00:38:48.890258+00:00",
+      "context": {
+        "id": "01KG3K0G9T0MMXN4DDX4C31522",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890278+00:00",
+      "last_reported": "2026-01-29T00:38:48.890278+00:00",
+      "last_updated": "2026-01-29T00:38:48.890278+00:00",
+      "context": {
+        "id": "01KG3K0G9TDTCQBDG8TE6F9FJ1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890315+00:00",
+      "last_reported": "2026-01-29T00:38:48.890315+00:00",
+      "last_updated": "2026-01-29T00:38:48.890315+00:00",
+      "context": {
+        "id": "01KG3K0G9TAZGPDMCJYRMXRA50",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890350+00:00",
+      "last_reported": "2026-01-29T00:38:48.890350+00:00",
+      "last_updated": "2026-01-29T00:38:48.890350+00:00",
+      "context": {
+        "id": "01KG3K0G9TG8C4S6RARWK0JB6B",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890406+00:00",
+      "last_reported": "2026-01-29T00:38:48.890406+00:00",
+      "last_updated": "2026-01-29T00:38:48.890406+00:00",
+      "context": {
+        "id": "01KG3K0G9TJ5DXKQEV7KXR5XRA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890430+00:00",
+      "last_reported": "2026-01-29T00:38:48.890430+00:00",
+      "last_updated": "2026-01-29T00:38:48.890430+00:00",
+      "context": {
+        "id": "01KG3K0G9T9PT50SZNG9RPPMJJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890451+00:00",
+      "last_reported": "2026-01-29T00:38:48.890451+00:00",
+      "last_updated": "2026-01-29T00:38:48.890451+00:00",
+      "context": {
+        "id": "01KG3K0G9TV9W03D1HZH6E27W3",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890472+00:00",
+      "last_reported": "2026-01-29T00:38:48.890472+00:00",
+      "last_updated": "2026-01-29T00:38:48.890472+00:00",
+      "context": {
+        "id": "01KG3K0G9T44GT745ABWGJJREX",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.iphone_15_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890500+00:00",
+      "last_reported": "2026-01-29T00:38:48.890500+00:00",
+      "last_updated": "2026-01-29T00:38:48.890500+00:00",
+      "context": {
+        "id": "01KG3K0G9TBPT21ZG9MDTQJF44",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890530+00:00",
+      "last_reported": "2026-01-29T00:38:48.890530+00:00",
+      "last_updated": "2026-01-29T00:38:48.890530+00:00",
+      "context": {
+        "id": "01KG3K0G9T57329M7KYQPD0MF2",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890551+00:00",
+      "last_reported": "2026-01-29T00:38:48.890551+00:00",
+      "last_updated": "2026-01-29T00:38:48.890551+00:00",
+      "context": {
+        "id": "01KG3K0G9TWMPS48FQX4E8T94B",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890571+00:00",
+      "last_reported": "2026-01-29T00:38:48.890571+00:00",
+      "last_updated": "2026-01-29T00:38:48.890571+00:00",
+      "context": {
+        "id": "01KG3K0G9TKG96GTSWRHMJQK3E",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890605+00:00",
+      "last_reported": "2026-01-29T00:38:48.890605+00:00",
+      "last_updated": "2026-01-29T00:38:48.890605+00:00",
+      "context": {
+        "id": "01KG3K0G9TCCE0R3763A7N612Q",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890628+00:00",
+      "last_reported": "2026-01-29T00:38:48.890628+00:00",
+      "last_updated": "2026-01-29T00:38:48.890628+00:00",
+      "context": {
+        "id": "01KG3K0G9T8ERT45RH29ZVWVK1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890659+00:00",
+      "last_reported": "2026-01-29T00:38:48.890659+00:00",
+      "last_updated": "2026-01-29T00:38:48.890659+00:00",
+      "context": {
+        "id": "01KG3K0G9T166MZVAZTAZE3AVX",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890685+00:00",
+      "last_reported": "2026-01-29T00:38:48.890685+00:00",
+      "last_updated": "2026-01-29T00:38:48.890685+00:00",
+      "context": {
+        "id": "01KG3K0G9TEY7KJ6RW0KX245HD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.pve_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890705+00:00",
+      "last_reported": "2026-01-29T00:38:48.890705+00:00",
+      "last_updated": "2026-01-29T00:38:48.890705+00:00",
+      "context": {
+        "id": "01KG3K0G9TQGZ0Z8W64RMSB2E9",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890725+00:00",
+      "last_reported": "2026-01-29T00:38:48.890725+00:00",
+      "last_updated": "2026-01-29T00:38:48.890725+00:00",
+      "context": {
+        "id": "01KG3K0G9T8J8CQKSREGBZN4AR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890746+00:00",
+      "last_reported": "2026-01-29T00:38:48.890746+00:00",
+      "last_updated": "2026-01-29T00:38:48.890746+00:00",
+      "context": {
+        "id": "01KG3K0G9T4FFR4NDJB1VHHPGZ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890778+00:00",
+      "last_reported": "2026-01-29T00:38:48.890778+00:00",
+      "last_updated": "2026-01-29T00:38:48.890778+00:00",
+      "context": {
+        "id": "01KG3K0G9T4XMB69EM6S5FJX87",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890815+00:00",
+      "last_reported": "2026-01-29T00:38:48.890815+00:00",
+      "last_updated": "2026-01-29T00:38:48.890815+00:00",
+      "context": {
+        "id": "01KG3K0G9TGCV12TSHPAQX2Q0P",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890839+00:00",
+      "last_reported": "2026-01-29T00:38:48.890839+00:00",
+      "last_updated": "2026-01-29T00:38:48.890839+00:00",
+      "context": {
+        "id": "01KG3K0G9TE38W0Q47HXDZ26R4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890858+00:00",
+      "last_reported": "2026-01-29T00:38:48.890858+00:00",
+      "last_updated": "2026-01-29T00:38:48.890858+00:00",
+      "context": {
+        "id": "01KG3K0G9TXCWHV1Z98WQMH696",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890878+00:00",
+      "last_reported": "2026-01-29T00:38:48.890878+00:00",
+      "last_updated": "2026-01-29T00:38:48.890878+00:00",
+      "context": {
+        "id": "01KG3K0G9THJXPG7ZZRWMQWZYR",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890899+00:00",
+      "last_reported": "2026-01-29T00:38:48.890899+00:00",
+      "last_updated": "2026-01-29T00:38:48.890899+00:00",
+      "context": {
+        "id": "01KG3K0G9TFASHPFJG8H4W43KS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.amazon_kftuwi_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890919+00:00",
+      "last_reported": "2026-01-29T00:38:48.890919+00:00",
+      "last_updated": "2026-01-29T00:38:48.890919+00:00",
+      "context": {
+        "id": "01KG3K0G9TGWR0HC1G4B7KKNTY",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.amazon_kftuwi_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890940+00:00",
+      "last_reported": "2026-01-29T00:38:48.890940+00:00",
+      "last_updated": "2026-01-29T00:38:48.890940+00:00",
+      "context": {
+        "id": "01KG3K0G9TS82JGK7VNHSZRRWX",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.amazon_kftuwi_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.890973+00:00",
+      "last_reported": "2026-01-29T00:38:48.890973+00:00",
+      "last_updated": "2026-01-29T00:38:48.890973+00:00",
+      "context": {
+        "id": "01KG3K0G9THAEGMD49B2QC83NF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryan_family_01_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891008+00:00",
+      "last_reported": "2026-01-29T00:38:48.891008+00:00",
+      "last_updated": "2026-01-29T00:38:48.891008+00:00",
+      "context": {
+        "id": "01KG3K0G9VPX2PJBQMYD5KDFTW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryan_family_01_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891031+00:00",
+      "last_reported": "2026-01-29T00:38:48.891031+00:00",
+      "last_updated": "2026-01-29T00:38:48.891031+00:00",
+      "context": {
+        "id": "01KG3K0G9VV85T9D5Z5R2XB0MB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryan_family_01_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891058+00:00",
+      "last_reported": "2026-01-29T00:38:48.891058+00:00",
+      "last_updated": "2026-01-29T00:38:48.891058+00:00",
+      "context": {
+        "id": "01KG3K0G9V1GTSNWMZKNQVY5PE",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamily_desktop_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891087+00:00",
+      "last_reported": "2026-01-29T00:38:48.891087+00:00",
+      "last_updated": "2026-01-29T00:38:48.891087+00:00",
+      "context": {
+        "id": "01KG3K0G9VHHTPBQBQGF5KWJY2",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamily_desktop_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891108+00:00",
+      "last_reported": "2026-01-29T00:38:48.891108+00:00",
+      "last_updated": "2026-01-29T00:38:48.891108+00:00",
+      "context": {
+        "id": "01KG3K0G9VDDYWV5QK7SHVG6HD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamily_desktop_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891129+00:00",
+      "last_reported": "2026-01-29T00:38:48.891129+00:00",
+      "last_updated": "2026-01-29T00:38:48.891129+00:00",
+      "context": {
+        "id": "01KG3K0G9VPHXC1Z4EPVQDSNBA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamily_pc_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891149+00:00",
+      "last_reported": "2026-01-29T00:38:48.891149+00:00",
+      "last_updated": "2026-01-29T00:38:48.891149+00:00",
+      "context": {
+        "id": "01KG3K0G9V46D4HWM2KD5ZWYR4",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamily_pc_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891169+00:00",
+      "last_reported": "2026-01-29T00:38:48.891169+00:00",
+      "last_updated": "2026-01-29T00:38:48.891169+00:00",
+      "context": {
+        "id": "01KG3K0G9V1M94Y780A6VEVBRD",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryanfamily_pc_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891207+00:00",
+      "last_reported": "2026-01-29T00:38:48.891207+00:00",
+      "last_updated": "2026-01-29T00:38:48.891207+00:00",
+      "context": {
+        "id": "01KG3K0G9VRCQZ0MVQK3JM1TBK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_15_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891230+00:00",
+      "last_reported": "2026-01-29T00:38:48.891230+00:00",
+      "last_updated": "2026-01-29T00:38:48.891230+00:00",
+      "context": {
+        "id": "01KG3K0G9VWXH3X2ZR0B1KNW7X",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_15_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891251+00:00",
+      "last_reported": "2026-01-29T00:38:48.891251+00:00",
+      "last_updated": "2026-01-29T00:38:48.891251+00:00",
+      "context": {
+        "id": "01KG3K0G9V1P8WBVKPR38V4X6P",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_15_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891282+00:00",
+      "last_reported": "2026-01-29T00:38:48.891282+00:00",
+      "last_updated": "2026-01-29T00:38:48.891282+00:00",
+      "context": {
+        "id": "01KG3K0G9VYCM87AD0NA1PBJHB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.pve_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891317+00:00",
+      "last_reported": "2026-01-29T00:38:48.891317+00:00",
+      "last_updated": "2026-01-29T00:38:48.891317+00:00",
+      "context": {
+        "id": "01KG3K0G9VTPR53TXTTD1RXG6D",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.pve_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891462+00:00",
+      "last_reported": "2026-01-29T00:38:48.891462+00:00",
+      "last_updated": "2026-01-29T00:38:48.891462+00:00",
+      "context": {
+        "id": "01KG3K0G9V3FTPR3ZMZANSKKHJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.pve_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891487+00:00",
+      "last_reported": "2026-01-29T00:38:48.891487+00:00",
+      "last_updated": "2026-01-29T00:38:48.891487+00:00",
+      "context": {
+        "id": "01KG3K0G9V982HA8SM1JQHTT6J",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.ulefone_armor_27t_pro_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891507+00:00",
+      "last_reported": "2026-01-29T00:38:48.891507+00:00",
+      "last_updated": "2026-01-29T00:38:48.891507+00:00",
+      "context": {
+        "id": "01KG3K0G9VYWMSXPN9SV4VJF0A",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.ulefone_armor_27t_pro_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891544+00:00",
+      "last_reported": "2026-01-29T00:38:48.891544+00:00",
+      "last_updated": "2026-01-29T00:38:48.891544+00:00",
+      "context": {
+        "id": "01KG3K0G9VR0ZRHFZSJW46ZCBH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.ulefone_armor_27t_pro_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.891568+00:00",
+      "last_reported": "2026-01-29T00:38:48.891568+00:00",
+      "last_updated": "2026-01-29T00:38:48.891568+00:00",
+      "context": {
+        "id": "01KG3K0G9VGDR7GPYWANFDFBP7",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_discussions",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Discussions",
+        "supported_features": 0,
+        "unit_of_measurement": "discussions"
+      },
+      "last_changed": "2026-01-29T00:38:48.891590+00:00",
+      "last_reported": "2026-01-29T00:38:48.891590+00:00",
+      "last_updated": "2026-01-29T00:38:48.891590+00:00",
+      "context": {
+        "id": "01KG3K0G9V4H68PSH3T4ZF0G91",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_discussions",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Discussions",
+        "supported_features": 0,
+        "unit_of_measurement": "discussions"
+      },
+      "last_changed": "2026-01-29T00:38:48.891611+00:00",
+      "last_reported": "2026-01-29T00:38:48.891611+00:00",
+      "last_updated": "2026-01-29T00:38:48.891611+00:00",
+      "context": {
+        "id": "01KG3K0G9V13KWVNYPKX1C8V8F",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_discussions",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Discussions",
+        "supported_features": 0,
+        "unit_of_measurement": "discussions"
+      },
+      "last_changed": "2026-01-29T00:38:48.891632+00:00",
+      "last_reported": "2026-01-29T00:38:48.891632+00:00",
+      "last_updated": "2026-01-29T00:38:48.891632+00:00",
+      "context": {
+        "id": "01KG3K0G9VTQ0Q03PSTQKR4NMJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_stars",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Stars",
+        "supported_features": 0,
+        "unit_of_measurement": "stars"
+      },
+      "last_changed": "2026-01-29T00:38:48.891655+00:00",
+      "last_reported": "2026-01-29T00:38:48.891655+00:00",
+      "last_updated": "2026-01-29T00:38:48.891655+00:00",
+      "context": {
+        "id": "01KG3K0G9VP72R9DJ3Q9V2DWA0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_stars",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Stars",
+        "supported_features": 0,
+        "unit_of_measurement": "stars"
+      },
+      "last_changed": "2026-01-29T00:38:48.891680+00:00",
+      "last_reported": "2026-01-29T00:38:48.891680+00:00",
+      "last_updated": "2026-01-29T00:38:48.891680+00:00",
+      "context": {
+        "id": "01KG3K0G9V1HAT4RCHFP7H7096",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_stars",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Stars",
+        "supported_features": 0,
+        "unit_of_measurement": "stars"
+      },
+      "last_changed": "2026-01-29T00:38:48.891701+00:00",
+      "last_reported": "2026-01-29T00:38:48.891701+00:00",
+      "last_updated": "2026-01-29T00:38:48.891701+00:00",
+      "context": {
+        "id": "01KG3K0G9VS9ASMQMKVPEZH3SV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_watchers",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Watchers",
+        "supported_features": 0,
+        "unit_of_measurement": "watchers"
+      },
+      "last_changed": "2026-01-29T00:38:48.891747+00:00",
+      "last_reported": "2026-01-29T00:38:48.891747+00:00",
+      "last_updated": "2026-01-29T00:38:48.891747+00:00",
+      "context": {
+        "id": "01KG3K0G9V96DED1KK4F35FEEN",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_watchers",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Watchers",
+        "supported_features": 0,
+        "unit_of_measurement": "watchers"
+      },
+      "last_changed": "2026-01-29T00:38:48.891773+00:00",
+      "last_reported": "2026-01-29T00:38:48.891773+00:00",
+      "last_updated": "2026-01-29T00:38:48.891773+00:00",
+      "context": {
+        "id": "01KG3K0G9V6G0EMT5FYQYJR7J1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_watchers",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Watchers",
+        "supported_features": 0,
+        "unit_of_measurement": "watchers"
+      },
+      "last_changed": "2026-01-29T00:38:48.891794+00:00",
+      "last_reported": "2026-01-29T00:38:48.891794+00:00",
+      "last_updated": "2026-01-29T00:38:48.891794+00:00",
+      "context": {
+        "id": "01KG3K0G9VZ0CC5JDDD3PFP3MM",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_forks",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Forks",
+        "supported_features": 0,
+        "unit_of_measurement": "forks"
+      },
+      "last_changed": "2026-01-29T00:38:48.891815+00:00",
+      "last_reported": "2026-01-29T00:38:48.891815+00:00",
+      "last_updated": "2026-01-29T00:38:48.891815+00:00",
+      "context": {
+        "id": "01KG3K0G9VFK35Z6HK4KVS6QDJ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_forks",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Forks",
+        "supported_features": 0,
+        "unit_of_measurement": "forks"
+      },
+      "last_changed": "2026-01-29T00:38:48.891836+00:00",
+      "last_reported": "2026-01-29T00:38:48.891836+00:00",
+      "last_updated": "2026-01-29T00:38:48.891836+00:00",
+      "context": {
+        "id": "01KG3K0G9VMB0YNNW8HW63D57Q",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_forks",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Forks",
+        "supported_features": 0,
+        "unit_of_measurement": "forks"
+      },
+      "last_changed": "2026-01-29T00:38:48.891857+00:00",
+      "last_reported": "2026-01-29T00:38:48.891857+00:00",
+      "last_updated": "2026-01-29T00:38:48.891857+00:00",
+      "context": {
+        "id": "01KG3K0G9VWWZ9CPWPYQQF37X5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_issues",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Issues",
+        "supported_features": 0,
+        "unit_of_measurement": "issues"
+      },
+      "last_changed": "2026-01-29T00:38:48.891879+00:00",
+      "last_reported": "2026-01-29T00:38:48.891879+00:00",
+      "last_updated": "2026-01-29T00:38:48.891879+00:00",
+      "context": {
+        "id": "01KG3K0G9VEXRSXJM6F95V6YQS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_issues",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Issues",
+        "supported_features": 0,
+        "unit_of_measurement": "issues"
+      },
+      "last_changed": "2026-01-29T00:38:48.891900+00:00",
+      "last_reported": "2026-01-29T00:38:48.891900+00:00",
+      "last_updated": "2026-01-29T00:38:48.891900+00:00",
+      "context": {
+        "id": "01KG3K0G9V3YM9QSXD9F367V2X",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_issues",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Issues",
+        "supported_features": 0,
+        "unit_of_measurement": "issues"
+      },
+      "last_changed": "2026-01-29T00:38:48.891938+00:00",
+      "last_reported": "2026-01-29T00:38:48.891938+00:00",
+      "last_updated": "2026-01-29T00:38:48.891938+00:00",
+      "context": {
+        "id": "01KG3K0G9VT6ZFRJGE9NZWN7X5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_pull_requests",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Pull requests",
+        "supported_features": 0,
+        "unit_of_measurement": "pull requests"
+      },
+      "last_changed": "2026-01-29T00:38:48.891961+00:00",
+      "last_reported": "2026-01-29T00:38:48.891961+00:00",
+      "last_updated": "2026-01-29T00:38:48.891961+00:00",
+      "context": {
+        "id": "01KG3K0G9VM98CNWEE785NRDC5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_pull_requests",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Pull requests",
+        "supported_features": 0,
+        "unit_of_measurement": "pull requests"
+      },
+      "last_changed": "2026-01-29T00:38:48.891982+00:00",
+      "last_reported": "2026-01-29T00:38:48.891982+00:00",
+      "last_updated": "2026-01-29T00:38:48.891982+00:00",
+      "context": {
+        "id": "01KG3K0G9VBTYEG2N80MNMHQKC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_pull_requests",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "state_class": "measurement",
+        "friendly_name": "Pull requests",
+        "supported_features": 0,
+        "unit_of_measurement": "pull requests"
+      },
+      "last_changed": "2026-01-29T00:38:48.892011+00:00",
+      "last_reported": "2026-01-29T00:38:48.892011+00:00",
+      "last_updated": "2026-01-29T00:38:48.892011+00:00",
+      "context": {
+        "id": "01KG3K0G9WVMK1AM2FCJHGR43Y",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_latest_commit",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest commit",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892041+00:00",
+      "last_reported": "2026-01-29T00:38:48.892041+00:00",
+      "last_updated": "2026-01-29T00:38:48.892041+00:00",
+      "context": {
+        "id": "01KG3K0G9WPCSF196GZC8P47X2",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_latest_commit",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest commit",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892076+00:00",
+      "last_reported": "2026-01-29T00:38:48.892076+00:00",
+      "last_updated": "2026-01-29T00:38:48.892076+00:00",
+      "context": {
+        "id": "01KG3K0G9WXKNQETN0EAN182RF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_latest_commit",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest commit",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892099+00:00",
+      "last_reported": "2026-01-29T00:38:48.892099+00:00",
+      "last_updated": "2026-01-29T00:38:48.892099+00:00",
+      "context": {
+        "id": "01KG3K0G9WQCZZJR8N06NTCSX6",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_latest_discussion",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest discussion",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892120+00:00",
+      "last_reported": "2026-01-29T00:38:48.892120+00:00",
+      "last_updated": "2026-01-29T00:38:48.892120+00:00",
+      "context": {
+        "id": "01KG3K0G9WHNKMG8GTEZ5WCNSF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_latest_discussion",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest discussion",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892156+00:00",
+      "last_reported": "2026-01-29T00:38:48.892156+00:00",
+      "last_updated": "2026-01-29T00:38:48.892156+00:00",
+      "context": {
+        "id": "01KG3K0G9WHPCE5X7ESGC3YSV8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_latest_discussion",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest discussion",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892179+00:00",
+      "last_reported": "2026-01-29T00:38:48.892179+00:00",
+      "last_updated": "2026-01-29T00:38:48.892179+00:00",
+      "context": {
+        "id": "01KG3K0G9WB9SN1211ZNRTMTN8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_latest_release",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest release",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892200+00:00",
+      "last_reported": "2026-01-29T00:38:48.892200+00:00",
+      "last_updated": "2026-01-29T00:38:48.892200+00:00",
+      "context": {
+        "id": "01KG3K0G9WD2YE7TYCBHB20MY1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_latest_release",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest release",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892220+00:00",
+      "last_reported": "2026-01-29T00:38:48.892220+00:00",
+      "last_updated": "2026-01-29T00:38:48.892220+00:00",
+      "context": {
+        "id": "01KG3K0G9W0VP8Q8GM7W2K2E5J",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_latest_release",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest release",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892241+00:00",
+      "last_reported": "2026-01-29T00:38:48.892241+00:00",
+      "last_updated": "2026-01-29T00:38:48.892241+00:00",
+      "context": {
+        "id": "01KG3K0G9W3FNFN21RZS58H9E1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_latest_issue",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest issue",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892261+00:00",
+      "last_reported": "2026-01-29T00:38:48.892261+00:00",
+      "last_updated": "2026-01-29T00:38:48.892261+00:00",
+      "context": {
+        "id": "01KG3K0G9WX5KH29YPZDMTA5M7",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_latest_issue",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest issue",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892281+00:00",
+      "last_reported": "2026-01-29T00:38:48.892281+00:00",
+      "last_updated": "2026-01-29T00:38:48.892281+00:00",
+      "context": {
+        "id": "01KG3K0G9W91K6NKEB1Q2D4NA1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_latest_issue",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest issue",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892313+00:00",
+      "last_reported": "2026-01-29T00:38:48.892313+00:00",
+      "last_updated": "2026-01-29T00:38:48.892313+00:00",
+      "context": {
+        "id": "01KG3K0G9WBSGD7HDWN439KV8T",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_latest_pull_request",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest pull request",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892382+00:00",
+      "last_reported": "2026-01-29T00:38:48.892382+00:00",
+      "last_updated": "2026-01-29T00:38:48.892382+00:00",
+      "context": {
+        "id": "01KG3K0G9W9BYYR5TEPY7D7EQV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_latest_pull_request",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest pull request",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892406+00:00",
+      "last_reported": "2026-01-29T00:38:48.892406+00:00",
+      "last_updated": "2026-01-29T00:38:48.892406+00:00",
+      "context": {
+        "id": "01KG3K0G9WR8T7JARRX3QNWK9G",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_latest_pull_request",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest pull request",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892444+00:00",
+      "last_reported": "2026-01-29T00:38:48.892444+00:00",
+      "last_updated": "2026-01-29T00:38:48.892444+00:00",
+      "context": {
+        "id": "01KG3K0G9W87JKFZQ4851SBKKB",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.lissy93_awesome_privacy_latest_tag",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest tag",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892465+00:00",
+      "last_reported": "2026-01-29T00:38:48.892465+00:00",
+      "last_updated": "2026-01-29T00:38:48.892465+00:00",
+      "context": {
+        "id": "01KG3K0G9W3RBSQ5S4NMM8XJY0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.home_assistant_home_assistant_io_latest_tag",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest tag",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892486+00:00",
+      "last_reported": "2026-01-29T00:38:48.892486+00:00",
+      "last_updated": "2026-01-29T00:38:48.892486+00:00",
+      "context": {
+        "id": "01KG3K0G9W1AJR883KCMJRD0SA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.basedhardware_omi_latest_tag",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Latest tag",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892507+00:00",
+      "last_reported": "2026-01-29T00:38:48.892507+00:00",
+      "last_updated": "2026-01-29T00:38:48.892507+00:00",
+      "context": {
+        "id": "01KG3K0G9WJ3RJY60F2TJGC2JE",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryansprovision",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892528+00:00",
+      "last_reported": "2026-01-29T00:38:48.892528+00:00",
+      "last_updated": "2026-01-29T00:38:48.892528+00:00",
+      "context": {
+        "id": "01KG3K0G9WDF34ASQARP3MYCKA",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryansprovision_in_game",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "In game",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892549+00:00",
+      "last_reported": "2026-01-29T00:38:48.892549+00:00",
+      "last_updated": "2026-01-29T00:38:48.892549+00:00",
+      "context": {
+        "id": "01KG3K0G9W93M24M6Q8WF7A6EX",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.bryansprovision_subscribed_to_xbox_game_pass",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Subscribed to Xbox Game Pass",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892599+00:00",
+      "last_reported": "2026-01-29T00:38:48.892599+00:00",
+      "last_updated": "2026-01-29T00:38:48.892599+00:00",
+      "context": {
+        "id": "01KG3K0G9WTBZHR7XDQW1SVDHS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "image.bryansprovision_gamerpic",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Gamerpic",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892623+00:00",
+      "last_reported": "2026-01-29T00:38:48.892623+00:00",
+      "last_updated": "2026-01-29T00:38:48.892623+00:00",
+      "context": {
+        "id": "01KG3K0G9W1N077JH08NDVZ28F",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "image.bryansprovision_now_playing",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Now playing",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892644+00:00",
+      "last_reported": "2026-01-29T00:38:48.892644+00:00",
+      "last_updated": "2026-01-29T00:38:48.892644+00:00",
+      "context": {
+        "id": "01KG3K0G9WGZJKQPR199GTJEZ6",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "image.bryansprovision_avatar",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Avatar",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892678+00:00",
+      "last_reported": "2026-01-29T00:38:48.892678+00:00",
+      "last_updated": "2026-01-29T00:38:48.892678+00:00",
+      "context": {
+        "id": "01KG3K0G9WAM5P828ADCMQDK7N",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_status",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Status",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892701+00:00",
+      "last_reported": "2026-01-29T00:38:48.892701+00:00",
+      "last_updated": "2026-01-29T00:38:48.892701+00:00",
+      "context": {
+        "id": "01KG3K0G9WVC8FGF8V003KFHR5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_gamerscore",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Gamerscore",
+        "supported_features": 0,
+        "unit_of_measurement": "points"
+      },
+      "last_changed": "2026-01-29T00:38:48.892722+00:00",
+      "last_reported": "2026-01-29T00:38:48.892722+00:00",
+      "last_updated": "2026-01-29T00:38:48.892722+00:00",
+      "context": {
+        "id": "01KG3K0G9WSKY5T9J04HYEH9NF",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_last_online",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last online",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892754+00:00",
+      "last_reported": "2026-01-29T00:38:48.892754+00:00",
+      "last_updated": "2026-01-29T00:38:48.892754+00:00",
+      "context": {
+        "id": "01KG3K0G9WC56GEW4DH1XSGGCH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_following",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Following",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.892780+00:00",
+      "last_reported": "2026-01-29T00:38:48.892780+00:00",
+      "last_updated": "2026-01-29T00:38:48.892780+00:00",
+      "context": {
+        "id": "01KG3K0G9WXH69R8Y5054BG2ES",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_follower",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Follower",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.892815+00:00",
+      "last_reported": "2026-01-29T00:38:48.892815+00:00",
+      "last_updated": "2026-01-29T00:38:48.892815+00:00",
+      "context": {
+        "id": "01KG3K0G9W3DMPX1D2AFDZ6DC5",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_now_playing",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Now playing",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892837+00:00",
+      "last_reported": "2026-01-29T00:38:48.892837+00:00",
+      "last_updated": "2026-01-29T00:38:48.892837+00:00",
+      "context": {
+        "id": "01KG3K0G9W5FJAMNME0V160Q3C",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_friends",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Friends",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.892857+00:00",
+      "last_reported": "2026-01-29T00:38:48.892857+00:00",
+      "last_updated": "2026-01-29T00:38:48.892857+00:00",
+      "context": {
+        "id": "01KG3K0G9WM8Y360P65DV7JG2E",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_in_party",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "In party",
+        "supported_features": 0,
+        "unit_of_measurement": "people"
+      },
+      "last_changed": "2026-01-29T00:38:48.892877+00:00",
+      "last_reported": "2026-01-29T00:38:48.892877+00:00",
+      "last_updated": "2026-01-29T00:38:48.892877+00:00",
+      "context": {
+        "id": "01KG3K0G9W9XEA2C25FEZ8GZHY",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.bryansprovision_party_join_restrictions",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "options": [
+          "invite_only",
+          "joinable"
+        ],
+        "device_class": "enum",
+        "friendly_name": "Party join restrictions",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892899+00:00",
+      "last_reported": "2026-01-29T00:38:48.892899+00:00",
+      "last_updated": "2026-01-29T00:38:48.892899+00:00",
+      "context": {
+        "id": "01KG3K0G9W3T7JQ3QCFXQVN99F",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.892969+00:00",
+      "last_reported": "2026-01-29T00:38:48.892969+00:00",
+      "last_updated": "2026-01-29T00:38:48.892969+00:00",
+      "context": {
+        "id": "01KG3K0G9WRPP2VNZNEQ1B4NY9",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893692+00:00",
+      "last_reported": "2026-01-29T00:38:48.893692+00:00",
+      "last_updated": "2026-01-29T00:38:48.893692+00:00",
+      "context": {
+        "id": "01KG3K0G9XFTRSBKQ9975K5V1Q",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893723+00:00",
+      "last_reported": "2026-01-29T00:38:48.893723+00:00",
+      "last_updated": "2026-01-29T00:38:48.893723+00:00",
+      "context": {
+        "id": "01KG3K0G9XSPAW3Y3019QN98XP",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893746+00:00",
+      "last_reported": "2026-01-29T00:38:48.893746+00:00",
+      "last_updated": "2026-01-29T00:38:48.893746+00:00",
+      "context": {
+        "id": "01KG3K0G9XSZ2SR0DAGA3KSDTN",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893768+00:00",
+      "last_reported": "2026-01-29T00:38:48.893768+00:00",
+      "last_updated": "2026-01-29T00:38:48.893768+00:00",
+      "context": {
+        "id": "01KG3K0G9X776BNKC3GJ9Q73NT",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893790+00:00",
+      "last_reported": "2026-01-29T00:38:48.893790+00:00",
+      "last_updated": "2026-01-29T00:38:48.893790+00:00",
+      "context": {
+        "id": "01KG3K0G9XAD9MDMG6PY15MVDC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893815+00:00",
+      "last_reported": "2026-01-29T00:38:48.893815+00:00",
+      "last_updated": "2026-01-29T00:38:48.893815+00:00",
+      "context": {
+        "id": "01KG3K0G9X5SRJ1C6FWJ4BMMR0",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.onn_streaming_device_4k_pro_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893854+00:00",
+      "last_reported": "2026-01-29T00:38:48.893854+00:00",
+      "last_updated": "2026-01-29T00:38:48.893854+00:00",
+      "context": {
+        "id": "01KG3K0G9X943DH1QNNVTHBVDW",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_client",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Client",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893912+00:00",
+      "last_reported": "2026-01-29T00:38:48.893912+00:00",
+      "last_updated": "2026-01-29T00:38:48.893912+00:00",
+      "context": {
+        "id": "01KG3K0G9X23XPS4KMEKW2H9TQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_key_expiry_disabled",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Key expiry disabled",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893937+00:00",
+      "last_reported": "2026-01-29T00:38:48.893937+00:00",
+      "last_updated": "2026-01-29T00:38:48.893937+00:00",
+      "context": {
+        "id": "01KG3K0G9X3HMS2H84S3K3N323",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_supports_hairpinning",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports hairpinning",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893960+00:00",
+      "last_reported": "2026-01-29T00:38:48.893960+00:00",
+      "last_updated": "2026-01-29T00:38:48.893960+00:00",
+      "context": {
+        "id": "01KG3K0G9XB6BWWH3NPXRAHJ1C",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_supports_ipv6",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports IPv6",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.893985+00:00",
+      "last_reported": "2026-01-29T00:38:48.893985+00:00",
+      "last_updated": "2026-01-29T00:38:48.893985+00:00",
+      "context": {
+        "id": "01KG3K0G9XRGYX0PF89E60V33R",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_supports_pcp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports PCP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894006+00:00",
+      "last_reported": "2026-01-29T00:38:48.894006+00:00",
+      "last_updated": "2026-01-29T00:38:48.894006+00:00",
+      "context": {
+        "id": "01KG3K0G9YB6K2G3D5E1PT5KGC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_supports_nat_pmp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports NAT-PMP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894027+00:00",
+      "last_reported": "2026-01-29T00:38:48.894027+00:00",
+      "last_updated": "2026-01-29T00:38:48.894027+00:00",
+      "context": {
+        "id": "01KG3K0G9YKNHSQ6PMD3686WQH",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_supports_udp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UDP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894048+00:00",
+      "last_reported": "2026-01-29T00:38:48.894048+00:00",
+      "last_updated": "2026-01-29T00:38:48.894048+00:00",
+      "context": {
+        "id": "01KG3K0G9YQZGN79NA8854A14H",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "binary_sensor.ulefone_armor_27t_pro_1_supports_upnp",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "Supports UPnP",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894070+00:00",
+      "last_reported": "2026-01-29T00:38:48.894070+00:00",
+      "last_updated": "2026-01-29T00:38:48.894070+00:00",
+      "context": {
+        "id": "01KG3K0G9YD7SXJQRRNWS3HAHS",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.onn_streaming_device_4k_pro_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894091+00:00",
+      "last_reported": "2026-01-29T00:38:48.894091+00:00",
+      "last_updated": "2026-01-29T00:38:48.894091+00:00",
+      "context": {
+        "id": "01KG3K0G9YFW1CSA24MJTQEN17",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.onn_streaming_device_4k_pro_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894111+00:00",
+      "last_reported": "2026-01-29T00:38:48.894111+00:00",
+      "last_updated": "2026-01-29T00:38:48.894111+00:00",
+      "context": {
+        "id": "01KG3K0G9Y0JX1G7ST1NTCANQP",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.onn_streaming_device_4k_pro_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894148+00:00",
+      "last_reported": "2026-01-29T00:38:48.894148+00:00",
+      "last_updated": "2026-01-29T00:38:48.894148+00:00",
+      "context": {
+        "id": "01KG3K0G9YZB2VX5R3A35KJFG8",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.ulefone_armor_27t_pro_1_expires",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Expires",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894184+00:00",
+      "last_reported": "2026-01-29T00:38:48.894184+00:00",
+      "last_updated": "2026-01-29T00:38:48.894184+00:00",
+      "context": {
+        "id": "01KG3K0G9YGZY78F7WB7VEV5MM",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.ulefone_armor_27t_pro_1_ip_address",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "friendly_name": "IP address",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894208+00:00",
+      "last_reported": "2026-01-29T00:38:48.894208+00:00",
+      "last_updated": "2026-01-29T00:38:48.894208+00:00",
+      "context": {
+        "id": "01KG3K0G9YHVSYAW6HTPB541ZQ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.ulefone_armor_27t_pro_1_last_seen",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "timestamp",
+        "friendly_name": "Last seen",
+        "supported_features": 0
+      },
+      "last_changed": "2026-01-29T00:38:48.894229+00:00",
+      "last_reported": "2026-01-29T00:38:48.894229+00:00",
+      "last_updated": "2026-01-29T00:38:48.894229+00:00",
+      "context": {
+        "id": "01KG3K0G9Y6SCY8VD7RJVWNJDC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "device_tracker.iphone_f9n9mv5m07",
+      "state": "home",
+      "attributes": {
+        "source_type": "gps",
+        "battery_level": 5,
+        "latitude": 40.8124189016905,
+        "longitude": -72.97545624816533,
+        "gps_accuracy": 18,
+        "altitude": 22.69577553478021,
+        "vertical_accuracy": 30,
+        "friendly_name": "iPhone-F9N9MV5M07"
+      },
+      "last_changed": "2026-01-31T02:53:28.025838+00:00",
+      "last_reported": "2026-01-31T02:53:28.025838+00:00",
+      "last_updated": "2026-01-31T02:53:28.025838+00:00",
+      "context": {
+        "id": "01KG8ZGG2S4BE23WG4RVVNFYN7",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_battery_state",
+      "state": "Not Charging",
+      "attributes": {
+        "Low Power Mode": true,
+        "icon": "mdi:battery-outline",
+        "friendly_name": "iPhone-F9N9MV5M07 Battery State"
+      },
+      "last_changed": "2026-01-31T02:43:49.914880+00:00",
+      "last_reported": "2026-01-31T02:43:50.599085+00:00",
+      "last_updated": "2026-01-31T02:43:49.914880+00:00",
+      "context": {
+        "id": "01KG8YYVGTCXPPTM9R2MBKR9AG",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_ssid",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 SSID"
+      },
+      "last_changed": "2026-01-31T02:43:50.231272+00:00",
+      "last_reported": "2026-01-31T02:43:50.599328+00:00",
+      "last_updated": "2026-01-31T02:43:50.231272+00:00",
+      "context": {
+        "id": "01KG8YYVTQFTNKX63BWFG2W7M1",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_bssid",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 BSSID"
+      },
+      "last_changed": "2026-01-31T02:43:50.231483+00:00",
+      "last_reported": "2026-01-31T02:43:50.599495+00:00",
+      "last_updated": "2026-01-31T02:43:50.231483+00:00",
+      "context": {
+        "id": "01KG8YYVTQ6GVDTFCGBX635D5E",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_battery_level",
+      "state": "5",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-outline",
+        "friendly_name": "iPhone-F9N9MV5M07 Battery Level"
+      },
+      "last_changed": "2026-01-31T02:43:49.933647+00:00",
+      "last_reported": "2026-01-31T02:43:50.598939+00:00",
+      "last_updated": "2026-01-31T02:43:49.933647+00:00",
+      "context": {
+        "id": "01KG8YYVHD90HQJPJXNBBCAHAY",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_storage",
+      "state": "unavailable",
+      "attributes": {
+        "unit_of_measurement": "% available",
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 Storage"
+      },
+      "last_changed": "2026-01-31T02:43:50.231032+00:00",
+      "last_reported": "2026-01-31T02:43:50.599207+00:00",
+      "last_updated": "2026-01-31T02:43:50.231032+00:00",
+      "context": {
+        "id": "01KG8YYVTQ9PY9E5HKV6DX19MK",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_sim_2",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 SIM 2"
+      },
+      "last_changed": "2026-01-31T02:43:50.233042+00:00",
+      "last_reported": "2026-01-31T02:43:50.599735+00:00",
+      "last_updated": "2026-01-31T02:43:50.233042+00:00",
+      "context": {
+        "id": "01KG8YYVTS6FBRERBBENEGCQAC",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_connection_type",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 Connection Type"
+      },
+      "last_changed": "2026-01-31T02:43:50.231648+00:00",
+      "last_reported": "2026-01-31T02:43:50.599616+00:00",
+      "last_updated": "2026-01-31T02:43:50.231648+00:00",
+      "context": {
+        "id": "01KG8YYVTQ0GDDNP70PS8RCK79",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_sim_1",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 SIM 1"
+      },
+      "last_changed": "2026-01-31T02:43:50.231813+00:00",
+      "last_reported": "2026-01-31T02:43:50.599874+00:00",
+      "last_updated": "2026-01-31T02:43:50.231813+00:00",
+      "context": {
+        "id": "01KG8YYVTQRV3NQ09KDPBZWQDZ",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_geocoded_location",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 Geocoded Location"
+      },
+      "last_changed": "2026-01-31T02:44:02.405004+00:00",
+      "last_reported": "2026-01-31T02:44:02.405004+00:00",
+      "last_updated": "2026-01-31T02:44:02.405004+00:00",
+      "context": {
+        "id": "01KG8YZ7Q55RZPY0CRD7KEWTEV",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_last_update_trigger",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 Last Update Trigger"
+      },
+      "last_changed": "2026-01-31T02:43:50.233205+00:00",
+      "last_reported": "2026-01-31T02:43:50.599998+00:00",
+      "last_updated": "2026-01-31T02:43:50.233205+00:00",
+      "context": {
+        "id": "01KG8YYVTSQGH49PMEK930N09K",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_app_version",
+      "state": "2026.1.1",
+      "attributes": {
+        "icon": "mdi:cellphone",
+        "friendly_name": "iPhone-F9N9MV5M07 App Version"
+      },
+      "last_changed": "2026-01-31T02:43:50.019596+00:00",
+      "last_reported": "2026-01-31T02:43:50.600124+00:00",
+      "last_updated": "2026-01-31T02:43:50.019596+00:00",
+      "context": {
+        "id": "01KG8YYVM38X1AAY5XF0DYSM8A",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_location_permission",
+      "state": "Authorized Always",
+      "attributes": {
+        "icon": "mdi:map",
+        "friendly_name": "iPhone-F9N9MV5M07 Location permission"
+      },
+      "last_changed": "2026-01-31T02:44:02.405433+00:00",
+      "last_reported": "2026-01-31T02:44:02.405433+00:00",
+      "last_updated": "2026-01-31T02:44:02.405433+00:00",
+      "context": {
+        "id": "01KG8YZ7Q5A270XXN7NF15M64H",
+        "parent_id": null,
+        "user_id": null
+      }
+    },
+    {
+      "entity_id": "sensor.iphone_f9n9mv5m07_audio_output",
+      "state": "unavailable",
+      "attributes": {
+        "icon": "mdi:dots-square",
+        "friendly_name": "iPhone-F9N9MV5M07 Audio Output"
+      },
+      "last_changed": "2026-01-31T02:43:50.233651+00:00",
+      "last_reported": "2026-01-31T02:43:50.600369+00:00",
+      "last_updated": "2026-01-31T02:43:50.233651+00:00",
+      "context": {
+        "id": "01KG8YYVTS5QVVR8F314D09EHH",
+        "parent_id": null,
+        "user_id": null
+      }
+    }
+  ],
+  "config": {
+    "allowlist_external_dirs": [
+      "/config/www",
+      "/media"
+    ],
+    "allowlist_external_urls": [],
+    "components": [
+      "github",
+      "ssdp",
+      "stt",
+      "cloud",
+      "go2rtc",
+      "jellyfin.sensor",
+      "thread",
+      "sensor",
+      "input_number",
+      "epic_games_store",
+      "default_config",
+      "binary_sensor",
+      "counter",
+      "google_translate.tts",
+      "energy.sensor",
+      "timer",
+      "websocket_api",
+      "ffmpeg",
+      "mobile_app.binary_sensor",
+      "jellyfin",
+      "cast",
+      "shopping_list",
+      "alexa_devices",
+      "bluetooth_adapters",
+      "openai_conversation.ai_task",
+      "image_upload",
+      "file",
+      "media_player",
+      "device_automation",
+      "scene",
+      "met",
+      "logbook",
+      "search",
+      "diagnostics",
+      "homeassistant",
+      "homeassistant.scene",
+      "lovelace",
+      "persistent_notification",
+      "assist_pipeline",
+      "input_select",
+      "auth",
+      "history",
+      "cast.media_player",
+      "tailscale",
+      "tag",
+      "labs",
+      "notify",
+      "google_assistant",
+      "backup.sensor",
+      "homeassistant_alerts",
+      "mobile_app.sensor",
+      "bluetooth",
+      "usage_prediction",
+      "jellyfin.remote",
+      "radio_browser",
+      "cloud.binary_sensor",
+      "conversation",
+      "trace",
+      "steam_online",
+      "my",
+      "google_translate",
+      "api",
+      "cloud.stt",
+      "intent",
+      "system_health",
+      "http",
+      "input_text",
+      "logger",
+      "ifttt",
+      "zone",
+      "shopping_list.todo",
+      "jellyfin.media_player",
+      "google_generative_ai_conversation",
+      "zeroconf",
+      "alexa",
+      "sun",
+      "openai_conversation.conversation",
+      "system_log",
+      "ai_task",
+      "cloud.tts",
+      "sun.sensor",
+      "webhook",
+      "schedule",
+      "script",
+      "wake_word",
+      "openai_conversation",
+      "event",
+      "analytics",
+      "input_datetime",
+      "automation",
+      "network",
+      "icloud",
+      "repairs",
+      "recorder",
+      "tts",
+      "remote",
+      "file_upload",
+      "person",
+      "mobile_app.notify",
+      "sun.binary_sensor",
+      "xbox",
+      "config",
+      "energy",
+      "mobile_app.device_tracker",
+      "blueprint",
+      "backup",
+      "onboarding",
+      "mobile_app",
+      "device_tracker",
+      "dhcp",
+      "backup.event",
+      "media_source",
+      "frontend",
+      "camera",
+      "usb",
+      "icloud.device_tracker",
+      "smartthings",
+      "icloud.sensor",
+      "input_button",
+      "stream",
+      "hardware",
+      "todo",
+      "input_boolean",
+      "application_credentials"
+    ],
+    "config_dir": "/config",
+    "config_source": "storage",
+    "country": "US",
+    "currency": "USD",
+    "debug": false,
+    "elevation": 0,
+    "external_url": null,
+    "internal_url": null,
+    "language": "en",
+    "latitude": 40.8124257,
+    "location_name": "Home",
+    "longitude": -72.9754372,
+    "radius": 100,
+    "recovery_mode": false,
+    "safe_mode": false,
+    "state": "RUNNING",
+    "time_zone": "America/New_York",
+    "unit_system": {
+      "length": "mi",
+      "accumulated_precipitation": "in",
+      "area": "ft\u00b2",
+      "mass": "lb",
+      "pressure": "psi",
+      "temperature": "\u00b0F",
+      "volume": "gal",
+      "wind_speed": "mph"
+    },
+    "version": "2025.12.5",
+    "whitelist_external_dirs": [
+      "/config/www",
+      "/media"
+    ]
+  }
+}

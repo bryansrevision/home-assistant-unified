@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: 'Security: Motion Detected While Away'
+  id: security_motion_detected_away
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01YCDVR4RZ5FV6D79JMB
+  parent_id: null
+  user_id: null
+entity_id: automation.security_motion_detected_while_away
+last_changed: '2026-01-29T00:38:34.188568+00:00'
+last_reported: '2026-01-29T00:38:34.188568+00:00'
+last_updated: '2026-01-29T00:38:34.188568+00:00'
+state: 'on'

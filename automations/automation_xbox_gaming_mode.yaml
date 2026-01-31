@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: Xbox Gaming Mode
+  id: 14e5c1ea-310c-4557-bb18-d809fb3169e2
+  last_triggered: null
+  mode: single
+context:
+  id: 01KG3K01Y860FQM9AA2J3EX2MK
+  parent_id: null
+  user_id: null
+entity_id: automation.xbox_gaming_mode
+last_changed: '2026-01-29T00:38:34.184011+00:00'
+last_reported: '2026-01-29T00:38:34.184011+00:00'
+last_updated: '2026-01-29T00:38:34.184011+00:00'
+state: 'on'
