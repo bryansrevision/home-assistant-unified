@@ -179,8 +179,8 @@ repository
 ### 3. Configuration File Alignment
 
 **Issue:** Need to verify if `core/configuration.yaml` matches live  
-`/config/configuration.yaml`
-**Recommendation:** Pull live configuration file for comparison
+`/config/configuration.yaml` **Recommendation:** Pull live configuration file
+for comparison
 
 ### 4. Secrets Management
 
