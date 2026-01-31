@@ -1,19 +1,22 @@
 # Home Assistant Integration Review
+
 **Date:** January 31, 2026  
 **Server:** 192.168.1.201:8123  
 **Version:** Home Assistant 2025.12.5  
 **Status:** ✅ Live and Connected
 
----
+
 
 ## 📊 Server Summary
 
 ### Live Entity Statistics
+
 - **Total Entities:** 328
 - **Total Domains:** 21
 - **Automations:** 27 active
 
 ### Entity Distribution by Domain
+
 | Domain | Count | Description |
 |--------|-------|-------------|
 | sensor | 146 | Environmental, system, and device sensors |
@@ -38,11 +41,12 @@
 | weather | 1 | Weather integration |
 | zone | 1 | Home zone |
 
----
+
 
 ## 🤖 Automation Analysis
 
 ### Live Automations (27 total)
+
 1. `welcome_home` - Welcome home routine
 2. `away_mode` - Away mode activation
 3. `phone_low_battery` - Low battery notifications
@@ -72,9 +76,12 @@
 27. `security_motion_detected_while_away` - Security motion alerts
 
 ### Repository Automations
-Located in: [automations/unified-automations.yaml](automations/unified-automations.yaml)
+
+Located in:
+[automations/unified-automations.yaml](automations/unified-automations.yaml)
 
 **Categories:**
+
 - Security (3 automations)
 - Presence (3 automations)
 - Routines (3 automations)
@@ -83,11 +90,12 @@ Located in: [automations/unified-automations.yaml](automations/unified-automatio
 - Wearables/AI (3+ automations)
 - Infrastructure
 
----
+
 
 ## 🔌 Integration Status
 
 ### Core Integrations (Confirmed Active)
+
 ✅ **API** - REST API enabled and operational  
 ✅ **Mobile App** - Mobile app integration active  
 ✅ **Person Tracking** - 1 person entity configured  
@@ -104,26 +112,30 @@ Located in: [automations/unified-automations.yaml](automations/unified-automatio
 ✅ **Backup** - Automatic backups configured (last: Jan 30, 2026)
 
 ### Media & Entertainment Integrations
+
 ✅ **Media Players** - 8 devices (Alexa, Jellyfin, Xbox, etc.)  
 ✅ **Remote Controls** - 1 remote entity  
 ✅ **Image Processing** - 6 image entities
 
 ### Smart Home Integrations
+
 ✅ **Binary Sensors** - 91 entities (doors, windows, motion)  
 ✅ **Sensors** - 146 entities (environmental, system)  
 ✅ **Switches** - 8 smart switches  
 ✅ **Notify Services** - 12 notification channels
 
 ### AI & Automation
+
 ✅ **AI Tasks** - 3 AI task entities  
 ✅ **Scripts** - 5 custom scripts  
 ✅ **Todo Lists** - 1 todo integration
 
----
+
 
 ## 📁 Repository Structure
 
 ### Configuration Files
+
 ```
 core/
 ├── configuration.yaml          ✅ Main configuration (HTTP, API, zones, etc.)
@@ -154,65 +166,77 @@ config/
 └── .env.example             ✅ Template file
 ```
 
----
+
 
 ## ⚠️ Alignment Issues & Recommendations
 
 ### 1. Automation Count Mismatch
+
 **Issue:** Live server has 27 automations, repository defines 20+  
-**Recommendation:** Perform full sync to identify missing automations in repository
+**Recommendation:** Perform full sync to identify missing automations in
+repository
 
 ### 2. Missing Integration Documentation
+
 **Issue:** 146 sensors + 91 binary sensors - need platform identification  
 **Recommendation:** Document which integrations provide these entities:
+
 - Backup integration (confirmed)
 - Weather service (needs identification)
 - Calendar service (needs identification)
 - Device tracker platforms (needs identification)
 
 ### 3. Configuration File Alignment
-**Issue:** Need to verify if `core/configuration.yaml` matches live `/config/configuration.yaml`  
+
+**Issue:** Need to verify if `core/configuration.yaml` matches live  
+`/config/configuration.yaml`
 **Recommendation:** Pull live configuration file for comparison
 
 ### 4. Secrets Management
+
 **Issue:** Configuration references `!secret` values not documented  
 **Recommendation:** Create secrets documentation template
 
 ### 5. Scripts Definition
+
 **Issue:** 5 scripts active on server, no `scripts.yaml` in repository  
 **Recommendation:** Export and document active scripts
 
----
+
 
 ## ✅ Next Steps
 
 ### Immediate Actions
+
 1. **Sync Pull:** Run `python scripts/align-server.py sync-pull --type all`
 2. **Compare Configurations:** Pull live `configuration.yaml` and compare
 3. **Export Scripts:** Retrieve 5 active scripts from server
 4. **Document Integrations:** Create integration inventory
 
 ### Medium Priority
+
 1. Create `INTEGRATIONS.md` documenting all 21 domains
 2. Add platform documentation for sensors/binary_sensors
 3. Set up automated sync schedule (daily/weekly)
 4. Create backup verification workflow
 
 ### Long Term
+
 1. Implement CI/CD pipeline for configuration testing
 2. Set up automated alignment checks
 3. Create integration health monitoring
 4. Document custom component development
 
----
+
 
 ## 🔗 Related Documentation
+
 - [MCP Configuration](docs/mcp-server/CONFIG.md)
 - [Deployment Summary](DEPLOYMENT_COMPLETE.md)
 - [Integration Notes](INTEGRATION_NOTES.md)
 - [Sync Guide](SYNC_GUIDE.md)
 
----
+
 
 **Review Status:** ✅ Complete  
 **Alignment Status:** ⚠️ Partial - Sync recommended  

@@ -252,6 +252,31 @@ input_boolean: !include ../integrations/tasker-profiles.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+################################################################################
+# THIRD-PARTY SERVICE INTEGRATIONS
+################################################################################
+
+# Amazon Alexa Integration
+alexa_media: !include ../integrations/alexa-integration.yaml
+alexa: !include ../integrations/alexa-integration.yaml
+
+# Google Home / Assistant Integration
+google_assistant: !include ../integrations/google-home-integration.yaml
+cast: !include ../integrations/google-home-integration.yaml
+google: !include ../integrations/google-home-integration.yaml
+
+# Samsung SmartThings Integration
+smartthings: !include ../integrations/smartthings-integration.yaml
+
+# Apple HomeKit / iOS Integration
+homekit: !include ../integrations/apple-homekit-integration.yaml
+ios: !include ../integrations/apple-homekit-integration.yaml
+icloud: !include ../integrations/apple-homekit-integration.yaml
+
+# Android Integrations (Tasker & Join)
+input_boolean: !include_dir_merge_named ../integrations/tasker-profiles.yaml
+rest_command: !include ../integrations/join-integration.yaml
+
 # Logger configuration
 logger:
   default: info
@@ -260,3 +285,10 @@ logger:
     homeassistant.components.mobile_app: info
     homeassistant.components.device_tracker: info
     homeassistant.components.rest: warning
+    homeassistant.components.alexa: info
+    homeassistant.components.alexa_media: info
+    homeassistant.components.google_assistant: info
+    homeassistant.components.cast: info
+    homeassistant.components.smartthings: info
+    homeassistant.components.homekit: info
+    homeassistant.components.icloud: info

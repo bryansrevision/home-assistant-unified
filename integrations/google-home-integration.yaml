@@ -1,0 +1,224 @@
+---
+# Google Home / Google Assistant Integration Configuration
+# Connects Home Assistant with Google services for voice control
+# Last Updated: January 31, 2026
+
+################################################################################
+# GOOGLE ASSISTANT INTEGRATION
+################################################################################
+
+# Google Assistant Smart Home Action
+google_assistant:
+  project_id: !secret google_assistant_project_id
+  service_account: !include google_service_account.json
+  report_state: true
+  exposed_domains:
+    - switch
+    - light
+    - scene
+    - script
+    - climate
+    - group
+    - cover
+    - lock
+    - media_player
+    - fan
+    - sensor
+    - binary_sensor
+
+  entity_config:
+    # Expose specific entities
+    switch.living_room_lamp:
+      name: "Living Room Lamp"
+      aliases:
+        - "Main Lamp"
+        - "Couch Light"
+      room: Living Room
+
+    light.bedroom_ceiling:
+      name: "Bedroom Light"
+      aliases:
+        - "Bedroom Ceiling"
+        - "Main Bedroom Light"
+      room: Bedroom
+
+    climate.thermostat:
+      name: "Thermostat"
+      aliases:
+        - "Temperature Control"
+        - "AC"
+      room: Living Room
+
+    # Hide sensitive entities
+    switch.alarm_system:
+      expose: false
+
+    sensor.wifi_password:
+      expose: false
+
+################################################################################
+# GOOGLE CAST (CHROMECAST) INTEGRATION
+################################################################################
+
+# Discover and control Chromecast devices
+cast:
+  media_player:
+    - host: !secret chromecast_living_room_ip
+      name: "Living Room Chromecast"
+    - host: !secret chromecast_bedroom_ip
+      name: "Bedroom Chromecast"
+    - host: !secret google_home_kitchen_ip
+      name: "Kitchen Google Home"
+    - host: !secret google_nest_hub_ip
+      name: "Google Nest Hub"
+
+################################################################################
+# GOOGLE CALENDAR INTEGRATION
+################################################################################
+
+# Google Calendar for events and reminders
+google:
+  client_id: !secret google_calendar_client_id
+  client_secret: !secret google_calendar_client_secret
+  track_new_calendar: true
+  calendar_access_role: reader
+
+# Calendar entities
+calendar:
+  - platform: google
+    calendars:
+      - cal_id: !secret google_calendar_personal_id
+        name: "Personal Calendar"
+        track: true
+
+      - cal_id: !secret google_calendar_work_id
+        name: "Work Calendar"
+        track: true
+
+      - cal_id: !secret google_calendar_family_id
+        name: "Family Calendar"
+        track: true
+
+################################################################################
+# GOOGLE LOCATION SHARING
+################################################################################
+
+# Google Maps for device tracking
+device_tracker:
+  - platform: google_maps
+    username: !secret google_maps_username
+    password: !secret google_maps_password
+    max_gps_accuracy: 200
+
+################################################################################
+# NOTIFY SERVICES FOR GOOGLE
+################################################################################
+
+notify:
+  # Google Cast TTS Notifications
+  - name: google_home_tts
+    platform: cast
+    target: media_player.google_home_kitchen
+
+  - name: google_nest_hub_tts
+    platform: cast
+    target: media_player.google_nest_hub
+
+  # Google Cast Group Announce
+  - name: google_home_announce_all
+    platform: group
+    services:
+      - service: google_home_tts
+      - service: google_nest_hub_tts
+
+################################################################################
+# GOOGLE HOME AUTOMATIONS
+################################################################################
+
+# TTS for Google Home devices
+tts:
+  - platform: google_cloud
+    key_file: !include google_tts_key.json
+    language: en-US
+    gender: female
+    voice: en-US-Wavenet-F
+    encoding: linear16
+    speed: 1.0
+    pitch: 0.0
+    gain: 0.0
+    profiles:
+      - small-bluetooth-speaker-class-device
+      - medium-bluetooth-speaker-class-device
+      - large-home-entertainment-class-device
+
+# Script: Google Home Welcome Announcement
+script:
+  google_home_welcome:
+    alias: "Google Home Welcome"
+    sequence:
+      - service: tts.google_cloud_say
+        target:
+          entity_id: media_player.google_home_kitchen
+        data:
+          message: >
+            Welcome home! The house temperature is {{ states('sensor.home_temperature') }} degrees.
+            {% if is_state('binary_sensor.front_door', 'on') %}
+              The front door is currently open.
+            {% endif %}
+
+  google_home_bedtime:
+    alias: "Google Home Bedtime"
+    sequence:
+      - service: tts.google_cloud_say
+        target:
+          entity_id: media_player.google_nest_hub
+        data:
+          message: "Goodnight! All lights are off and the house is secure. Sleep well!"
+
+################################################################################
+# GOOGLE HOME SENSORS
+################################################################################
+
+sensor:
+  - platform: template
+    sensors:
+      google_home_status:
+        friendly_name: "Google Home Status"
+        value_template: >
+          {% if is_state('media_player.google_home_kitchen', 'playing') %}
+            Playing
+          {% elif is_state('media_player.google_home_kitchen', 'paused') %}
+            Paused
+          {% else %}
+            Idle
+          {% endif %}
+        icon_template: mdi:google-home
+
+# Binary Sensor for Google Home Activity
+binary_sensor:
+  - platform: template
+    sensors:
+      google_home_active:
+        friendly_name: "Google Home Active"
+        value_template: >
+          {{ is_state('media_player.google_home_kitchen', 'playing') or
+             is_state('media_player.google_nest_hub', 'playing') }}
+        device_class: sound
+
+################################################################################
+# GOOGLE ASSISTANT ROUTINES
+################################################################################
+
+# Input Booleans for Google Assistant Routine Triggers
+input_boolean:
+  google_morning_routine:
+    name: "Google Morning Routine Active"
+    icon: mdi:weather-sunny
+
+  google_bedtime_routine:
+    name: "Google Bedtime Routine Active"
+    icon: mdi:weather-night
+
+  google_away_mode:
+    name: "Google Away Mode"
+    icon: mdi:home-export-outline

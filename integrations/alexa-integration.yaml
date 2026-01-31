@@ -1,0 +1,170 @@
+---
+# Amazon Alexa Integration Configuration
+# Connects Home Assistant with Alexa for voice control and automation
+# Last Updated: January 31, 2026
+
+################################################################################
+# ALEXA INTEGRATION
+################################################################################
+
+# Alexa Media Player Custom Component
+# Enables control of Alexa devices and access to media playback
+alexa_media:
+  accounts:
+    - email: !secret alexa_email
+      password: !secret alexa_password
+      url: amazon.com
+      scan_interval: 60
+      include_devices:
+        - "Living Room Echo"
+        - "Bedroom Echo Dot"
+        - "Kitchen Echo Show"
+        - "Office Echo"
+        - "Entryway Echo"
+        - "Gaming Room Echo"
+      exclude_devices:
+        - "This Device"
+
+# Alexa Smart Home Skill (for device discovery)
+alexa:
+  smart_home:
+    locale: en-US
+    endpoint: https://api.amazonalexa.com/v3/events
+    client_id: !secret alexa_client_id
+    client_secret: !secret alexa_client_secret
+    filter:
+      include_domains:
+        - switch
+        - light
+        - scene
+        - script
+        - climate
+        - cover
+        - lock
+        - media_player
+        - fan
+      include_entity_globs:
+        - binary_sensor.*_occupancy
+        - sensor.*_temperature
+      exclude_entities:
+        - light.kitchen_accent
+        - switch.bedroom_main
+
+# Alexa Flash Briefings
+# Custom news and updates for Alexa routines
+alexa_intent:
+  FlashBriefingIntent:
+    action:
+      service: script.alexa_flash_briefing
+    speech:
+      type: plain
+      text: >
+        Good morning! Here's your daily briefing.
+        The temperature is {{ states('sensor.home_temperature') }} degrees.
+        {% if is_state('binary_sensor.front_door', 'on') %}
+          The front door is open.
+        {% endif %}
+        You have {{ states('calendar.personal') }} events today.
+
+################################################################################
+# NOTIFY SERVICES FOR ALEXA
+################################################################################
+
+notify:
+  # Alexa Media Notification Service
+  - name: alexa_media
+    platform: alexa_media
+    targets:
+      - media_player.alexa_living_room
+      - media_player.alexa_bedroom
+      - media_player.alexa_kitchen
+
+  # Alexa Announce All
+  - name: alexa_announce_all
+    platform: alexa_media
+    targets:
+      - media_player.alexa_living_room
+      - media_player.alexa_bedroom
+      - media_player.alexa_kitchen
+      - media_player.alexa_office
+      - media_player.alexa_entryway
+
+################################################################################
+# ALEXA ROUTINES & AUTOMATIONS
+################################################################################
+
+# Sensor for Alexa Last Called Device
+sensor:
+  - platform: template
+    sensors:
+      alexa_last_called:
+        friendly_name: "Alexa Last Called Device"
+        value_template: >
+          {% set ns = namespace(last_called='') %}
+          {% for entity in states.media_player %}
+            {% if 'alexa' in entity.entity_id.lower() and entity.state == 'playing' %}
+              {% set ns.last_called = entity.name %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.last_called }}
+
+# Input Boolean for Alexa Do Not Disturb
+input_boolean:
+  alexa_dnd_mode:
+    name: "Alexa Do Not Disturb"
+    icon: mdi:bell-off
+
+# Script: Alexa Welcome Home Announcement
+script:
+  alexa_welcome_home:
+    alias: "Alexa Welcome Home"
+    sequence:
+      - service: notify.alexa_media
+        data:
+          target: media_player.alexa_living_room
+          data:
+            type: announce
+            method: all
+          message: >
+            Welcome home! The temperature inside is {{ states('sensor.home_temperature') }} degrees.
+            {% if is_state('light.living_room', 'off') %}
+              I've turned on the lights for you.
+            {% endif %}
+
+  alexa_goodnight:
+    alias: "Alexa Goodnight Routine"
+    sequence:
+      - service: notify.alexa_media
+        data:
+          target: media_player.alexa_bedroom
+          data:
+            type: announce
+          message: >
+            Goodnight! I've secured the house and turned off the lights.
+            Sleep well!
+      - delay: "00:00:05"
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.alexa_bedroom
+        data:
+          media_content_id: "sleep sounds"
+          media_content_type: custom
+
+################################################################################
+# ALEXA ENTITY CUSTOMIZATION
+################################################################################
+
+homeassistant:
+  customize:
+    # Alexa-friendly names for devices
+    switch.living_room_lamp:
+      alexa_name: "Living Room Lamp"
+      alexa_description: "Main lamp in the living room"
+
+    light.bedroom_ceiling:
+      alexa_name: "Bedroom Light"
+      alexa_description: "Ceiling light in the bedroom"
+
+    climate.thermostat:
+      alexa_name: "Thermostat"
+      alexa_description: "Main home thermostat"

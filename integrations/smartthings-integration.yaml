@@ -1,0 +1,271 @@
+---
+# Samsung SmartThings Integration Configuration
+# Connects Home Assistant with Samsung SmartThings ecosystem
+# Last Updated: January 31, 2026
+
+################################################################################
+# SMARTTHINGS INTEGRATION
+################################################################################
+
+# Samsung SmartThings Cloud API Integration
+smartthings:
+  access_token: !secret smartthings_access_token
+  
+  # SmartThings webhook for real-time updates
+  webhook_url: !secret smartthings_webhook_url
+
+################################################################################
+# SMARTTHINGS DEVICES
+################################################################################
+
+# Lights from SmartThings
+light:
+  - platform: smartthings
+    scan_interval: 30
+
+# Switches from SmartThings
+switch:
+  - platform: smartthings
+    scan_interval: 30
+
+# Sensors from SmartThings
+sensor:
+  - platform: smartthings
+    scan_interval: 30
+    monitored_conditions:
+      - temperature
+      - humidity
+      - battery
+      - illuminance
+      - power
+      - energy
+
+# Binary Sensors from SmartThings
+binary_sensor:
+  - platform: smartthings
+    scan_interval: 30
+    monitored_conditions:
+      - motion
+      - presence
+      - contact
+      - water
+      - smoke
+      - carbonMonoxide
+
+# Climate devices (thermostats) from SmartThings
+climate:
+  - platform: smartthings
+
+# Locks from SmartThings
+lock:
+  - platform: smartthings
+
+# Covers (blinds, shades) from SmartThings
+cover:
+  - platform: smartthings
+
+################################################################################
+# SMARTTHINGS SCENES & AUTOMATIONS
+################################################################################
+
+# SmartThings Scene Triggers
+scene:
+  - name: "SmartThings Good Morning"
+    entities:
+      light.bedroom_smartthings: on
+      climate.smartthings_thermostat:
+        temperature: 72
+  
+  - name: "SmartThings Away Mode"
+    entities:
+      light.all_smartthings_lights: off
+      lock.front_door_smartthings: locked
+      climate.smartthings_thermostat:
+        hvac_mode: away
+
+################################################################################
+# SMARTTHINGS DEVICE TRACKING
+################################################################################
+
+# SmartThings presence sensors for device tracking
+device_tracker:
+  - platform: smartthings
+    scan_interval: 30
+
+################################################################################
+# SMARTTHINGS NOTIFICATIONS
+################################################################################
+
+# Notify via SmartThings mobile app
+notify:
+  - name: smartthings_notify
+    platform: rest
+    resource: https://api.smartthings.com/v1/notifications
+    method: POST
+    headers:
+      Authorization: !secret smartthings_bearer_token
+      Content-Type: application/json
+    message_param_name: message
+    data:
+      deviceIds: !secret smartthings_device_ids
+
+################################################################################
+# SMARTTHINGS SENSORS & MONITORING
+################################################################################
+
+sensor:
+  # SmartThings Hub Status
+  - platform: rest
+    name: "SmartThings Hub Status"
+    resource: !secret smartthings_hub_api_url
+    method: GET
+    headers:
+      Authorization: !secret smartthings_bearer_token
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - firmwareVersion
+      - uptime
+      - zigbeeChannel
+      - zwaveRegion
+    scan_interval: 300
+
+  # Template sensors for SmartThings devices
+  - platform: template
+    sensors:
+      smartthings_device_count:
+        friendly_name: "SmartThings Device Count"
+        value_template: >
+          {{ states.light | selectattr('entity_id', 'search', 'smartthings') | list | count +
+             states.switch | selectattr('entity_id', 'search', 'smartthings') | list | count +
+             states.sensor | selectattr('entity_id', 'search', 'smartthings') | list | count }}
+        icon_template: mdi:samsung
+
+      smartthings_hub_connection:
+        friendly_name: "SmartThings Hub Connection"
+        value_template: >
+          {% if is_state('sensor.smartthings_hub_status', 'online') %}
+            Connected
+          {% else %}
+            Disconnected
+          {% endif %}
+        icon_template: >
+          {% if is_state('sensor.smartthings_hub_status', 'online') %}
+            mdi:check-network
+          {% else %}
+            mdi:close-network
+          {% endif %}
+
+################################################################################
+# SMARTTHINGS AUTOMATIONS
+################################################################################
+
+# Input Booleans for SmartThings modes
+input_boolean:
+  smartthings_home_mode:
+    name: "SmartThings Home Mode"
+    icon: mdi:home
+  
+  smartthings_away_mode:
+    name: "SmartThings Away Mode"
+    icon: mdi:home-export-outline
+  
+  smartthings_night_mode:
+    name: "SmartThings Night Mode"
+    icon: mdi:weather-night
+
+# Scripts for SmartThings device control
+script:
+  smartthings_all_lights_on:
+    alias: "SmartThings All Lights On"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id: all
+        data:
+          brightness_pct: 100
+
+  smartthings_all_lights_off:
+    alias: "SmartThings All Lights Off"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id: all
+
+  smartthings_lock_all:
+    alias: "SmartThings Lock All"
+    sequence:
+      - service: lock.lock
+        target:
+          entity_id: all
+
+################################################################################
+# SMARTTHINGS WEBHOOKS
+################################################################################
+
+# Automation to handle SmartThings webhooks
+automation:
+  - id: smartthings_webhook_handler
+    alias: "SmartThings Webhook Handler"
+    trigger:
+      - platform: webhook
+        webhook_id: smartthings_events
+    action:
+      - service: logbook.log
+        data:
+          name: "SmartThings Event"
+          message: >
+            Device: {{ trigger.json.deviceId }}
+            Event: {{ trigger.json.eventType }}
+            Value: {{ trigger.json.value }}
+
+################################################################################
+# SAMSUNG TV INTEGRATION (via SmartThings)
+################################################################################
+
+# Samsung Smart TV control
+media_player:
+  - platform: samsungtv
+    host: !secret samsung_tv_living_room_ip
+    name: "Living Room Samsung TV"
+    port: 8001
+    mac: !secret samsung_tv_mac
+    access_token: !secret samsung_tv_token
+    source_list:
+      - HDMI1
+      - HDMI2
+      - HDMI3
+      - Netflix
+      - YouTube
+      - Disney+
+      - Prime Video
+  
+  - platform: samsungtv
+    host: !secret samsung_tv_bedroom_ip
+    name: "Bedroom Samsung TV"
+    port: 8001
+    mac: !secret samsung_tv_bedroom_mac
+    access_token: !secret samsung_tv_bedroom_token
+
+################################################################################
+# SMARTTHINGS GROUPS
+################################################################################
+
+# Group all SmartThings lights
+light:
+  - platform: group
+    name: "All SmartThings Lights"
+    entities:
+      - light.living_room_smartthings
+      - light.bedroom_smartthings
+      - light.kitchen_smartthings
+      - light.hallway_smartthings
+
+# Group all SmartThings sensors
+group:
+  smartthings_sensors:
+    name: "SmartThings Sensors"
+    entities:
+      - sensor.living_room_temperature_smartthings
+      - sensor.bedroom_temperature_smartthings
+      - binary_sensor.front_door_smartthings
+      - binary_sensor.motion_sensor_smartthings

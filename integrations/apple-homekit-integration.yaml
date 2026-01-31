@@ -1,0 +1,360 @@
+---
+# Apple HomeKit & iCloud Integration Configuration
+# Connects Home Assistant with Apple ecosystem (HomeKit, iCloud, iOS)
+# Last Updated: January 31, 2026
+
+################################################################################
+# HOMEKIT INTEGRATION (Expose HA to Apple Home)
+################################################################################
+
+# HomeKit Bridge - Expose Home Assistant devices to Apple Home
+homekit:
+  name: "Home Assistant"
+  port: 51827
+  
+  # Filter which entities to expose
+  filter:
+    include_domains:
+      - light
+      - switch
+      - climate
+      - cover
+      - lock
+      - fan
+      - media_player
+      - scene
+      - script
+    
+    include_entity_globs:
+      - sensor.*_temperature
+      - sensor.*_humidity
+      - binary_sensor.*_motion
+      - binary_sensor.*_occupancy
+    
+    exclude_entities:
+      - light.bedroom_accent
+      - switch.debug_mode
+  
+  # Entity customization for HomeKit
+  entity_config:
+    light.living_room:
+      name: "Living Room Light"
+      feature_list:
+        - feature: brightness
+        - feature: color_temperature
+    
+    climate.thermostat:
+      name: "Home Thermostat"
+      linked_battery_sensor: sensor.thermostat_battery
+      low_battery_threshold: 20
+    
+    cover.garage_door:
+      name: "Garage Door"
+      linked_obstruction_sensor: binary_sensor.garage_obstruction
+    
+    lock.front_door:
+      name: "Front Door Lock"
+      code: !secret homekit_lock_code
+    
+    media_player.living_room_tv:
+      name: "Living Room TV"
+      feature_list:
+        - feature: on_off
+        - feature: play_pause
+
+################################################################################
+# ICLOUD INTEGRATION (Device Tracking & Find My)
+################################################################################
+
+# iCloud device tracker for iOS devices
+icloud:
+  username: !secret icloud_username
+  password: !secret icloud_password
+  
+  # Account configuration
+  with_family: true
+  max_interval: 30
+  gps_accuracy_threshold: 500
+  
+  # Tracked devices
+  tracked_devices:
+    - !secret icloud_device_iphone_id
+    - !secret icloud_device_ipad_id
+    - !secret icloud_device_watch_id
+
+# Device tracker from iCloud
+device_tracker:
+  - platform: icloud
+    username: !secret icloud_username
+    password: !secret icloud_password
+    account_name: primary_icloud
+
+################################################################################
+# IOS MOBILE APP INTEGRATION
+################################################################################
+
+# iOS Companion App integration
+ios:
+  push:
+    categories:
+      - name: "Security Alert"
+        identifier: "security_alert"
+        actions:
+          - identifier: "VIEW_CAMERA"
+            title: "View Camera"
+            activationMode: "background"
+            authenticationRequired: false
+            destructive: false
+          
+          - identifier: "DISARM_ALARM"
+            title: "Disarm Alarm"
+            activationMode: "background"
+            authenticationRequired: true
+            destructive: true
+      
+      - name: "Garage Control"
+        identifier: "garage_control"
+        actions:
+          - identifier: "OPEN_GARAGE"
+            title: "Open Garage"
+            activationMode: "background"
+            authenticationRequired: true
+          
+          - identifier: "CLOSE_GARAGE"
+            title: "Close Garage"
+            activationMode: "background"
+            authenticationRequired: false
+
+################################################################################
+# NOTIFY SERVICES FOR IOS
+################################################################################
+
+notify:
+  # iOS Mobile App notifications
+  - name: mobile_app_iphone
+    platform: ios
+    target: !secret ios_device_iphone_id
+  
+  - name: mobile_app_ipad
+    platform: ios
+    target: !secret ios_device_ipad_id
+  
+  # Critical iOS notifications (bypasses Do Not Disturb)
+  - name: ios_critical
+    platform: ios
+    target: !secret ios_device_iphone_id
+    data:
+      push:
+        sound:
+          name: default
+          critical: 1
+          volume: 1.0
+
+################################################################################
+# APPLE WATCH COMPLICATIONS
+################################################################################
+
+# Sensors optimized for Apple Watch
+sensor:
+  - platform: template
+    sensors:
+      watch_home_temperature:
+        friendly_name: "Home Temp"
+        value_template: "{{ states('sensor.home_temperature') }}°"
+        icon_template: mdi:thermometer
+      
+      watch_home_status:
+        friendly_name: "Home Status"
+        value_template: >
+          {% if is_state('alarm_control_panel.home_alarm', 'armed_away') %}
+            Away
+          {% elif is_state('alarm_control_panel.home_alarm', 'armed_home') %}
+            Home
+          {% else %}
+            Disarmed
+          {% endif %}
+        icon_template: mdi:shield-home
+      
+      watch_garage_status:
+        friendly_name: "Garage"
+        value_template: >
+          {% if is_state('cover.garage_door', 'open') %}
+            Open
+          {% else %}
+            Closed
+          {% endif %}
+        icon_template: mdi:garage
+
+################################################################################
+# SIRI SHORTCUTS INTEGRATION
+################################################################################
+
+# Scripts accessible via Siri
+script:
+  siri_good_morning:
+    alias: "Siri Good Morning"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.bedroom
+        data:
+          brightness_pct: 50
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.thermostat
+        data:
+          temperature: 72
+      - service: notify.mobile_app_iphone
+        data:
+          message: "Good morning! Temperature set to 72°F and lights are on."
+
+  siri_goodnight:
+    alias: "Siri Goodnight"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id: all
+      - service: lock.lock
+        target:
+          entity_id: all
+      - service: alarm_control_panel.alarm_arm_night
+        target:
+          entity_id: alarm_control_panel.home_alarm
+      - service: notify.mobile_app_iphone
+        data:
+          message: "Goodnight! All lights off, doors locked, and alarm armed."
+
+  siri_im_home:
+    alias: "Siri I'm Home"
+    sequence:
+      - service: alarm_control_panel.alarm_disarm
+        target:
+          entity_id: alarm_control_panel.home_alarm
+        data:
+          code: !secret alarm_code
+      - service: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_pct: 80
+      - service: climate.set_preset_mode
+        target:
+          entity_id: climate.thermostat
+        data:
+          preset_mode: home
+
+  siri_leaving_home:
+    alias: "Siri Leaving Home"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id: all
+      - service: climate.set_preset_mode
+        target:
+          entity_id: climate.thermostat
+        data:
+          preset_mode: away
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.home_alarm
+        data:
+          code: !secret alarm_code
+      - service: notify.mobile_app_iphone
+        data:
+          message: "Have a great day! House is secure and alarm is armed."
+
+################################################################################
+# HOMEKIT AUTOMATIONS
+################################################################################
+
+# Input Booleans for HomeKit scenes
+input_boolean:
+  homekit_movie_mode:
+    name: "HomeKit Movie Mode"
+    icon: mdi:movie-open
+  
+  homekit_party_mode:
+    name: "HomeKit Party Mode"
+    icon: mdi:party-popper
+  
+  homekit_sleep_mode:
+    name: "HomeKit Sleep Mode"
+    icon: mdi:sleep
+
+################################################################################
+# AIRPLAY 2 DEVICES
+################################################################################
+
+# AirPlay 2 media receivers
+media_player:
+  - platform: apple_tv
+    host: !secret apple_tv_living_room_ip
+    name: "Living Room Apple TV"
+    credentials: !secret apple_tv_living_room_credentials
+  
+  - platform: apple_tv
+    host: !secret apple_tv_bedroom_ip
+    name: "Bedroom Apple TV"
+    credentials: !secret apple_tv_bedroom_credentials
+
+# HomePod integration
+  - platform: homepod
+    host: !secret homepod_living_room_ip
+    name: "Living Room HomePod"
+  
+  - platform: homepod
+    host: !secret homepod_bedroom_ip
+    name: "Bedroom HomePod Mini"
+
+################################################################################
+# ICLOUD SENSORS
+################################################################################
+
+sensor:
+  # iCloud battery levels
+  - platform: template
+    sensors:
+      iphone_battery:
+        friendly_name: "iPhone Battery"
+        unit_of_measurement: "%"
+        value_template: "{{ state_attr('device_tracker.iphone', 'battery_level') }}"
+        device_class: battery
+        icon_template: >
+          {% set battery = state_attr('device_tracker.iphone', 'battery_level') | int %}
+          {% if battery >= 95 %}
+            mdi:battery
+          {% elif battery >= 85 %}
+            mdi:battery-90
+          {% elif battery >= 75 %}
+            mdi:battery-80
+          {% elif battery >= 65 %}
+            mdi:battery-70
+          {% elif battery >= 55 %}
+            mdi:battery-60
+          {% elif battery >= 45 %}
+            mdi:battery-50
+          {% elif battery >= 35 %}
+            mdi:battery-40
+          {% elif battery >= 25 %}
+            mdi:battery-30
+          {% elif battery >= 15 %}
+            mdi:battery-20
+          {% else %}
+            mdi:battery-alert
+          {% endif %}
+
+################################################################################
+# HOMEKIT CUSTOMIZATION
+################################################################################
+
+homeassistant:
+  customize:
+    # HomeKit-specific entity customization
+    light.living_room:
+      homekit_name: "Living Room Lights"
+      homekit_hidden: false
+    
+    switch.coffee_maker:
+      homekit_name: "Coffee Maker"
+      homekit_hidden: false
+      device_class: outlet
