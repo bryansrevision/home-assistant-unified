@@ -1,0 +1,415 @@
+---
+# Android Device Integration Configuration
+# Complete mobile device integration for Home Assistant
+# Last Updated: February 1, 2026
+
+################################################################################
+# MOBILE APP INTEGRATION
+################################################################################
+
+# Home Assistant Mobile App (Android)
+mobile_app:
+  # Enable mobile app integration
+  # This allows Android devices to:
+  # - Send location updates
+  # - Receive notifications
+  # - Report sensor data (battery, network, etc.)
+  # - Control devices via app
+  # - Use voice commands
+
+################################################################################
+# ANDROID DEVICE TRACKER
+################################################################################
+
+device_tracker:
+  - platform: mobile_app
+    # Devices are automatically discovered when mobile app connects
+    # Configure individual devices in Integrations UI
+
+################################################################################
+# ANDROID SENSORS
+################################################################################
+
+# Template sensors for Android device status
+sensor:
+  - platform: template
+    sensors:
+      # Primary Android Phone
+      android_phone_battery:
+        friendly_name: "Android Phone Battery"
+        unit_of_measurement: "%"
+        value_template: >
+          {{ state_attr('sensor.android_phone_battery_level', 'state') | int(0) }}
+        icon_template: >
+          {% set battery = states('sensor.android_phone_battery_level') | int(0) %}
+          {% set battery_round = (battery / 10) | int * 10 %}
+          {% if battery_round >= 100 %}
+            mdi:battery
+          {% elif battery_round > 0 %}
+            mdi:battery-{{ battery_round }}
+          {% else %}
+            mdi:battery-alert
+          {% endif %}
+        attribute_templates:
+          charging: >
+            {{ state_attr('sensor.android_phone_battery_state', 'charging') }}
+      
+      android_phone_wifi:
+        friendly_name: "Android Phone WiFi"
+        value_template: >
+          {{ state_attr('sensor.android_phone_wifi_connection', 'ssid') | default('Disconnected') }}
+        icon_template: >
+          {% if states('sensor.android_phone_wifi_connection') != 'unknown' %}
+            mdi:wifi
+          {% else %}
+            mdi:wifi-off
+          {% endif %}
+      
+      android_phone_location:
+        friendly_name: "Android Phone Location"
+        value_template: >
+          {{ states('device_tracker.android_phone') }}
+        icon_template: >
+          {% set state = states('device_tracker.android_phone') %}
+          {% if state == 'home' %}
+            mdi:home
+          {% elif state == 'work' %}
+            mdi:briefcase
+          {% else %}
+            mdi:map-marker
+          {% endif %}
+      
+      # Tablet
+      android_tablet_battery:
+        friendly_name: "Android Tablet Battery"
+        unit_of_measurement: "%"
+        value_template: >
+          {{ state_attr('sensor.android_tablet_battery_level', 'state') | int(0) }}
+        icon_template: >
+          {% set battery = states('sensor.android_tablet_battery_level') | int(0) %}
+          {% set battery_round = (battery / 10) | int * 10 %}
+          {% if battery_round >= 100 %}
+            mdi:tablet
+          {% elif battery_round > 0 %}
+            mdi:tablet-{{ battery_round }}
+          {% else %}
+            mdi:tablet-off
+          {% endif %}
+
+################################################################################
+# BINARY SENSORS FOR ANDROID DEVICES
+################################################################################
+
+binary_sensor:
+  - platform: template
+    sensors:
+      android_phone_charging:
+        friendly_name: "Android Phone Charging"
+        device_class: battery_charging
+        value_template: >
+          {{ is_state_attr('sensor.android_phone_battery_state', 'charging', true) }}
+        icon_template: >
+          {% if is_state_attr('sensor.android_phone_battery_state', 'charging', true) %}
+            mdi:battery-charging
+          {% else %}
+            mdi:battery
+          {% endif %}
+      
+      android_phone_at_home:
+        friendly_name: "Android Phone At Home"
+        device_class: presence
+        value_template: >
+          {{ is_state('device_tracker.android_phone', 'home') }}
+        icon_template: >
+          {% if is_state('device_tracker.android_phone', 'home') %}
+            mdi:home-account
+          {% else %}
+            mdi:home-remove
+          {% endif %}
+      
+      android_phone_connected:
+        friendly_name: "Android Phone Connected"
+        device_class: connectivity
+        value_template: >
+          {{ states('sensor.android_phone_wifi_connection') != 'unknown' and
+             states('sensor.android_phone_wifi_connection') != 'unavailable' }}
+        icon_template: >
+          {% if states('sensor.android_phone_wifi_connection') != 'unknown' %}
+            mdi:cellphone-wireless
+          {% else %}
+            mdi:cellphone-off
+          {% endif %}
+
+################################################################################
+# NOTIFICATIONS TO ANDROID DEVICES
+################################################################################
+
+notify:
+  # Primary Android Phone
+  - name: android_phone
+    platform: mobile_app
+    # Automatically configured via mobile app
+  
+  # Android Tablet
+  - name: android_tablet
+    platform: mobile_app
+  
+  # All Android Devices Group
+  - name: all_android_devices
+    platform: group
+    services:
+      - service: mobile_app_android_phone
+      - service: mobile_app_android_tablet
+
+################################################################################
+# ANDROID DEVICE ACTIONS
+################################################################################
+
+# Automation actions for Android devices
+script:
+  notify_android_critical:
+    alias: "Send Critical Notification to Android"
+    sequence:
+      - service: notify.android_phone
+        data:
+          title: "{{ title }}"
+          message: "{{ message }}"
+          data:
+            priority: high
+            ttl: 0
+            notification_icon: mdi:alert
+            color: red
+            importance: high
+            vibrationPattern: "100, 1000, 100, 1000, 100"
+            ledColor: red
+            actions:
+              - action: "DISMISS"
+                title: "Dismiss"
+              - action: "VIEW"
+                title: "View"
+  
+  notify_android_info:
+    alias: "Send Info Notification to Android"
+    sequence:
+      - service: notify.android_phone
+        data:
+          title: "{{ title }}"
+          message: "{{ message }}"
+          data:
+            priority: normal
+            notification_icon: mdi:information
+            color: blue
+  
+  android_location_update:
+    alias: "Request Android Location Update"
+    sequence:
+      - service: notify.mobile_app_android_phone
+        data:
+          message: "request_location_update"
+  
+  android_ble_scan:
+    alias: "Request Android BLE Scan"
+    sequence:
+      - service: notify.mobile_app_android_phone
+        data:
+          message: command_ble_transmitter
+          data:
+            command: transmit
+            id: "ble_beacon_{{ now().timestamp() }}"
+            uuid: "00000000-0000-0000-0000-000000000000"
+  
+  android_screen_command:
+    alias: "Android Screen Control"
+    sequence:
+      - service: notify.mobile_app_android_phone
+        data:
+          message: "command_{{ command }}"
+          # Commands: screen_on, screen_off, screen_brightness_turn
+  
+  android_dnd_enable:
+    alias: "Enable Android Do Not Disturb"
+    sequence:
+      - service: notify.mobile_app_android_phone
+        data:
+          message: command_dnd
+          data:
+            command: "on"
+  
+  android_dnd_disable:
+    alias: "Disable Android Do Not Disturb"
+    sequence:
+      - service: notify.mobile_app_android_phone
+        data:
+          message: command_dnd
+          data:
+            command: "off"
+  
+  android_volume_set:
+    alias: "Set Android Volume"
+    sequence:
+      - service: notify.mobile_app_android_phone
+        data:
+          message: command_volume_level
+          data:
+            command: "{{ level }}"
+            media_stream: "{{ stream | default('music') }}"
+            # Streams: alarm, music, notification, ring, system
+
+################################################################################
+# ANDROID PRESENCE AUTOMATION
+################################################################################
+
+# Input booleans for Android device states
+input_boolean:
+  android_phone_home:
+    name: "Android Phone Home"
+    icon: mdi:home-account
+  
+  android_tablet_home:
+    name: "Android Tablet Home"
+    icon: mdi:tablet
+
+################################################################################
+# ANDROID BLUETOOTH TRACKING
+################################################################################
+
+# Bluetooth tracking for Android devices
+device_tracker:
+  - platform: bluetooth_le_tracker
+    track_new_devices: false
+    # iOS/Android devices often use random MAC addresses
+    # Configure specific devices in known_devices.yaml
+
+################################################################################
+# ANDROID WEBHOOKS FOR TASKER/JOIN INTEGRATION
+################################################################################
+
+# Webhooks receive data from Tasker and Join
+# See tasker-profiles.yaml and join-integration.yaml for full configuration
+
+# Example webhook endpoint:
+# POST /api/webhook/android_event
+# {
+#   "event_type": "location_changed",
+#   "device_id": "android_phone",
+#   "latitude": 40.7128,
+#   "longitude": -74.0060,
+#   "battery_level": 85,
+#   "wifi_ssid": "Home WiFi"
+# }
+
+################################################################################
+# ANDROID SENSORS AVAILABLE FROM MOBILE APP
+################################################################################
+
+# The following sensors are automatically created by the mobile app:
+#
+# Battery:
+#   - sensor.DEVICE_battery_level (%)
+#   - sensor.DEVICE_battery_state (charging/discharging)
+#   - sensor.DEVICE_battery_health
+#   - sensor.DEVICE_battery_temperature
+#
+# Network:
+#   - sensor.DEVICE_wifi_connection (SSID)
+#   - sensor.DEVICE_wifi_bssid
+#   - sensor.DEVICE_wifi_ip_address
+#   - sensor.DEVICE_wifi_link_speed
+#   - sensor.DEVICE_wifi_frequency
+#
+# Location:
+#   - device_tracker.DEVICE
+#   - sensor.DEVICE_geocoded_location
+#
+# Activity:
+#   - sensor.DEVICE_detected_activity
+#   - sensor.DEVICE_steps
+#
+# Connection:
+#   - binary_sensor.DEVICE_mobile_data
+#   - binary_sensor.DEVICE_bluetooth_state
+#   - sensor.DEVICE_bluetooth_connection
+#
+# Media:
+#   - sensor.DEVICE_audio_mode
+#   - sensor.DEVICE_volume_level
+#
+# Device Info:
+#   - sensor.DEVICE_android_os_version
+#   - sensor.DEVICE_app_version
+#   - sensor.DEVICE_device_name
+#   - sensor.DEVICE_manufacturer
+#   - sensor.DEVICE_model
+#
+# Sensors (if available):
+#   - sensor.DEVICE_light_sensor
+#   - sensor.DEVICE_pressure_sensor
+#   - sensor.DEVICE_proximity_sensor
+#   - sensor.DEVICE_accelerometer
+#   - sensor.DEVICE_gyroscope
+
+################################################################################
+# ANDROID CAMERA INTEGRATION
+################################################################################
+
+# IP Webcam / DroidCam integration for using Android as camera
+camera:
+  - platform: mjpeg
+    name: "Android Phone Camera"
+    mjpeg_url: "http://ANDROID_IP:8080/video"
+    # Requires IP Webcam app on Android
+    # Download: https://play.google.com/store/apps/details?id=com.pas.webcam
+  
+  - platform: generic
+    name: "Android Tablet Camera"
+    still_image_url: "http://ANDROID_TABLET_IP:8080/shot.jpg"
+    # Alternative still image capture
+
+################################################################################
+# ANDROID MEDIA PLAYERS
+################################################################################
+
+# Android devices can be controlled as media players
+# Automatically discovered via mobile app
+# Examples:
+#   - media_player.android_phone
+#   - media_player.android_tablet
+
+################################################################################
+# ZONE-BASED AUTOMATIONS FOR ANDROID
+################################################################################
+
+# Zones for Android device tracking
+zone:
+  - name: "Grocery Store"
+    latitude: 40.7580
+    longitude: -73.9855
+    radius: 200
+    icon: mdi:cart
+  
+  - name: "Gym"
+    latitude: 40.7489
+    longitude: -73.9680
+    radius: 150
+    icon: mdi:dumbbell
+
+################################################################################
+# ANDROID DEVICE COMMANDS VIA MOBILE APP
+################################################################################
+
+# Commands that can be sent to Android via notify service:
+#
+# - command_activity: Launches an Android activity
+# - command_broadcast_intent: Sends a broadcast intent
+# - command_ble_transmitter: Start/stop BLE beacon
+# - command_dnd: Enable/disable Do Not Disturb
+# - command_high_accuracy_mode: Toggle location accuracy
+# - command_launch_app: Launch specific app
+# - command_media: Media playback commands
+# - command_notification: Manage notifications
+# - command_ringer_mode: Change ringer mode
+# - command_screen_on/off: Control screen
+# - command_update_sensors: Force sensor update
+# - command_volume_level: Set volume
+# - command_webview: Display web content
+

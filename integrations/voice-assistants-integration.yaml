@@ -1,0 +1,488 @@
+# ============================================================================
+# GOOGLE HOME + AMAZON ALEXA VOICE ASSISTANT INTEGRATION
+# Voice Commands, Routines, TTS, and Cross-Platform Control
+# ============================================================================
+
+# ============================================================================
+# AMAZON ALEXA INTEGRATION
+# ============================================================================
+
+# Alexa Media Player (via HACS)
+alexa_media:
+  accounts:
+    - email: !secret alexa_email
+      password: !secret alexa_password
+      url: amazon.com
+      scan_interval: 60
+      include_devices:
+        - "Living Room Echo"
+        - "Bedroom Echo Dot"
+        - "Kitchen Echo Show"
+        - "Office Echo"
+      exclude_devices:
+        - "This Device"
+        - "Bryan's Alexa App"
+
+# ============================================================================
+# GOOGLE HOME / GOOGLE ASSISTANT INTEGRATION
+# ============================================================================
+
+# Google Assistant SDK
+google_assistant:
+  project_id: !secret google_assistant_project_id
+  service_account: !include SERVICE_ACCOUNT.JSON
+  report_state: true
+  exposed_domains:
+    - switch
+    - light
+    - group
+    - media_player
+    - climate
+    - fan
+    - cover
+    - scene
+    - script
+  entity_config:
+    # Expose specific entities to Google Home
+    light.living_room_lights:
+      name: "Living Room Lights"
+      aliases:
+        - "Main Lights"
+        - "Downstairs Lights"
+    switch.tv_power:
+      name: "TV"
+      aliases:
+        - "Television"
+    climate.thermostat:
+      name: "Thermostat"
+      aliases:
+        - "Temperature"
+        - "Heat"
+        - "AC"
+
+# Google Cast / Chromecast Integration (for Google Home devices)
+cast:
+  media_player:
+    - host: !secret google_home_kitchen_ip
+    - host: !secret google_nest_hub_ip
+    - host: !secret chromecast_living_room_ip
+    - host: !secret chromecast_bedroom_ip
+
+# ============================================================================
+# VOICE COMMAND SENSORS AND TRACKING
+# ============================================================================
+
+sensor:
+  - platform: template
+    sensors:
+      last_alexa_command:
+        friendly_name: "Last Alexa Command"
+        value_template: "{{ state_attr('media_player.living_room_echo', 'last_called') }}"
+        
+      alexa_active_devices:
+        friendly_name: "Alexa Devices Active"
+        value_template: >
+          {% set devices = [
+            states('media_player.living_room_echo'),
+            states('media_player.bedroom_echo_dot'),
+            states('media_player.kitchen_echo_show'),
+            states('media_player.office_echo')
+          ] %}
+          {{ devices | select('in', ['playing', 'on']) | list | count }}
+       unit_of_measurement: "devices"
+        icon_template: mdi:amazon-alexa
+        
+      google_home_status:
+        friendly_name: "Google Home Status"
+        value_template: >
+          {% if states('media_player.google_home_kitchen') == 'playing' %}
+            Active
+          {% else %}
+            Idle
+          {% endif %}
+        icon_template: mdi:google-home
+        
+      total_voice_assistants_online:
+        friendly_name: "Voice Assistants Online"
+        value_template: >
+          {% set alexa = [
+            states('media_player.living_room_echo'),
+            states('media_player.bedroom_echo_dot'),
+            states('media_player.kitchen_echo_show'),
+            states('media_player.office_echo')
+          ] | reject('in', ['unavailable', 'unknown']) | list | count %}
+          {% set google = [
+            states('media_player.google_home_kitchen'),
+            states('media_player.google_nest_hub')
+          ] | reject('in', ['unavailable', 'unknown']) | list | count %}
+          {{ alexa + google }}
+        unit_of_measurement: "assistants"
+        icon_template: mdi:microphone
+
+# Binary Sensors for Voice Assistant Status
+binary_sensor:
+  - platform: template
+    sensors:
+      alexa_media_connected:
+        friendly_name: "Alexa Media Connected"
+        device_class: connectivity
+        value_template: "{{ states('media_player.living_room_echo') not in ['unavailable', 'unknown'] }}"
+        
+      google_home_connected:
+        friendly_name: "Google Home Connected"
+        device_class: connectivity
+        value_template: "{{ states('media_player.google_home_kitchen') not in ['unavailable', 'unknown'] }}"
+
+# ============================================================================
+# VOICE COMMAND SCRIPTS
+# ============================================================================
+
+script:
+  # Alexa Announcements
+  alexa_announce_all:
+    alias: "Alexa - Announce to All Devices"
+    fields:
+      message:
+        description: "Message to announce"
+        example: "Dinner is ready!"
+    sequence:
+      - service: notify.alexa_media
+        data:
+          message: "{{ message }}"
+          target:
+            - media_player.living_room_echo
+            - media_player.bedroom_echo_dot
+            - media_player.kitchen_echo_show
+            - media_player.office_echo
+          data:
+            type: announce
+            
+  alexa_announce_specific:
+    alias: "Alexa - Announce to Specific Device"
+    fields:
+      device:
+        description: "Device entity ID"
+        example: "media_player.living_room_echo"
+      message:
+        description: "Message to announce"
+    sequence:
+      - service: notify.alexa_media
+        data:
+          message: "{{ message }}"
+          target: "{{ device }}"
+          data:
+            type: announce
+            
+  # Google Home TTS
+  google_home_speak:
+    alias: "Google Home - Speak Message"
+    fields:
+      device:
+        description: "Google Home device"
+        example: "media_player.google_home_kitchen"
+      message:
+        description: "Message to speak"
+    sequence:
+      - service: tts.google_translate_say
+        target:
+          entity_id: "{{ device }}"
+        data:
+          message: "{{ message }}"
+          language: "en"
+          
+  # Cross-Platform Announcement (Both Alexa and Google)
+  announce_everywhere:
+    alias: "Announce Everywhere"
+    fields:
+      message:
+        description: "Message to announce on all devices"
+    sequence:
+      - service: script.alexa_announce_all
+        data:
+          message: "{{ message }}"
+      - service: tts.google_translate_say
+        target:
+          entity_id:
+            - media_player.google_home_kitchen
+            - media_player.google_nest_hub
+        data:
+          message: "{{ message }}"
+          
+  # Alexa Routines Trigger
+  trigger_alexa_routine:
+    alias: "Trigger Alexa Routine"
+    fields:
+      routine_name:
+        description: "Name of Alexa routine to trigger"
+        example: "Good Morning"
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.living_room_echo
+        data:
+          media_content_type: "routine"
+          media_content_id: "{{ routine_name }}"
+          
+  # Voice Command Integration with GitHub Status
+  alexa_report_github_status:
+    alias: "Alexa - Report GitHub Status"
+    sequence:
+      - service: rest_command.get_github_actions_status
+      - delay: '00:00:02'
+      - service: script.alexa_announce_all
+        data:
+          message: >
+            GitHub status report: 
+            You have {{ states('sensor.github_open_issues') }} open issues.
+            {{ states('sensor.github_active_workflows') }} workflows are currently running.
+            {{ states('sensor.github_recent_commits') }} commits in the last 24 hours.
+            
+  # Google Home Report
+  google_home_daily_report:
+    alias: "Google Home - Daily Report"
+    sequence:
+      - service: script.google_home_speak
+        data:
+          device: "media_player.google_home_kitchen"
+          message: >
+            Good morning! Here's your daily report.
+            The temperature is {{ states('sensor.outdoor_temperature') }} degrees.
+            You have {{ states('calendar.personal_calendar') }} events today.
+            {{ states('sensor.cameras_online_count') }} security cameras are online.
+            All systems are functioning normally.
+
+# ============================================================================
+# ALEXA GITHUB STATUS AUTOMATION
+# ============================================================================
+
+# REST Commands for GitHub API
+rest_command:
+  get_github_actions_status:
+    url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/actions/runs?status=in_progress"
+    method: GET
+    headers:
+      Authorization: "token {{ github_token }}"
+      Accept: "application/vnd.github.v3+json"
+      
+  get_github_issues:
+    url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/issues?state=open"
+    method: GET
+    headers:
+      Authorization: "token {{ github_token }}"
+      Accept: "application/vnd.github.v3+json"
+      
+  get_github_recent_commits:
+    url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/commits?since={{ (now() - timedelta(days=1)).isoformat() }}"
+    method: GET
+    headers:
+      Authorization: "token {{ github_token }}"
+      Accept: "application/vnd.github.v3+json"
+
+# GitHub Status Sensors
+sensor:
+  - platform: rest
+    name: "GitHub Open Issues"
+    resource_template: "https://api.github.com/repos/bryansrevision/home-assistant-unified/issues?state=open"
+    method: GET
+    headers:
+      Authorization: !secret github_token_header
+      Accept: "application/vnd.github.v3+json"
+    value_template: "{{ value_json | length }}"
+    unit_of_measurement: "issues"
+    scan_interval: 600
+    
+  - platform: rest
+    name: "GitHub Active Workflows"
+    resource_template: "https://api.github.com/repos/bryansrevision/home-assistant-unified/actions/runs?status=in_progress"
+    method: GET
+    headers:
+      Authorization: !secret github_token_header
+      Accept: "application/vnd.github.v3+json"
+    value_template: "{{ value_json.total_count }}"
+    unit_of_measurement: "workflows"
+    json_attributes:
+      - workflow_runs
+    scan_interval: 300
+    
+  - platform: rest
+    name: "GitHub Recent Commits"
+    resource_template: "https://api.github.com/repos/bryansrevision/home-assistant-unified/commits?since={{ (now() - timedelta(days=1)).isoformat() }}"
+    method: GET
+    headers:
+      Authorization: !secret github_token_header
+      Accept: "application/vnd.github.v3+json"
+    value_template: "{{ value_json | length }}"
+    unit_of_measurement: "commits"
+    scan_interval: 600
+
+# Automation: Alexa GitHub Status on Voice Request
+automation:
+  - alias: "Alexa - GitHub Status Voice Request"
+    id: alexa_github_status_voice_request
+    trigger:
+      # Triggered by Alexa routine "GitHub Status"
+      - platform: event
+        event_type: alexa_actionable_notification
+        event_data:
+          event_id: "github_status_request"
+    action:
+      - service: script.alexa_report_github_status
+      
+  # Alert on GitHub workflow failure
+  - alias: "Alexa - Alert on GitHub Workflow Failure"
+    id: alexa_github_workflow_failure
+    trigger:
+      - platform: state
+        entity_id: sensor.github_workflow_status
+        to: "failure"
+    action:
+      - service: script.alexa_announce_all
+        data:
+          message: "Attention: A GitHub workflow has failed. Check your repository for details."
+      - service: notify.mobile_app_phone
+        data:
+          title: "❌ GitHub Workflow Failed"
+          message: "Workflow failed - check GitHub Actions"
+          data:
+            url: "https://github.com/bryansrevision/home-assistant-unified/actions"
+            
+  # Daily GitHub summary at 8 AM
+  - alias: "Alexa - Daily GitHub Summary"
+    id: alexa_daily_github_summary
+    trigger:
+      - platform: time
+        at: "08:00:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.daily_github_reports_enabled
+        state: 'on'
+    action:
+      - service: script.alexa_report_github_status
+      
+  # Voice-triggered repository update check
+  - alias: "Alexa - Check for Repository Updates"
+    id: alexa_check_repo_updates
+    trigger:
+      - platform: event
+        event_type: alexa_actionable_notification
+        event_data:
+          event_id: "check_repo_updates"
+    action:
+      - service: rest_command.get_github_recent_commits
+      - delay: '00:00:02'
+      - service: script.alexa_announce_specific
+        data:
+          device: "{{ trigger.event.data.device }}"
+          message: >
+            {% if states('sensor.github_recent_commits') | int > 0 %}
+              There are {{ states('sensor.github_recent_commits') }} new commits in the repository.
+            {% else %}
+              No new commits in the last 24 hours.
+            {% endif %}
+
+# ============================================================================
+# VOICE COMMAND ROUTINES
+# ============================================================================
+
+automation:
+  # Good Morning Routine (voice-triggered)
+  - alias: "Voice - Good Morning Routine"
+    id: voice_good_morning_routine
+    trigger:
+      - platform: event
+        event_type: alexa_actionable_notification
+        event_data:
+          event_id: "good_morning"
+    action:
+      - service: script.good_morning
+      - service: script.alexa_announce_all
+        data:
+          message: "Good morning! Starting your day."
+      - service: script.google_home_daily_report
+      
+  # Good Night Routine (voice-triggered)
+  - alias: "Voice - Good Night Routine"
+    id: voice_good_night_routine
+    trigger:
+      - platform: event
+        event_type: alexa_actionable_notification
+        event_data:
+          event_id: "good_night"
+    action:
+      - service: script.good_night
+      - service: script.alexa_announce_all
+        data:
+          message: "Good night! Sweet dreams."
+          
+  # Emergency alert via voice
+  - alias: "Voice - Emergency Alert"
+    id: voice_emergency_alert
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.cove_any_sensor_open
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.water_leak_detected
+        to: 'on'
+    action:
+      - service: script.announce_everywhere
+        data:
+          message: "Alert! Emergency detected! Check your phone for details!"
+      - service: notify.mobile_app_phone
+        data:
+          title: "🚨 EMERGENCY ALERT"
+          message: "{{ trigger.to_state.attributes.friendly_name }} triggered!"
+
+# ============================================================================
+# INPUT BOOLEANS FOR VOICE CONTROL
+# ============================================================================
+input_boolean:
+  daily_github_reports_enabled:
+    name: "Daily GitHub Reports Enabled"
+    initial: true
+    icon: mdi:github
+    
+  voice_announcements_enabled:
+    name: "Voice Announcements Enabled"
+    initial: true
+    icon: mdi:account-voice
+    
+  cross_platform_voice_enabled:
+    name: "Cross-Platform Voice Enabled"
+    initial: true
+    icon: mdi:voice
+
+# ============================================================================
+# GROUPS
+# ============================================================================
+group:
+  alexa_devices:
+    name: "Alexa Devices"
+    entities:
+      - media_player.living_room_echo
+      - media_player.bedroom_echo_dot
+      - media_player.kitchen_echo_show
+      - media_player.office_echo
+      
+  google_home_devices:
+    name: "Google Home Devices"
+    entities:
+      - media_player.google_home_kitchen
+      - media_player.google_nest_hub
+      - media_player.chromecast_living_room
+      - media_player.chromecast_bedroom
+
+# ============================================================================
+# NOTES:
+# 1. Install Alexa Media Player via HACS
+# 2. Configure Google Assistant via Integrations → Add Integration
+# 3. Create Alexa routines in Alexa app with webhook triggers
+# 4. Add to secrets.yaml:
+#    - alexa_email
+#    - alexa_password
+#    - google_assistant_project_id
+#    - github_token_header: "token YOUR_GITHUB_TOKEN"
+# 5. Enable Actions on Google for Google Home control
+# 6. Create actionable notifications in Alexa app
+# 7. Set up Google Cloud project for Assistant SDK
+# ============================================================================

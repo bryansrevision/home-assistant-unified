@@ -1,0 +1,494 @@
+# ============================================================================
+# CUSTOM HOME ASSISTANT AGENT INTEGRATION
+# Full integration of custom Python agent with Home Assistant
+# ============================================================================
+
+# ============================================================================
+# AGENT API SENSOR (REST-based)
+# ============================================================================
+
+sensor:
+  # Main Agent Status Sensor
+  - platform: rest
+    name: "HA Agent Status"
+    resource: "http://192.168.1.201:8888/api/status"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - running
+      - uptime
+      - last_health_check
+      - last_github_sync
+      - integrations_healthy
+      - errors_count
+      - auto_fixes_count
+      - version
+    scan_interval: 30
+    
+  # Agent Health Metrics
+  - platform: template
+    sensors:
+      ha_agent_uptime:
+        friendly_name: "HA Agent Uptime"
+        value_template: >
+          {% set uptime = state_attr('sensor.ha_agent_status', 'uptime') | int(0) %}
+          {% set days = uptime // 86400 %}
+          {% set hours = (uptime % 86400) // 3600 %}
+          {% set minutes = (uptime % 3600) // 60 %}
+          {{ days }}d {{ hours }}h {{ minutes }}m
+        icon_template: mdi:clock-outline
+        
+      ha_agent_integrations_healthy:
+        friendly_name: "HA Agent Integrations Healthy"
+        value_template: "{{ state_attr('sensor.ha_agent_status', 'integrations_healthy') | int(0) }}"
+        unit_of_measurement: "integrations"
+        icon_template: >
+          {% set healthy = state_attr('sensor.ha_agent_status', 'integrations_healthy') | int(0) %}
+          {% if healthy >= 5 %}
+            mdi:check-circle
+          {% elif healthy >= 3 %}
+            mdi:alert-circle
+          {% else %}
+            mdi:close-circle
+          {% endif %}
+          
+      ha_agent_errors_count:
+        friendly_name: "HA Agent Errors"
+        value_template: "{{ state_attr('sensor.ha_agent_status', 'errors_count') | int(0) }}"
+        unit_of_measurement: "errors"
+        icon_template: >
+          {% if state_attr('sensor.ha_agent_status', 'errors_count') | int(0) > 0 %}
+            mdi:alert
+          {% else %}
+            mdi:check
+          {% endif %}
+          
+      ha_agent_auto_fixes_count:
+        friendly_name: "HA Agent Auto Fixes Today"
+        value_template: "{{ state_attr('sensor.ha_agent_status', 'auto_fixes_count') | int(0) }}"
+        unit_of_measurement: "fixes"
+        icon_template: mdi:wrench
+        
+      ha_agent_last_health_check:
+        friendly_name: "HA Agent Last Health Check"
+        value_template: >
+          {% set last_check = state_attr('sensor.ha_agent_status', 'last_health_check') %}
+          {% if last_check %}
+            {{ relative_time(as_timestamp(last_check) | timestamp_local) }} ago
+          {% else %}
+            Never
+          {% endif %}
+        icon_template: mdi:heart-pulse
+        
+      ha_agent_last_github_sync:
+        friendly_name: "HA Agent Last GitHub Sync"
+        value_template: >
+          {% set last_sync = state_attr('sensor.ha_agent_status', 'last_github_sync') %}
+          {% if last_sync %}
+            {{ relative_time(as_timestamp(last_sync) | timestamp_local) }} ago
+          {% else %}
+            Never
+          {% endif %}
+        icon_template: mdi:github
+        
+      ha_agent_version:
+        friendly_name: "HA Agent Version"
+        value_template: "{{ state_attr('sensor.ha_agent_status', 'version') | default('Unknown') }}"
+        icon_template: mdi:information
+
+# Binary Sensors for Agent Status
+binary_sensor:
+  - platform: template
+    sensors:
+      ha_agent_running:
+        friendly_name: "HA Agent Running"
+        device_class: running
+        value_template: "{{ state_attr('sensor.ha_agent_status', 'running') == true }}"
+        availability_template: "{{ states('sensor.ha_agent_status') not in ['unavailable', 'unknown'] }}"
+        
+      ha_agent_healthy:
+        friendly_name: "HA Agent Healthy"
+        device_class: safety
+        value_template: >
+          {% set errors = state_attr('sensor.ha_agent_status', 'errors_count') | int(0) %}
+          {% set healthy = state_attr('sensor.ha_agent_status', 'integrations_healthy') | int(0) %}
+          {{ errors == 0 and healthy >= 3 }}
+          
+      ha_agent_has_errors:
+        friendly_name: "HA Agent Has Errors"
+        device_class: problem
+        value_template: "{{ state_attr('sensor.ha_agent_status', 'errors_count') | int(0) > 0 }}"
+
+# ============================================================================
+# AGENT REST COMMANDS
+# ============================================================================
+
+rest_command:
+  # Trigger agent health check
+  agent_health_check:
+    url: "http://192.168.1.201:8888/api/health"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+      
+  # Check all integrations
+  agent_check_integrations:
+    url: "http://192.168.1.201:8888/api/integrations/check"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+      
+  # Sync with GitHub
+  agent_github_sync:
+    url: "http://192.168.1.201:8888/api/github/sync"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+      
+  # Execute agent command
+  agent_execute_command:
+    url: "http://192.168.1.201:8888/api/execute"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+    payload: '{"command": "{{ command }}", "params": {{ params | default({}) | tojson }}}'
+    
+  # Generate documentation
+  agent_generate_docs:
+    url: "http://192.168.1.201:8888/api/docs/generate"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+      
+  # Network scan
+  agent_network_scan:
+    url: "http://192.168.1.201:8888/api/network/scan"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+      
+  # Restart Home Assistant (via agent)
+  agent_restart_ha:
+    url: "http://192.168.1.201:8888/api/ha/restart"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+      
+  # Get agent logs
+  agent_get_logs:
+    url: "http://192.168.1.201:8888/api/logs?lines={{ lines | default(50) }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+      Content-Type: "application/json"
+
+# ============================================================================
+# AGENT CONTROL SCRIPTS
+# ============================================================================
+
+script:
+  # Full health check (health + integrations)
+  agent_full_health_check:
+    alias: "HA Agent - Full Health Check"
+    sequence:
+      - service: rest_command.agent_health_check
+      - delay: '00:00:02'
+      - service: rest_command.agent_check_integrations
+      - delay: '00:00:02'
+      - service: notify.mobile_app_phone
+        data:
+          title: "🏥 Agent Health Check Complete"
+          message: >
+            Status: {{ states('sensor.ha_agent_status') }}
+            Healthy Integrations: {{ states('sensor.ha_agent_integrations_healthy') }}
+            Errors: {{ states('sensor.ha_agent_errors_count') }}
+            
+  # Sync and backup
+  agent_sync_and_backup:
+    alias: "HA Agent - Sync and Backup"
+    sequence:
+      - service: rest_command.agent_generate_docs
+      - delay: '00:00:05'
+      - service: rest_command.agent_github_sync
+      - delay: '00:00:05'
+      - service: notify.mobile_app_phone
+        data:
+          title: "☁️ Agent Sync Complete"
+          message: "Documentation generated and synced to GitHub"
+          
+  # Auto-fix integrations
+  agent_auto_fix:
+    alias: "HA Agent - Auto Fix Issues"
+    sequence:
+      - service: rest_command.agent_execute_command
+        data:
+          command: "auto_fix"
+          params: '{"scope": "all"}'
+      - delay: '00:00:10'
+      - service: script.agent_full_health_check
+      
+  # Network discovery
+  agent_discover_devices:
+    alias: "HA Agent - Discover Devices"
+    sequence:
+      - service: persistent_notification.create
+        data:
+          title: "🔍 Network Scan Starting"
+          message: "Scanning network for devices..."
+      - service: rest_command.agent_network_scan
+      - delay: '00:00:30'
+      - service: notify.mobile_app_phone
+        data:
+          title: "🌐 Network Scan Complete"
+          message: "Check HA notifications for discovered devices"
+          
+  # Get agent logs
+  agent_view_logs:
+    alias: "HA Agent - View Logs"
+    fields:
+      lines:
+        description: "Number of log lines to retrieve"
+        example: 100
+    sequence:
+      - service: rest_command.agent_get_logs
+        data:
+          lines: "{{ lines | default(50) }}"
+      - delay: '00:00:02'
+      - service: persistent_notification.create
+        data:
+          title: "📋 Agent Logs Retrieved"
+          message: "Check agent dashboard for log details"
+          
+  # Restart agent service
+  agent_restart_service:
+    alias: "HA Agent - Restart Service"
+    sequence:
+      - service: shell_command.restart_agent
+      - delay: '00:00:05'
+      - service: notify.mobile_app_phone
+        data:
+          title: "🔄 Agent Restarting"
+          message: "Home Assistant Agent service is restarting..."
+      - delay: '00:00:20'
+      - service: rest_command.agent_health_check
+
+# ============================================================================
+# AGENT AUTOMATIONS
+# ============================================================================
+
+automation:
+  # Daily health check
+  - alias: "Agent - Daily Health Check"
+    id: agent_daily_health_check
+    trigger:
+      - platform: time
+        at: "09:00:00"
+    action:
+      - service: script.agent_full_health_check
+      
+  # Alert on agent offline
+  - alias: "Agent - Alert on Offline"
+    id: agent_alert_on_offline
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.ha_agent_running
+        to: 'off'
+        for:
+          minutes: 5
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ HA Agent Offline"
+          message: "Home Assistant Agent has been offline for 5 minutes"
+          data:
+            priority: high
+            actions:
+              - action: "RESTART_AGENT"
+                title: "Restart Agent"
+              - action: "VIEW_LOGS"
+                title: "View Logs"
+                
+  # Handle restart agent action
+  - alias: "Agent - Handle Restart Action"
+    id: agent_handle_restart_action
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "RESTART_AGENT"
+    action:
+      - service: script.agent_restart_service
+      
+  # Handle view logs action
+  - alias: "Agent - Handle View Logs Action"
+    id: agent_handle_view_logs_action
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "VIEW_LOGS"
+    action:
+      - service: script.agent_view_logs
+        data:
+          lines: 100
+          
+  # Alert on errors
+  - alias: "Agent - Alert on Errors"
+    id: agent_alert_on_errors
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.ha_agent_errors_count
+        above: 0
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "⚠️ HA Agent Errors Detected"
+          message: "{{ states('sensor.ha_agent_errors_count') }} errors detected. Run auto-fix?"
+          notification_id: "agent_errors"
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ Agent Errors"
+          message: "{{ states('sensor.ha_agent_errors_count') }} errors detected"
+          data:
+            actions:
+              - action: "AUTO_FIX"
+                title: "Auto Fix"
+              - action: "VIEW_DETAILS"
+                title: "View Details"
+                
+  # Handle auto-fix action
+  - alias: "Agent - Handle Auto Fix Action"
+    id: agent_handle_auto_fix
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "AUTO_FIX"
+    action:
+      - service: script.agent_auto_fix
+      
+  # Auto GitHub sync every 6 hours
+  - alias: "Agent - Auto GitHub Sync"
+    id: agent_auto_github_sync
+    trigger:
+      - platform: time_pattern
+        hours: "/6"
+    condition:
+      - condition: state
+        entity_id: input_boolean.agent_auto_sync_enabled
+        state: 'on'
+    action:
+      - service: script.agent_sync_and_backup
+      
+  # Weekly network scan
+  - alias: "Agent - Weekly Network Scan"
+    id: agent_weekly_network_scan
+    trigger:
+      - platform: time
+        at: "02:00:00"
+    condition:
+      - condition: time
+        weekday:
+          - sun
+    action:
+      - service: script.agent_discover_devices
+
+# ============================================================================
+# SHELL COMMANDS FOR AGENT MANAGEMENT
+# ============================================================================
+
+shell_command:
+  # Start agent
+  start_agent: "cd /config/agents && python agent_cli.py start --daemon"
+  
+  # Stop agent
+  stop_agent: "cd /config/agents && python agent_cli.py stop"
+  
+  # Restart agent
+  restart_agent: "cd /config/agents && python agent_cli.py restart"
+  
+  # Agent status
+  agent_status: "cd /config/agents && python agent_cli.py status"
+  
+  # Agent logs
+  agent_logs: "cd /config/agents && python agent_cli.py logs --lines 50"
+
+# ============================================================================
+# INPUT CONTROLS FOR AGENT
+# ============================================================================
+
+input_boolean:
+  agent_auto_sync_enabled:
+    name: "Agent Auto GitHub Sync"
+    initial: true
+    icon: mdi:git
+    
+  agent_auto_fix_enabled:
+    name: "Agent Auto Fix Enabled"
+    initial: true
+    icon: mdi:wrench
+    
+  agent_notifications_enabled:
+    name: "Agent Notifications Enabled"
+    initial: true
+    icon: mdi:bell
+
+input_select:
+  agent_log_level:
+    name: "Agent Log Level"
+    options:
+      - "DEBUG"
+      - "INFO"
+      - "WARNING"
+      - "ERROR"
+      - "CRITICAL"
+    initial: "INFO"
+    icon: mdi:file-document
+
+# ============================================================================
+# GROUPS
+# ============================================================================
+
+group:
+  agent_sensors:
+    name: "HA Agent Sensors"
+    entities:
+      - sensor.ha_agent_status
+      - sensor.ha_agent_uptime
+      - sensor.ha_agent_integrations_healthy
+      - sensor.ha_agent_errors_count
+      - sensor.ha_agent_auto_fixes_count
+      - sensor.ha_agent_last_health_check
+      - sensor.ha_agent_last_github_sync
+      
+  agent_controls:
+    name: "HA Agent Controls"
+    entities:
+      - input_boolean.agent_auto_sync_enabled
+      - input_boolean.agent_auto_fix_enabled
+      - input_boolean.agent_notifications_enabled
+      - input_select.agent_log_level
+
+# ============================================================================
+# NOTES:
+# 1. Agent must be running on port 8888 (default)
+# 2. Ensure HA token is configured in secrets.yaml
+# 3. Agent API authentication uses HA token
+# 4. Agent service can be managed via shell commands
+# 5. Start agent: python agent_cli.py start --daemon
+# 6. Agent logs stored in /config/agents/logs/
+# 7. GitHub sync requires GitHub token in secrets.yaml
+# 8. Auto-fix feature requires agent v1.0+ with enhanced capabilities
+# 9. Network scan may take 30-60 seconds to complete
+# 10. Agent dashboard available at http://192.168.1.201:8888/dashboard
+# ============================================================================

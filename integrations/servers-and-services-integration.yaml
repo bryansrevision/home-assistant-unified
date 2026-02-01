@@ -1,0 +1,447 @@
+# ============================================================================
+# NODE-RED, IPTV, MCP HUB, AND SERVER INTEGRATIONS
+# ============================================================================
+
+# ============================================================================
+# NODE-RED INTEGRATION
+# ============================================================================
+
+# Node-RED Webhook Receiver
+automation:
+  - alias: "Node-RED - Webhook Receiver"
+    id: nodered_webhook_receiver
+    trigger:
+      - platform: webhook
+        webhook_id: nodered_trigger
+       allowed_methods:
+          - POST
+          - GET
+    action:
+      - service: python_script.handle_nodered_webhook
+        data:
+          payload: "{{ trigger.json }}"
+      - service: persistent_notification.create
+        data:
+          title: "Node-RED Event Received"
+          message: "{{ trigger.json.message | default('No message') }}"
+
+# REST Commands for Node-RED
+rest_command:
+  # Trigger Node-RED Flow
+  nodered_trigger_flow:
+    url: "http://192.168.1.201:1880/trigger/{{ flow_id }}"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: '{"source": "home_assistant", "data": {{ data | tojson }}}'
+    
+  # Node-RED Deploy
+  nodered_deploy:
+    url: "http://192.168.1.201:1880/flows"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      Node-RED-Deployment-Type: "full"
+    
+  # Get Node-RED Flows
+  nodered_get_flows:
+    url: "http://192.168.1.201:1880/flows"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+
+# RESTful Sensors for Node-RED
+sensor:
+  - platform: rest
+    name: "Node-RED Status"
+    resource: "http://192.168.1.201:1880/health"
+    method: GET
+    value_template: "{{ value_json.status | default('unknown') }}"
+    json_attributes:
+      - version
+      - uptime
+      - flows_count
+    scan_interval: 300
+    
+  - platform: template
+    sensors:
+      nodered_flows_active:
+        friendly_name: "Node-RED Active Flows"
+        value_template: "{{ state_attr('sensor.node_red_status', 'flows_count') | int(0) }}"
+        unit_of_measurement: "flows"
+        icon_template: mdi:graph
+        
+      nodered_uptime:
+        friendly_name: "Node-RED Uptime"
+        value_template: >
+          {% set uptime = state_attr('sensor.node_red_status', 'uptime') | int(0) %}
+          {% set days = uptime // 86400 %}
+          {% set hours = (uptime % 86400) // 3600 %}
+          {{ days }}d {{ hours }}h
+        icon_template: mdi:clock-outline
+
+# Binary Sensor for Node-RED Status
+binary_sensor:
+  - platform: template
+    sensors:
+      nodered_running:
+        friendly_name: "Node-RED Running"
+        device_class: connectivity
+        value_template: "{{ states('sensor.node_red_status') not in ['unavailable', 'unknown'] }}"
+
+# ============================================================================
+# IPTV INTEGRATION
+# ============================================================================
+
+# IPTV Channels via M3U Playlist
+iptv:
+  - name: "IPTV Channels"
+    url: "http://192.168.1.201:8000/playlist.m3u8"  # Update with actual IPTV source
+    scan_interval: 3600
+    
+# Alternative: Individual IPTV Sources
+media_source:
+  - name: "IPTV Streams"
+    platform: iptv
+
+# IPTV Camera Streams (for security cameras via IPTV)
+camera:
+  - platform: ffmpeg
+    name: "IPTV Security Feed 1"
+    input: "http://192.168.1.201:8000/stream1.m3u8"
+    
+  - platform: ffmpeg
+    name: "IPTV Security Feed 2"
+    input: "http://192.168.1.201:8000/stream2.m3u8"
+
+# IPTV Channel Sensors
+sensor:
+  - platform: template
+    sensors:
+      iptv_active_streams:
+        friendly_name: "IPTV Active Streams"
+        value_template: >
+          {% set streams = [
+            states('media_player.iptv_channel_1'),
+            states('media_player.iptv_channel_2'),
+            states('media_player.iptv_channel_3')
+          ] %}
+          {{ streams | select('equalto', 'playing') | list | count }}
+        unit_of_measurement: "streams"
+        icon_template: mdi:television-play
+
+# Scripts for IPTV Control
+script:
+  iptv_play_channel:
+    alias: "IPTV - Play Channel"
+    fields:
+      channel_number:
+        description: "Channel number to play"
+        example: "101"
+      device:
+        description: "Device to play on"
+        example: "media_player.lg_tv_living_room"
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: "{{ device }}"
+        data:
+          media_content_type: "channel"
+          media_content_id: "{{ channel_number }}"
+          
+  iptv_record_channel:
+    alias: "IPTV - Record Channel"
+    fields:
+      channel_number:
+        description: "Channel to record"
+      duration:
+        description: "Recording duration in minutes"
+        example: 60
+    sequence:
+      - service: shell_command.iptv_record
+        data:
+          channel: "{{ channel_number }}"
+          duration: "{{ duration }}"
+      - service: notify.mobile_app_phone
+        data:
+          title: "📹 IPTV Recording Started"
+          message: "Recording channel {{ channel_number }} for {{ duration }} minutes"
+
+# ============================================================================
+# MCP (Model Context Protocol) HUB INTEGRATION
+# ============================================================================
+
+# RESTful Sensors for MCP Hub
+sensor:
+  - platform: rest
+    name: "MCP Hub Status"
+    resource: "http://192.168.1.201:8765/api/status"
+    method: GET
+    headers:
+      Authorization: !secret mcp_hub_api_token
+      Content-Type: "application/json"
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - connected_agents
+      - active_connections
+      - total_requests
+      - uptime
+    scan_interval: 60
+    
+  - platform: template
+    sensors:
+      mcp_hub_active_agents:
+        friendly_name: "MCP Hub Active Agents"
+        value_template: "{{ state_attr('sensor.mcp_hub_status', 'connected_agents') | int(0) }}"
+        unit_of_measurement: "agents"
+        icon_template: mdi:robot
+        
+      mcp_hub_total_requests:
+        friendly_name: "MCP Hub Total Requests"
+        value_template: "{{ state_attr('sensor.mcp_hub_status', 'total_requests') | int(0) }}"
+        unit_of_measurement: "requests"
+        icon_template: mdi:counter
+
+# Binary Sensor for MCP Hub
+binary_sensor:
+  - platform: template
+    sensors:
+      mcp_hub_online:
+        friendly_name: "MCP Hub Online"
+        device_class: connectivity
+        value_template: "{{ states('sensor.mcp_hub_status') == 'online' }}"
+
+# REST Commands for MCP Hub
+rest_command:
+  # Execute MCP Command
+  mcp_execute_command:
+    url: "http://192.168.1.201:8765/api/execute"
+    method: POST
+    headers:
+      Authorization: !secret mcp_hub_api_token
+      Content-Type: "application/json"
+    payload: '{"command": "{{ command }}", "params": {{ params | tojson }}}'
+    
+  # Get MCP Agent Status
+  mcp_get_agent_status:
+    url: "http://192.168.1.201:8765/api/agents/{{ agent_id }}/status"
+    method: GET
+    headers:
+      Authorization: !secret mcp_hub_api_token
+    
+  # Restart MCP Agent
+  mcp_restart_agent:
+    url: "http://192.168.1.201:8765/api/agents/{{ agent_id }}/restart"
+    method: POST
+    headers:
+      Authorization: !secret mcp_hub_api_token
+
+# ============================================================================
+# PROXMOX SERVER INTEGRATION
+# ============================================================================
+
+# RESTful Sensors for Proxmox
+sensor:
+  - platform: rest
+    name: "Proxmox Server Status"
+    resource: "https://192.168.1.100:8006/api2/json/cluster/resources"
+    method: GET
+    headers:
+      Authorization: !secret proxmox_api_token
+    value_template: "{{ value_json.data | selectattr('type', 'equalto', 'node') | list | first | attr('status') }}"
+    json_attributes:
+      - data
+    verify_ssl: false
+    scan_interval: 120
+    
+  - platform: template
+    sensors:
+      proxmox_cpu_usage:
+        friendly_name: "Proxmox CPU Usage"
+        value_template: >
+          {% set data = state_attr('sensor.proxmox_server_status', 'data') %}
+          {% if data %}
+            {% set node = data | selectattr('type', 'equalto', 'node') | list | first %}
+            {{ (node.cpu * 100) | round(1) }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "%"
+        icon_template: mdi:cpu-64-bit
+        
+      proxmox_memory_usage:
+        friendly_name: "Proxmox Memory Usage"
+        value_template: >
+          {% set data = state_attr('sensor.proxmox_server_status', 'data') %}
+          {% if data %}
+            {% set node = data | selectattr('type', 'equalto', 'node') | list | first %}
+            {{ ((node.mem / node.maxmem) * 100) | round(1) }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "%"
+        icon_template: mdi:memory
+        
+      proxmox_vms_running:
+        friendly_name: "Proxmox VMs Running"
+        value_template: >
+          {% set data = state_attr('sensor.proxmox_server_status', 'data') %}
+          {% if data %}
+            {{ data | selectattr('type', 'equalto', 'qemu') | selectattr('status', 'equalto', 'running') | list | count }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "VMs"
+        icon_template: mdi:server
+
+# REST Commands for Proxmox
+rest_command:
+  # Start Proxmox VM
+  proxmox_start_vm:
+    url: "https://192.168.1.100:8006/api2/json/nodes/{{ node }}/qemu/{{ vmid }}/status/start"
+    method: POST
+    headers:
+      Authorization: !secret proxmox_api_token
+    verify_ssl: false
+    
+  # Stop Proxmox VM
+  proxmox_stop_vm:
+    url: "https://192.168.1.100:8006/api2/json/nodes/{{ node }}/qemu/{{ vmid }}/status/stop"
+    method: POST
+    headers:
+      Authorization: !secret proxmox_api_token
+    verify_ssl: false
+    
+  # Snapshot Proxmox VM
+  proxmox_snapshot_vm:
+    url: "https://192.168.1.100:8006/api2/json/nodes/{{ node }}/qemu/{{ vmid }}/snapshot"
+    method: POST
+    headers:
+      Authorization: !secret proxmox_api_token
+    payload: '{"snapname": "{{ snapname }}", "description": "{{ description }}"}'
+    verify_ssl: false
+
+# ============================================================================
+# CLOUD SYNC INTEGRATION (OneDrive, Google Drive, Dropbox)
+# ============================================================================
+
+# Shell Commands for Cloud Sync
+shell_command:
+  # OneDrive Sync
+  onedrive_sync: "rclone sync /config/backups remote:HomeAssistant/Backups --config /config/rclone.conf"
+  
+  # Google Drive Sync
+  googledrive_sync: "rclone sync /config/backups gdrive:HomeAssistant/Backups --config /config/rclone.conf"
+  
+  # Dropbox Sync
+  dropbox_sync: "rclone sync /config/backups dropbox:HomeAssistant/Backups --config /config/rclone.conf"
+  
+  # Sync All Cloud Storage
+  cloud_sync_all: "bash /config/scripts/sync_all_clouds.sh"
+
+# Cloud Sync Sensors
+sensor:
+  - platform: command_line
+    name: "Last Cloud Sync"
+    command: "cat /config/.last_cloud_sync 2>/dev/null || echo 'Never'"
+    scan_interval: 300
+    
+  - platform: template
+    sensors:
+      cloud_sync_status:
+        friendly_name: "Cloud Sync Status"
+        value_template: >
+          {% set last_sync = states('sensor.last_cloud_sync') %}
+          {% if last_sync == 'Never' %}
+            Never synced
+          {% else %}
+            Last: {{ last_sync }}
+          {% endif %}
+        icon_template: mdi:cloud-upload
+
+# Cloud Sync Automations
+automation:
+  # Daily Cloud Backup
+  - alias: "Cloud Sync - Daily Backup"
+    id: cloud_sync_daily_backup
+    trigger:
+      - platform: time
+        at: "03:00:00"
+    action:
+      - service: shell_command.cloud_sync_all
+      - delay: '00:00:10'
+      - service: shell_command.update_last_sync_time
+      - service: notify.mobile_app_phone
+        data:
+          title: "☁️ Cloud Backup Complete"
+          message: "Daily backup to cloud storage completed"
+          
+  # Sync on HA Config Change
+  - alias: "Cloud Sync - On Config Change"
+    id: cloud_sync_on_config_change
+    trigger:
+      - platform: event
+        event_type: folder_watcher
+        event_data:
+          event_type: modified
+          path: "/config/"
+    condition:
+      - condition: template
+        value_template: "{{ trigger.event.data.file.endswith('.yaml') }}"
+    action:
+      - delay: '00:05:00'  # Wait 5 minutes for multiple changes
+      - service: shell_command.cloud_sync_all
+
+# Scripts for Server Management
+script:
+  server_health_check:
+    alias: "Server Health Check"
+    sequence:
+      - service: persistent_notification.create
+        data:
+          title: "🔍 Running Server Health Check"
+          message: "Checking all server statuses..."
+      - delay: '00:00:02'
+      - service: rest_command.mcp_get_agent_status
+        data:
+          agent_id: "all"
+      - service: notify.mobile_app_phone
+        data:
+          title: "🖥️ Server Health Report"
+          message: >
+            Proxmox: {{ states('sensor.proxmox_server_status') }}
+            Node-RED: {{ states('binary_sensor.nodered_running') }}
+            MCP Hub: {{ states('binary_sensor.mcp_hub_online') }}
+            Home Assistant Agent: {{ states('binary_sensor.ha_agent_running') }}
+
+# ============================================================================
+# INPUT BOOLEANS FOR AUTOMATION CONTROL
+# ============================================================================
+input_boolean:
+  nodered_integration_enabled:
+    name: "Node-RED Integration Enabled"
+    initial: true
+    icon: mdi:sitemap
+    
+  cloud_sync_enabled:
+    name: "Cloud Sync Enabled"
+    initial: true
+    icon: mdi:cloud-sync
+    
+  mcp_hub_enabled:
+    name: "MCP Hub Enabled"
+    initial: true
+    icon: mdi:robot
+
+# ============================================================================
+# NOTES:
+# 1. Node-RED: Install via Supervisor Add-on or Docker
+# 2. IPTV: Requires M3U playlist URL from provider
+# 3. MCP Hub: Custom server requires API token configuration
+# 4. Proxmox: Generate API token in Proxmox UI → Datacenter → API Tokens
+# 5. Cloud Sync: Install rclone and configure remotes
+# 6. Add to secrets.yaml:
+#    - mcp_hub_api_token
+#    - proxmox_api_token (format: "PVEAPIToken=USER@REALM!TOKENID=UUID")
+# 7. Create shell scripts in /config/scripts/ for cloud sync
+# ============================================================================

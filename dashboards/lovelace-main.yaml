@@ -1,0 +1,996 @@
+---
+# Home Assistant Lovelace Dashboard Configuration
+# Modern, responsive dashboard with TV controls, AI integration, and monitoring
+# Based on best practices from top GitHub repositories
+# Created: February 1, 2026
+
+title: Home Assistant Unified
+# Main configuration
+views:
+  # ============================================================================
+  # VIEW 1: HOME - Main Overview Dashboard
+  # ============================================================================
+  - title: Home
+    path: home
+    icon: mdi:home
+    theme: Backend-selected
+    badges:
+      - entity: person.dylan
+      - entity: sun.sun
+      - entity: sensor.time
+      - entity: sensor.date
+    cards:
+      # Welcome Card with Quick Actions
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 🏠 Welcome Home
+              {{ now().strftime('%A, %B %d, %Y') }}
+              
+              **{{ states('sensor.time') }}** | {{ states('weather.home') }}
+          
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: script.good_morning
+                name: Good Morning
+                icon: mdi:weather-sunny
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.good_morning
+              
+              - type: button
+                entity: script.good_night
+                name: Good Night
+                icon: mdi:weather-night
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.good_night
+              
+              - type: button
+                entity: script.away_mode
+                name: Away Mode
+                icon: mdi:home-export-outline
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.away_mode
+      
+      # Weather Card
+      - type: weather-forecast
+        entity: weather.home
+        forecast_type: daily
+        show_forecast: true
+      
+      # Quick Climate Control
+      - type: thermostat
+        entity: climate.home
+        name: Climate Control
+      
+      # Lights Overview
+      - type: entities
+        title: 💡 Lighting
+        show_header_toggle: true
+        entities:
+          - entity: light.living_room
+            name: Living Room
+          - entity: light.bedroom
+            name: Bedroom
+          - entity: light.kitchen
+            name: Kitchen
+          - entity: light.office
+            name: Office
+          - entity: switch.all_lights
+            name: All Lights
+      
+      # Security Overview
+      - type: entities
+        title: 🔒 Security & Safety
+        entities:
+          - entity: alarm_control_panel.home
+            name: Alarm System
+          - entity: binary_sensor.front_door
+            name: Front Door
+          - entity: binary_sensor.back_door
+            name: Back Door
+          - entity: binary_sensor.garage_door
+            name: Garage Door
+          - entity: camera.front_door
+            name: Front Camera
+      
+      # Energy Monitoring
+      - type: energy-distribution
+        title: ⚡ Energy Usage
+        link_dashboard: true
+
+  # ============================================================================
+  # VIEW 2: TV & MEDIA CONTROL - Television and Entertainment
+  # ============================================================================
+  - title: TV & Media
+    path: tv_media
+    icon: mdi:television
+    theme: Backend-selected
+    badges: []
+    cards:
+      # Living Room TV Control
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 📺 Living Room TV
+              Samsung Smart TV Controls
+          
+          - type: entities
+            entities:
+              - entity: media_player.samsung_tv_living_room
+                name: Samsung TV
+                type: custom:mini-media-player
+                artwork: cover
+                info: scroll
+                icon: mdi:television
+                hide:
+                  power_state: false
+                shortcuts:
+                  columns: 4
+                  buttons:
+                    - icon: mdi:netflix
+                      id: Netflix
+                      name: Netflix
+                    - icon: mdi:youtube
+                      id: YouTube
+                      name: YouTube
+                    - icon: mdi:hulu
+                      id: Hulu
+                      name: Hulu
+                    - icon: mdi:amazon
+                      id: Prime Video
+                      name: Prime
+          
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: media_player.samsung_tv_living_room
+                name: Power
+                icon: mdi:power
+                tap_action:
+                  action: call-service
+                  service: media_player.toggle
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+              
+              - type: button
+                name: Vol +
+                icon: mdi:volume-plus
+                tap_action:
+                  action: call-service
+                  service: media_player.volume_up
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+              
+              - type: button
+                name: Vol -
+                icon: mdi:volume-minus
+                tap_action:
+                  action: call-service
+                  service: media_player.volume_down
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+              
+              - type: button
+                name: Mute
+                icon: mdi:volume-mute
+                tap_action:
+                  action: call-service
+                  service: media_player.volume_mute
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+          
+          # TV Remote Control Pad
+          - type: grid
+            columns: 3
+            square: true
+            cards:
+              - type: button
+                icon: mdi:arrow-up
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_UP
+              - type: button
+                icon: mdi:apps
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_MENU
+              - type: button
+                icon: mdi:home
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_HOME
+              - type: button
+                icon: mdi:arrow-left
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_LEFT
+              - type: button
+                icon: mdi:checkbox-blank-circle
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_ENTER
+              - type: button
+                icon: mdi:arrow-right
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_RIGHT
+              - type: button
+                icon: mdi:arrow-down
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_DOWN
+              - type: button
+                icon: mdi:arrow-u-left-top
+                tap_action:
+                  action: call-service
+                  service: media_player.play_media
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+                    media_content_type: send_key
+                    media_content_id: KEY_RETURN
+              - type: button
+                icon: mdi:play-pause
+                tap_action:
+                  action: call-service
+                  service: media_player.media_play_pause
+                  service_data:
+                    entity_id: media_player.samsung_tv_living_room
+      
+      # Bedroom TV Control
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 📺 Bedroom TV
+              Samsung Smart TV Controls
+          
+          - type: media-control
+            entity: media_player.samsung_tv_bedroom
+          
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: media_player.samsung_tv_bedroom
+                name: Power
+                icon: mdi:power
+                tap_action:
+                  action: toggle
+              
+              - type: button
+                name: Source
+                icon: mdi:video-input-hdmi
+                tap_action:
+                  action: call-service
+                  service: media_player.select_source
+                  service_data:
+                    entity_id: media_player.samsung_tv_bedroom
+                    source: HDMI
+      
+      # Chromecast Devices
+      - type: entities
+        title: 📡 Chromecast Devices
+        entities:
+          - entity: media_player.living_room_chromecast
+            name: Living Room
+          - entity: media_player.bedroom_chromecast
+            name: Bedroom
+          - entity: media_player.kitchen_display
+            name: Kitchen Display
+      
+      # Apple TV
+      - type: media-control
+        entity: media_player.apple_tv_living_room
+        name: 🍎 Apple TV - Living Room
+      
+      # Spotify Controls
+      - type: media-control
+        entity: media_player.spotify
+        name: 🎵 Spotify
+
+  # ============================================================================
+  # VIEW 3: ALEXA & VOICE - Amazon Echo and Voice Control
+  # ============================================================================
+  - title: Alexa & Voice
+    path: alexa_voice
+    icon: mdi:amazon-alexa
+    theme: Backend-selected
+    badges: []
+    cards:
+      # Alexa Devices Overview
+      - type: markdown
+        content: |
+          ## 🗣️ Amazon Alexa Devices
+          Control and monitor your Echo devices
+      
+      # Living Room Echo
+      - type: entities
+        title: Living Room Echo
+        entities:
+          - entity: media_player.living_room_echo
+            name: Echo Device
+          - entity: sensor.living_room_echo_last_called
+            name: Last Command
+          - entity: switch.living_room_echo_do_not_disturb
+            name: Do Not Disturb
+          - entity: switch.living_room_echo_shuffle
+            name: Shuffle
+          - entity: switch.living_room_echo_repeat
+            name: Repeat
+      
+      # Bedroom Echo
+      - type: entities
+        title: Bedroom Echo
+        entities:
+          - entity: media_player.bedroom_echo
+            name: Echo Device
+          - entity: sensor.bedroom_echo_last_called
+            name: Last Command
+          - entity: switch.bedroom_echo_do_not_disturb
+            name: Do Not Disturb
+      
+      # Kitchen Echo Show
+      - type: entities
+        title: Kitchen Echo Show
+        entities:
+          - entity: media_player.kitchen_echo_show
+            name: Echo Show
+          - entity: sensor.kitchen_echo_show_last_called
+            name: Last Command
+          - entity: camera.kitchen_echo_show
+            name: Echo Show Camera
+      
+      # Alexa Quick Commands
+      - type: entities
+        title: 🎤 Quick Voice Commands
+        entities:
+          - type: button
+            name: "Announce: Dinner is Ready"
+            icon: mdi:food
+            tap_action:
+              action: call-service
+              service: notify.alexa_media
+              service_data:
+                target: 
+                  - media_player.living_room_echo
+                  - media_player.bedroom_echo
+                data:
+                  type: announce
+                message: "Dinner is ready!"
+          
+          - type: button
+            name: "Play Music in Living Room"
+            icon: mdi:music
+            tap_action:
+              action: call-service
+              service: media_player.play_media
+              service_data:
+                entity_id: media_player.living_room_echo
+                media_content_type: playlist
+                media_content_id: "My Favorites"
+          
+          - type: button
+            name: "Enable Do Not Disturb"
+            icon: mdi:sleep
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: 
+                  - switch.living_room_echo_do_not_disturb
+                  - switch.bedroom_echo_do_not_disturb
+      
+      # Alexa Routines
+      - type: entities
+        title: 📋 Alexa Routines
+        entities:
+          - entity: script.alexa_good_morning
+            name: Good Morning Routine
+          - entity: script.alexa_good_night
+            name: Good Night Routine
+          - entity: script.alexa_im_leaving
+            name: I'm Leaving
+          - entity: script.alexa_im_home
+            name: I'm Home
+
+  # ============================================================================
+  # VIEW 4: MOBILE & NOTIFICATIONS - Phone Control and Messaging
+  # ============================================================================
+  - title: Mobile & Notify
+    path: mobile_notify
+    icon: mdi:cellphone
+    theme: Backend-selected
+    badges:
+      - entity: sensor.phone_battery_level
+      - entity: binary_sensor.phone_charging
+      - entity: sensor.phone_wifi_connection
+    cards:
+      # Phone Status
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 📱 Android Phone Status
+              Device: {{ state_attr('sensor.phone_battery_level', 'friendly_name') }}
+          
+          - type: glance
+            entities:
+              - entity: sensor.phone_battery_level
+                name: Battery
+              - entity: binary_sensor.phone_charging
+                name: Charging
+              - entity: sensor.phone_wifi_connection
+                name: WiFi
+              - entity: sensor.phone_location
+                name: Location
+      
+      # Device Controls
+      - type: entities
+        title: 📲 Device Controls
+        entities:
+          - entity: switch.phone_bluetooth
+            name: Bluetooth
+          - entity: switch.phone_wifi
+            name: WiFi
+          - entity: switch.phone_do_not_disturb
+            name: Do Not Disturb
+          - entity: switch.phone_ringer_mode
+            name: Ringer Mode
+          - entity: number.phone_screen_brightness
+            name: Screen Brightness
+          - entity: number.phone_media_volume
+            name: Media Volume
+      
+      # Send Notifications
+      - type: entities
+        title: 📬 Send Notifications
+        entities:
+          - type: button
+            name: Critical Alert
+            icon: mdi:alert
+            tap_action:
+              action: call-service
+              service: notify.mobile_app_phone
+              service_data:
+                title: "🚨 Critical Alert"
+                message: "This is a test critical notification"
+                data:
+                  priority: high
+                  ttl: 0
+                  channel: Critical
+          
+          - type: button
+            name: Info Message
+            icon: mdi:information
+            tap_action:
+              action: call-service
+              service: notify.mobile_app_phone
+              service_data:
+                title: "ℹ️ Information"
+                message: "This is a test information notification"
+          
+          - type: button
+            name: Location Request
+            icon: mdi:map-marker
+            tap_action:
+              action: call-service
+              service: notify.mobile_app_phone
+              service_data:
+                message: request_location_update
+      
+      # Join API Controls
+      - type: entities
+        title: 🔗 Join (Tasker Integration)
+        entities:
+          - type: button
+            name: Send Join Notification
+            icon: mdi:send
+            tap_action:
+              action: call-service
+              service: rest_command.join_notification
+              service_data:
+                deviceId: !secret join_device_id_primary
+                title: "Home Assistant"
+                text: "Test notification from HA"
+          
+          - type: button
+            name: Trigger Tasker Profile
+            icon: mdi:robot
+            tap_action:
+              action: call-service
+              service: rest_command.join_tasker_command
+              service_data:
+                deviceId: !secret join_device_id_primary
+                taskname: "HomeAssistantCommand"
+          
+          - type: button
+            name: Start Camera Scan
+            icon: mdi:camera
+            tap_action:
+              action: call-service
+              service: notify.mobile_app_phone
+              service_data:
+                message: command_ble_transmitter
+      
+      # IFTTT Webhooks
+      - type: entities
+        title: 🔗 IFTTT Webhooks
+        entities:
+          - type: button
+            name: Trigger IFTTT Webhook
+            icon: mdi:webhook
+            tap_action:
+              action: call-service
+              service: rest_command.ifttt_webhook
+              service_data:
+                event: "home_assistant_trigger"
+                value1: "Test"
+                value2: "Value 2"
+                value3: "Value 3"
+      
+      # Message History
+      - type: entities
+        title: 📝 Recent Notifications
+        entities:
+          - entity: sensor.last_notification_sent
+            name: Last Notification
+          - entity: sensor.notification_count_today
+            name: Sent Today
+
+  # ============================================================================
+  # VIEW 5: AI CHAT & AUTOMATION - AI Assistant and Voice Commands
+  # ============================================================================
+  - title: AI Assistant
+    path: ai_assistant
+    icon: mdi:robot
+    theme: Backend-selected
+    badges: []
+    cards:
+      # AI Chat Interface
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🤖 AI Assistant Chat
+              Interactive conversation with OpenAI GPT-3.5 and Google Gemini
+          
+          - type: custom:ha-card
+            content: |
+              <ha-textfield
+                id="ai-chat-input"
+                label="Ask your AI assistant..."
+                icon="mdi:chat"
+              ></ha-textfield>
+              <mwc-button
+                raised
+                icon="mdi:send"
+                onclick="sendAIMessage()"
+              >Send</mwc-button>
+          
+          - type: markdown
+            entity_id: sensor.ai_assistant_response
+            content: |
+              **AI Response:**
+              {{ states('sensor.ai_assistant_response') }}
+      
+      # AI Provider Selection
+      - type: entities
+        title: 🔀 AI Backend Selection
+        entities:
+          - entity: input_select.ai_provider
+            name: Active AI Provider
+            options:
+              - OpenAI GPT-3.5
+              - Google Gemini
+              - Both (Consensus)
+          - entity: sensor.openai_conversation_status
+            name: OpenAI Status
+          - entity: sensor.google_gemini_status
+            name: Gemini Status
+          - entity: sensor.ai_assistant_usage_today
+            name: Requests Today
+      
+      # Quick AI Commands
+      - type: entities
+        title: ⚡ Quick AI Commands
+        entities:
+          - type: button
+            name: "What's the weather?"
+            icon: mdi:weather-partly-cloudy
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "What is the current weather and forecast?"
+          
+          - type: button
+            name: "Turn on all lights"
+            icon: mdi:lightbulb-on
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Turn on all the lights in the house"
+          
+          - type: button
+            name: "Set temperature to 72°F"
+            icon: mdi:thermometer
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Set the thermostat to 72 degrees Fahrenheit"
+          
+          - type: button
+            name: "Good morning routine"
+            icon: mdi:weather-sunny
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Execute my good morning routine"
+      
+      # Agent Status
+      - type: entities
+        title: 🤖 Home Assistant Agent Status
+        entities:
+          - entity: binary_sensor.ha_agent_running
+            name: Agent Status
+          - entity: sensor.ha_agent_last_health_check
+            name: Last Health Check
+          - entity: sensor.ha_agent_integrations_healthy
+            name: Healthy Integrations
+          - entity: sensor.ha_agent_last_github_sync
+            name: Last GitHub Sync
+          - entity: sensor.ha_agent_auto_fixes_today
+            name: Auto-Fixes Today
+      
+      # Agent Controls
+      - type: entities
+        title: 🎛️ Agent Controls
+        entities:
+          - type: button
+            name: Run Health Check
+            icon: mdi:heart-pulse
+            tap_action:
+              action: call-service
+              service: rest_command.agent_health_check
+          
+          - type: button
+            name: Check Integrations
+            icon: mdi:puzzle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_check_integrations
+          
+          - type: button
+            name: Sync to GitHub
+            icon: mdi:github
+            tap_action:
+              action: call-service
+              service: rest_command.agent_github_sync
+          
+          - type: button
+            name: Generate Documentation
+            icon: mdi:file-document
+            tap_action:
+              action: call-service
+              service: rest_command.agent_generate_docs
+      
+      # Conversation Pipeline
+      - type: entities
+        title: 🎙️ Voice Assistant Pipeline
+        entities:
+          - entity: input_select.conversation_agent
+            name: Assistant Pipeline
+            options:
+              - OpenAI GPT-3.5
+              - Google Gemini
+              - Home Assistant Local
+          - entity: switch.voice_assistant_wake_word
+            name: Wake Word Detection
+          - entity: sensor.last_voice_command
+            name: Last Voice Command
+
+  # ============================================================================
+  # VIEW 6: SYSTEM MONITORING - Home Assistant System Health
+  # ============================================================================
+  - title: System Monitor
+    path: system_monitor
+    icon: mdi:monitor-dashboard
+    theme: Backend-selected
+    badges:
+      - entity: sensor.processor_use
+      - entity: sensor.memory_use_percent
+      - entity: sensor.disk_use_percent
+      - entity: sensor.last_boot
+    cards:
+      # System Resources
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 💻 System Resources
+              Home Assistant Server Performance
+          
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.processor_use
+                name: CPU Usage
+                min: 0
+                max: 100
+                severity:
+                  green: 0
+                  yellow: 60
+                  red: 80
+              
+              - type: gauge
+                entity: sensor.memory_use_percent
+                name: Memory Usage
+                min: 0
+                max: 100
+                severity:
+                  green: 0
+                  yellow: 70
+                  red: 85
+              
+              - type: gauge
+                entity: sensor.disk_use_percent
+                name: Disk Usage
+                min: 0
+                max: 100
+                severity:
+                  green: 0
+                  yellow: 75
+                  red: 90
+      
+      # Home Assistant Info
+      - type: entities
+        title: 🏠 Home Assistant Info
+        entities:
+          - entity: sensor.current_version
+            name: Current Version
+          - entity: sensor.latest_version
+            name: Latest Version
+          - entity: binary_sensor.updater
+            name: Update Available
+          - entity: sensor.last_boot
+            name: Last Reboot
+          - entity: sensor.uptime
+            name: Uptime
+      
+      # Database Size
+      - type: entities
+        title: 🗄️ Database
+        entities:
+          - entity: sensor.database_size
+            name: Database Size
+          - entity: sensor.database_entities
+            name: Total Entities
+          - entity: sensor.database_events
+            name: Events (24h)
+      
+      # Integration Status
+      - type: entities
+        title: 🔌 Integrations Status
+        entities:
+          - entity: sensor.integration_count
+            name: Total Integrations
+          - entity: binary_sensor.alexa_media_connected
+            name: Alexa Media
+          - entity: binary_sensor.openai_conversation_connected
+            name: OpenAI
+          - entity: binary_sensor.google_gemini_connected
+            name: Google Gemini
+          - entity: binary_sensor.ifttt_connected
+            name: IFTTT
+          - entity: binary_sensor.join_connected
+            name: Join
+          - entity: binary_sensor.smartthings_connected
+            name: SmartThings
+      
+      # Entity Count
+      - type: entities
+        title: 📊 Entity Statistics
+        entities:
+          - entity: sensor.total_entities
+            name: Total Entities
+          - entity: sensor.lights_count
+            name: Lights
+          - entity: sensor.switches_count
+            name: Switches
+          - entity: sensor.sensors_count
+            name: Sensors
+          - entity: sensor.automations_count
+            name: Automations
+          - entity: sensor.scripts_count
+            name: Scripts
+      
+      # Automations Status
+      - type: entities
+        title: ⚙️ Automation Status
+        entities:
+          - entity: sensor.automations_total
+            name: Total Automations
+          - entity: sensor.automations_triggered_today
+            name: Triggered Today
+          - entity: sensor.automations_failed_today
+            name: Failed Today
+          - entity: sensor.last_automation_triggered
+            name: Last Triggered
+      
+      # Error Log
+      - type: entities
+        title: ⚠️ Recent Errors
+        entities:
+          - entity: sensor.error_count_today
+            name: Errors Today
+          - entity: sensor.warning_count_today
+            name: Warnings Today
+          - entity: sensor.last_error
+            name: Last Error
+
+  # ============================================================================
+  # VIEW 7: NETWORK MONITORING - Network Devices and Performance
+  # ============================================================================
+  - title: Network Monitor
+    path: network_monitor
+    icon: mdi:lan
+    theme: Backend-selected
+    badges:
+      - entity: sensor.devices_online
+      - entity: sensor.internet_speed_download
+      - entity: sensor.internet_speed_upload
+      - entity: binary_sensor.internet_connected
+    cards:
+      # Network Overview
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🌐 Network Overview
+              Monitor all network devices and connectivity
+          
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.devices_online
+                name: Devices Online
+                min: 0
+                max: 50
+              
+              - type: gauge
+                entity: sensor.internet_speed_download
+                name: Download (Mbps)
+                min: 0
+                max: 1000
+                severity:
+                  red: 0
+                  yellow: 50
+                  green: 100
+              
+              - type: gauge
+                entity: sensor.internet_speed_upload
+                name: Upload (Mbps)
+                min: 0
+                max: 100
+                severity:
+                  red: 0
+                  yellow: 10
+                  green: 20
+      
+      # Device Tracker
+      - type: entities
+        title: 📱 Tracked Devices
+        entities:
+          - entity: device_tracker.phone
+            name: Phone
+          - entity: device_tracker.tablet
+            name: Tablet
+          - entity: device_tracker.laptop
+            name: Laptop
+          - entity: device_tracker.desktop
+            name: Desktop
+      
+      # Network Devices
+      - type: entities
+        title: 🖥️ Network Devices
+        entities:
+          - entity: binary_sensor.proxmox_server
+            name: Proxmox Server
+            secondary_info: last-changed
+          - entity: binary_sensor.home_assistant_server
+            name: Home Assistant
+            secondary_info: last-changed
+          - entity: binary_sensor.router
+            name: Router
+            secondary_info: last-changed
+          - entity: binary_sensor.modem
+            name: Modem
+            secondary_info: last-changed
+      
+      # Smart Home Devices
+      - type: entities
+        title: 🏠 Smart Home Devices
+        entities:
+          - entity: binary_sensor.living_room_chromecast
+            name: Living Room Chromecast
+          - entity: binary_sensor.bedroom_chromecast
+            name: Bedroom Chromecast
+          - entity: binary_sensor.google_nest_hub
+            name: Google Nest Hub
+          - entity: binary_sensor.living_room_echo
+            name: Living Room Echo
+          - entity: binary_sensor.bedroom_echo
+            name: Bedroom Echo
+          - entity: binary_sensor.samsung_tv_living_room
+            name: Samsung TV (Living Room)
+          - entity: binary_sensor.samsung_tv_bedroom
+            name: Samsung TV (Bedroom)
+      
+      # Network Performance
+      - type: history-graph
+        title: 📈 Network Performance (24h)
+        entities:
+          - entity: sensor.internet_speed_download
+          - entity: sensor.internet_speed_upload
+          - entity: sensor.ping_google
+        hours_to_show: 24
+        refresh_interval: 0
+      
+      # Agent Network Scan Results
+      - type: entities
+        title: 🔍 Agent Network Scan
+        entities:
+          - entity: sensor.agent_last_network_scan
+            name: Last Scan
+          - entity: sensor.agent_devices_discovered
+            name: Devices Discovered
+          - entity: sensor.agent_new_devices
+            name: New Devices
+          - type: button
+            name: Run Network Scan
+            icon: mdi:lan-pending
+            tap_action:
+              action: call-service
+              service: rest_command.agent_network_scan

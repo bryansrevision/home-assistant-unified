@@ -1,0 +1,421 @@
+# ============================================================================
+# ADVANCED TV & MEDIA REMOTE CONTROL DASHBOARD
+# Google TV, NVIDIA Shield, LG TV, Samsung TV
+# ============================================================================
+
+# ============================================================================
+# GOOGLE TV / CHROMECAST WITH GOOGLE TV
+# ============================================================================
+androidtv:
+  - name: "Google TV Living Room"
+    host: 192.168.1.225
+    port: 5555
+    adb_server_ip: 192.168.1.201  # HA server IP running ADB
+    adb_server_port: 5037
+    apps:
+      com.netflix.ninja: "Netflix"
+      com.google.android.youtube.tv: "YouTube"
+      com.amazon.amazonvideo.livingroom: "Prime Video"
+      com.disney.disneyplus: "Disney+"
+      com.hulu.livingroomplus: "Hulu"
+      com.plexapp.android: "Plex"
+      com.spotify.tv.android: "Spotify"
+      
+  - name: "Google TV Bedroom"
+    host: 192.168.1.226
+    port: 5555
+    adb_server_ip: 192.168.1.201
+    adb_server_port: 5037
+    apps:
+      com.netflix.ninja: "Netflix"
+      com.google.android.youtube.tv: "YouTube"
+      com.disney.disneyplus: "Disney+"
+
+# ============================================================================
+# NVIDIA SHIELD TV
+# ============================================================================
+  - name: "NVIDIA Shield"
+    host: 192.168.1.227
+    port: 5555
+    adb_server_ip: 192.168.1.201
+    adb_server_port: 5037
+    device_class: androidtv
+    state_detection_rules:
+     'com.nvidia.tegrazone3': ["playing"]
+      'com.netflix.ninja': ["playing", "paused"]
+      'com.plexapp.android': ["playing", "paused"]
+      'com.google.android.apps.tv.launcherx': ["standby"]
+    apps:
+      com.netflix.ninja: "Netflix"
+      com.google.android.youtube.tv: "YouTube"
+      com.amazon.amazonvideo.livingroom: "Prime Video"
+      com.plexapp.android: "Plex"
+      com.nvidia.tegrazone3: "GeForce NOW"
+      com.steam.streaming: "Steam Link"
+      com.google.android.apps.nativeexplorer: "Kodi"
+
+# ============================================================================
+# LG TV (WebOS)
+# ============================================================================
+webostv:
+  - host: 192.168.1.228
+    name: "LG TV Living Room"
+    turn_on_action:
+      service: wake_on_lan.send_magic_packet
+      data:
+        mac: "11:22:33:44:55:66"  # Update with actual MAC
+    customize:
+      sources:
+        - "Live TV"
+        - "HDMI 1"
+        - "HDMI 2"
+        - "HDMI 3"
+        - "Netflix"
+        - "YouTube"
+        - "Disney+"
+        - "Amazon Prime"
+        
+  - host: 192.168.1.229
+    name: "LG TV Bedroom"
+    turn_on_action:
+      service: wake_on_lan.send_magic_packet
+      data:
+        mac: "11:22:33:44:55:77"  # Update with actual MAC
+
+# ============================================================================
+# REST COMMANDS FOR TV CONTROL
+# ============================================================================
+rest_command:
+  # Google TV Commands via ADB
+  google_tv_send_key:
+    url: "http://192.168.1.201:8888/api/adb/send_key"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+    payload: '{"device": "{{ device }}", "key": "{{ key }}"}'
+    
+  # NVIDIA Shield Game Mode Toggle
+  shield_game_mode_toggle:
+    url: "http://192.168.1.227:8080/api/game_mode/toggle"
+    method: POST
+    
+  # LG TV Commands
+  lg_tv_send_command:
+    url: "http://192.168.1.228:3000/api/command"
+    method: POST
+    payload: '{"type": "{{ type }}", "payload": "{{ payload }}"}'
+
+# ============================================================================
+# ADVANCED TV SENSORS
+# ============================================================================
+sensor:
+  - platform: template
+    sensors:
+      active_tvs_count:
+        friendly_name: "Active TVs"
+        value_template: >
+          {% set tvs = [
+            states('media_player.google_tv_living_room'),
+            states('media_player.google_tv_bedroom'),
+            states('media_player.nvidia_shield'),
+            states('media_player.lg_tv_living_room'),
+            states('media_player.lg_tv_bedroom'),
+            states('media_player.samsung_tv_living_room'),
+            states('media_player.samsung_tv_bedroom')
+          ] %}
+          {{ tvs | select('in', ['playing', 'on']) | list | count }}
+        unit_of_measurement: "TVs"
+        icon_template: mdi:television
+        
+      shield_current_app:
+        friendly_name: "Shield Current App"
+        value_template: "{{ state_attr('media_player.nvidia_shield', 'app_name') }}"
+        icon_template: mdi:application
+        
+      all_tvs_status:
+        friendly_name: "All TVs Status"
+        value_template: >
+          {% set on_count = states('sensor.active_tvs_count') | int(0) %}
+          {% if on_count == 0 %}
+            All TVs Off
+          {% elif on_count == 1 %}
+            1 TV Active
+          {% else %}
+            {{ on_count }} TVs Active
+          {% endif %}
+        icon_template: >
+          {% set on_count = states('sensor.active_tvs_count') | int(0) %}
+          {% if on_count == 0 %}
+            mdi:television-off
+          {% else %}
+            mdi:television
+          {% endif %}
+
+# ============================================================================
+# TV CONTROL SCRIPTS
+# ============================================================================
+script:
+  # Launch Netflix on any TV
+  launch_netflix:
+    alias: "Launch Netflix"
+    fields:
+      tv_entity:
+        description: "TV entity to launch Netflix on"
+        example: "media_player.google_tv_living_room"
+    sequence:
+      - service: media_player.select_source
+        target:
+          entity_id: "{{ tv_entity }}"
+        data:
+          source: "Netflix"
+      - delay: '00:00:02'
+      - service: media_player.media_play
+        target:
+          entity_id: "{{ tv_entity }}"
+          
+  # Launch YouTube
+  launch_youtube:
+    alias: "Launch YouTube"
+    fields:
+      tv_entity:
+        description: "TV entity"
+      search_query:
+        description: "YouTube search query (optional)"
+        example: "home automation tutorials"
+    sequence:
+      - service: media_player.select_source
+        target:
+          entity_id: "{{ tv_entity }}"
+        data:
+          source: "YouTube"
+      - condition: template
+        value_template: "{{ search_query is defined }}"
+      - service: media_player.play_media
+        target:
+          entity_id: "{{ tv_entity }}"
+        data:
+          media_content_type: "url"
+          media_content_id: "https://www.youtube.com/results?search_query={{ search_query | urlencode }}"
+          
+  # Gaming Mode on Shield
+  shield_gaming_mode:
+    alias: "NVIDIA Shield Gaming Mode"
+    sequence:
+      - service: media_player.turn_on
+        target:
+          entity_id: media_player.nvidia_shield
+      - delay: '00:00:03'
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.nvidia_shield
+        data:
+          source: "GeForce NOW"
+      - service: rest_command.shield_game_mode_toggle
+          
+  # Movie Night - All TVs Off
+  movie_night_single_tv:
+    alias: "Movie Night - Single TV"
+    fields:
+      main_tv:
+        description: "Main TV for movie"
+        example: "media_player.lg_tv_living_room"
+    sequence:
+      - service: media_player.turn_off
+        target:
+          entity_id:
+            - media_player.google_tv_bedroom
+            - media_player.lg_tv_bedroom
+            - media_player.samsung_tv_bedroom
+      - service: media_player.turn_on
+        target:
+          entity_id: "{{ main_tv }}"
+      - service: media_player.select_source
+        target:
+          entity_id: "{{ main_tv }}"
+        data:
+          source: "Netflix"
+      - service: light.turn_off
+        target:
+          entity_id: group.living_room_lights
+      - service: notify.mobile_app_phone
+        data:
+          title: "🎬 Movie Mode Activated"
+          message: "Ready for movie night!"
+          
+  # Turn Off All TVs
+  all_tvs_off:
+    alias: "Turn Off All TVs"
+    sequence:
+      - service: media_player.turn_off
+        target:
+          entity_id:
+            - media_player.google_tv_living_room
+            - media_player.google_tv_bedroom
+            - media_player.nvidia_shield
+            - media_player.lg_tv_living_room
+            - media_player.lg_tv_bedroom
+            - media_player.samsung_tv_living_room
+            - media_player.samsung_tv_bedroom
+      - service: notify.mobile_app_phone
+        data:
+          message: "All TVs have been turned off"
+          
+  # Sports Mode - Optimize for Live TV
+  sports_mode:
+    alias: "Sports Mode"
+    fields:
+      tv_entity:
+        description: "TV to use for sports"
+    sequence:
+      - service: media_player.turn_on
+        target:
+          entity_id: "{{ tv_entity }}"
+      - delay: '00:00:02'
+      - service: media_player.select_source
+        target:
+          entity_id: "{{ tv_entity }}"
+        data:
+          source: "Live TV"
+      - service: media_player.volume_set
+        target:
+          entity_id: "{{ tv_entity }}"
+        data:
+          volume_level: 0.6
+
+# ============================================================================
+# TV AUTOMATION
+# ============================================================================
+automation:
+  # Auto turn off TVs at night
+  - alias: "TVs - Auto Off at 2 AM"
+    id: tvs_auto_off_night
+    trigger:
+      - platform: time
+        at: "02:00:00"
+    condition:
+      - condition: template
+        value_template: "{{ states('sensor.active_tvs_count') | int(0) > 0 }}"
+    action:
+      - service: script.all_tvs_off
+      
+  # Shield idle notification
+  - alias: "Shield - Idle Warning"
+    id: shield_idle_warning
+    trigger:
+      - platform: state
+        entity_id: media_player.nvidia_shield
+        to: 'idle'
+        for:
+          hours: 4
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "💤 NVIDIA Shield Idle"
+          message: "Shield has been idle for 4 hours. Turn it off?"
+          data:
+            actions:
+              - action: "TURN_OFF_SHIELD"
+                title: "Turn Off"
+              - action: "KEEP_ON"
+                title: "Keep On"
+                
+  # Handle Shield turn off action
+  - alias: "Shield - Handle Turn Off Action"
+    id: shield_handle_turn_off
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "TURN_OFF_SHIELD"
+    action:
+      - service: media_player.turn_off
+        target:
+          entity_id: media_player.nvidia_shield
+          
+  # Welcome home - Turn on TV
+  - alias: "TVs - Welcome Home Turn On"
+    id: tvs_welcome_home
+    trigger:
+      - platform: state
+        entity_id: person.dylan
+        to: 'home'
+    condition:
+      - condition: time
+        after: "17:00:00"
+        before: "23:00:00"
+    action:
+      - service: media_player.turn_on
+        target:
+          entity_id: media_player.lg_tv_living_room
+      - delay: '00:00:05'
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.lg_tv_living_room
+        data:
+          source: "Live TV"
+
+# ============================================================================
+# INPUT SELECTS FOR TV CONTROL
+# ============================================================================
+input_select:
+  favorite_tv:
+    name: "Favorite TV"
+    options:
+      - "Google TV Living Room"
+      - "Google TV Bedroom"
+      - "NVIDIA Shield"
+      - "LG TV Living Room"
+      - "LG TV Bedroom"
+      - "Samsung TV Living Room"
+      - "Samsung TV Bedroom"
+    initial: "LG TV Living Room"
+    icon: mdi:television
+    
+  favorite_streaming_service:
+    name: "Favorite Streaming Service"
+    options:
+      - "Netflix"
+      - "YouTube"
+      - "Disney+"
+      - "Prime Video"
+      - "Hulu"
+      - "Plex"
+      - "Spotify"
+    initial: "Netflix"
+    icon: mdi:movie-open
+
+# ============================================================================
+# GROUPS
+# ============================================================================
+group:
+  all_tvs:
+    name: "All TVs"
+    entities:
+      - media_player.google_tv_living_room
+      - media_player.google_tv_bedroom
+      - media_player.nvidia_shield
+      - media_player.lg_tv_living_room
+      - media_player.lg_tv_bedroom
+      - media_player.samsung_tv_living_room
+      - media_player.samsung_tv_bedroom
+      
+  streaming_devices:
+    name: "Streaming Devices"
+    entities:
+      - media_player.google_tv_living_room
+      - media_player.google_tv_bedroom
+      - media_player.nvidia_shield
+      - media_player.chromecast_living_room
+      - media_player.chromecast_bedroom
+
+# ============================================================================
+# NOTES:
+# 1. Install ADB server on HA: apk add android-tools in SSH
+#    Or use ADB integration via HACS
+# 2. Enable ADB debugging on Android TV devices
+# 3. Pair devices: adb connect 192.168.1.225:5555
+# 4. For LG TVs, accept pairing prompt on first connection
+# 5. Update MAC addresses for Wake-on-LAN
+# 6. Install custom firmware or use LG webOS integration
+# 7. Update IP addresses to match your network
+# ============================================================================

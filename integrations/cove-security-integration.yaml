@@ -1,0 +1,384 @@
+# ============================================================================
+# COVE SMART HOME SECURITY INTEGRATION
+# For Cove Connect / CoveFR Security System
+# ============================================================================
+
+# Cove Security System Integration via MQTT/REST API
+# Note: Cove uses proprietary protocol, best integrated via MQTT bridge or REST webhooks
+
+# REST Commands for Cove System
+rest_command:
+  # Arm Cove System - Away Mode
+  cove_arm_away:
+    url: "https://api.cove.com/v1/systems/{{ cove_system_id }}/arm/away"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ cove_api_token }}"
+      Content-Type: "application/json"
+    payload: '{"user_id": "{{ cove_user_id }}"}'
+    
+  # Arm Cove System - Stay Mode
+  cove_arm_stay:
+    url: "https://api.cove.com/v1/systems/{{ cove_system_id }}/arm/stay"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ cove_api_token }}"
+      Content-Type: "application/json"
+    payload: '{"user_id": "{{ cove_user_id }}"}'
+    
+  # Disarm Cove System
+  cove_disarm:
+    url: "https://api.cove.com/v1/systems/{{ cove_system_id }}/disarm"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ cove_api_token }}"
+      Content-Type: "application/json"
+    payload: '{"user_id": "{{ cove_user_id }}", "pin": "{{ cove_disarm_pin }}"}'
+    
+  # Trigger Cove Panic Alarm
+  cove_panic:
+    url: "https://api.cove.com/v1/systems/{{ cove_system_id }}/panic"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ cove_api_token }}"
+      Content-Type: "application/json"
+      
+  # Get Cove System Status
+  cove_get_status:
+    url: "https://api.cove.com/v1/systems/{{ cove_system_id }}/status"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ cove_api_token }}"
+      Content-Type: "application/json"
+
+# RESTful Sensors for Cove Status
+sensor:
+  - platform: rest
+    name: "Cove Security Status"
+    resource: "https://api.cove.com/v1/systems/!secret cove_system_id/status"
+    method: GET
+    headers:
+      Authorization: !secret cove_api_authorization
+      Content-Type: "application/json"
+    value_template: "{{ value_json.state }}"
+    json_attributes:
+      - armed_state
+      - last_armed_time
+      - last_disarmed_time
+      - battery_level
+      - ac_power
+      - sensors_count
+      - sensors_open
+      - sensors_bypassed
+    scan_interval: 30
+    
+  - platform: template
+    sensors:
+      cove_armed_state:
+        friendly_name: "Cove Armed State"
+        value_template: >
+          {% if states.sensor.cove_security_status.attributes.armed_state == 'disarmed' %}
+            Disarmed
+          {% elif states.sensor.cove_security_status.attributes.armed_state == 'armed_away' %}
+            Armed Away
+          {% elif states.sensor.cove_security_status.attributes.armed_state == 'armed_stay' %}
+            Armed Stay
+          {% else %}
+            Unknown
+          {% endif %}
+        icon_template: >
+          {% if states.sensor.cove_security_status.attributes.armed_state == 'disarmed' %}
+            mdi:shield-off
+          {% elif states.sensor.cove_security_status.attributes.armed_state == 'armed_away' %}
+            mdi:shield-lock
+          {% elif states.sensor.cove_security_status.attributes.armed_state == 'armed_stay' %}
+            mdi:shield-home
+          {% else %}
+            mdi:shield-alert
+          {% endif %}
+          
+      cove_sensors_open:
+        friendly_name: "Cove Sensors Open"
+        value_template: "{{ state_attr('sensor.cove_security_status', 'sensors_open') | int(0) }}"
+        unit_of_measurement: "sensors"
+        icon_template: >
+          {% if state_attr('sensor.cove_security_status', 'sensors_open') | int(0) > 0 %}
+            mdi:door-open
+          {% else %}
+            mdi:door-closed
+          {% endif %}
+          
+      cove_battery_level:
+        friendly_name: "Cove System Battery"
+        value_template: "{{ state_attr('sensor.cove_security_status', 'battery_level') | int(0) }}"
+        unit_of_measurement: "%"
+        device_class: battery
+        
+      cove_ac_power:
+        friendly_name: "Cove AC Power"
+        value_template: >
+          {% if state_attr('sensor.cove_security_status', 'ac_power') %}
+            Connected
+          {% else %}
+            Disconnected
+          {% endif %}
+        icon_template: >
+          {% if state_attr('sensor.cove_security_status', 'ac_power') %}
+            mdi:power-plug
+          {% else %}
+            mdi:power-plug-off
+          {% endif %}
+
+# Binary Sensors for Cove Events
+binary_sensor:
+  - platform: template
+    sensors:
+      cove_system_armed:
+        friendly_name: "Cove System Armed"
+        device_class: safety
+        value_template: >
+          {{ state_attr('sensor.cove_security_status', 'armed_state') in ['armed_away', 'armed_stay'] }}
+          
+      cove_any_sensor_open:
+        friendly_name: "Cove Any Sensor Open"
+        device_class: door
+        value_template: >
+          {{ state_attr('sensor.cove_security_status', 'sensors_open') | int(0) > 0 }}
+          
+      cove_ac_power_status:
+        friendly_name: "Cove AC Power Connected"
+        device_class: plug
+        value_template: "{{ state_attr('sensor.cove_security_status', 'ac_power') == true }}"
+        
+      cove_low_battery:
+        friendly_name: "Cove Low Battery"
+        device_class: battery
+        value_template: >
+          {{ state_attr('sensor.cove_security_status', 'battery_level') | int(100) < 20 }}
+
+# Alarm Control Panel Entity for Cove
+alarm_control_panel:
+  - platform: template
+    panels:
+      cove_security_system:
+        name: "Cove Security System"
+        value_template: "{{ states('sensor.cove_armed_state') }}"
+        arm_away:
+          - service: rest_command.cove_arm_away
+        arm_home:
+          - service: rest_command.cove_arm_stay
+        disarm:
+          - service: rest_command.cove_disarm
+        code: !secret cove_disarm_pin
+
+# Cove Security Automation
+automation:
+  # Auto-arm when everyone leaves
+  - alias: "Cove - Auto Arm Away When Everyone Leaves"
+    id: cove_auto_arm_away
+    trigger:
+      - platform: state
+        entity_id: group.all_devices
+        to: 'not_home'
+        for:
+          minutes: 5
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.cove_security_system
+        state: 'disarmed'
+    action:
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.cove_security_system
+        data:
+          code: !secret cove_disarm_pin
+      - service: notify.mobile_app_phone
+        data:
+          title: "🏠 Cove Security Armed"
+          message: "System armed in Away mode - everyone has left"
+          
+  # Auto-disarm when someone arrives
+  - alias: "Cove - Notify When Someone Arrives Home"
+    id: cove_notify_arrival
+    trigger:
+      - platform: state
+        entity_id: group.all_devices
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.cove_security_system
+        state: 'armed_away'
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "🏠 Someone Arrived Home"
+          message: "Disarm the Cove security system"
+          data:
+            actions:
+              - action: "DISARM_COVE"
+                title: "Disarm System"
+              - action: "KEEP_ARMED"
+                title: "Keep Armed"
+                
+  # Handle disarm action from notification
+  - alias: "Cove - Handle Disarm Action"
+    id: cove_handle_disarm_action
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "DISARM_COVE"
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        target:
+          entity_id: alarm_control_panel.cove_security_system
+        data:
+          code: !secret cove_disarm_pin
+          
+  # Alert on sensor open while armed
+  - alias: "Cove - Alert on Sensor Open While Armed"
+    id: cove_alert_sensor_open
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.cove_any_sensor_open
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.cove_system_armed
+        state: 'on'
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "🚨 SECURITY ALERT"
+          message: "Cove sensor opened while system armed!"
+          data:
+            priority: high
+            ttl: 0
+      - service: rest_command.join_notification
+        data:
+          deviceId: !secret join_device_id_primary
+          title: "🚨 SECURITY ALERT"
+          text: "Cove sensor opened while system armed!"
+          
+  # Alert on AC power loss
+  - alias: "Cove - Alert on AC Power Loss"
+    id: cove_alert_power_loss
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.cove_ac_power_status
+        to: 'off'
+        for:
+          minutes: 2
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ Cove Power Alert"
+          message: "Cove system running on battery - AC power lost"
+          
+  # Alert on low battery
+  - alias: "Cove - Alert on Low Battery"
+    id: cove_alert_low_battery
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.cove_low_battery
+        to: 'on'
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "🔋 Cove Low Battery"
+          message: "Cove security system battery is low ({{ states('sensor.cove_battery_level') }}%)"
+          notification_id: "cove_low_battery"
+          
+  # Arm Stay at night
+  - alias: "Cove - Auto Arm Stay at Night"
+    id: cove_auto_arm_stay_night
+    trigger:
+      - platform: time
+        at: "23:00:00"
+    condition:
+      - condition: state
+        entity_id: group.all_devices
+        state: 'home'
+      - condition: state
+        entity_id: alarm_control_panel.cove_security_system
+        state: 'disarmed'
+    action:
+      - service: alarm_control_panel.alarm_arm_home
+        target:
+          entity_id: alarm_control_panel.cove_security_system
+        data:
+          code: !secret cove_disarm_pin
+      - service: notify.mobile_app_phone
+        data:
+          title: "🌙 Cove Security Armed"
+          message: "System armed in Stay mode for the night"
+
+# Input Boolean for Cove Automation Control
+input_boolean:
+  cove_auto_arm_enabled:
+    name: "Cove Auto-Arm Enabled"
+    initial: true
+    icon: mdi:shield-check
+    
+  cove_notifications_enabled:
+    name: "Cove Notifications Enabled"
+    initial: true
+    icon: mdi:bell-ring
+
+# Scripts for Cove Control
+script:
+  cove_arm_away_script:
+    alias: "Cove - Arm Away"
+    sequence:
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.cove_security_system
+        data:
+          code: !secret cove_disarm_pin
+      - delay: '00:00:02'
+      - service: notify.mobile_app_phone
+        data:
+          title: "🛡️ Cove Armed Away"
+          message: "Security system armed in Away mode"
+          
+  cove_arm_stay_script:
+    alias: "Cove - Arm Stay"
+    sequence:
+      - service: alarm_control_panel.alarm_arm_home
+        target:
+          entity_id: alarm_control_panel.cove_security_system
+        data:
+          code: !secret cove_disarm_pin
+      - delay: '00:00:02'
+      - service: notify.mobile_app_phone
+        data:
+          title: "🛡️ Cove Armed Stay"
+          message: "Security system armed in Stay mode"
+          
+  cove_disarm_script:
+    alias: "Cove - Disarm"
+    sequence:
+      - service: alarm_control_panel.alarm_disarm
+        target:
+          entity_id: alarm_control_panel.cove_security_system
+        data:
+          code: !secret cove_disarm_pin
+      - delay: '00:00:02'
+      - service: notify.mobile_app_phone
+        data:
+          title: "🔓 Cove Disarmed"
+          message: "Security system has been disarmed"
+
+# ============================================================================
+# NOTES:
+# 1. Add to secrets.yaml:
+#    - cove_api_token
+#    - cove_system_id
+#    - cove_user_id
+#    - cove_disarm_pin
+#    - cove_api_authorization: "Bearer YOUR_TOKEN_HERE"
+# 2. Contact Cove support to enable API access
+# 3. Alternative: Use MQTT bridge if Cove provides MQTT support
+# 4. Test API endpoints before enabling automations
+# 5. Adjust API URLs based on actual Cove API documentation
+# ============================================================================

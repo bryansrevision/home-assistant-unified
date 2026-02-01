@@ -1,0 +1,317 @@
+# ============================================================================
+# MASTER INTEGRATION CONFIGURATION
+# Include all integrations in main Home Assistant configuration
+# ============================================================================
+
+# This file should be included in configuration.yaml:
+# 
+# # In configuration.yaml, add:
+# homeassistant:
+#   packages: !include_dir_named integrations/
+
+# ============================================================================
+# CORE INTEGRATIONS
+# ============================================================================
+
+# Default Configuration
+default_config:
+
+# Enable advanced logging
+logger:
+  default: info
+  logs:
+    homeassistant.core: warning
+    homeassistant.components.camera: info
+    homeassistant.components.automation: info
+    homeassistant.components.rest_command: debug
+    custom_components.alexa_media: info
+
+# Enable system health
+system_health:
+
+# Enable my Home Assistant
+my:
+
+# HTTP/SSL Configuration
+http:
+  server_port: 8123
+  cors_allowed_origins:
+    - https://google.com
+    - https://www.home-assistant.io
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.0/24
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+
+# ============================================================================
+# INCLUDE ALL INTEGRATION FILES
+# ============================================================================
+
+# Camera Integration (Yi/Kami)
+camera: !include_dir_merge_list integrations/camera-integration.yaml
+
+# Cove Security System
+alarm_control_panel: !include integrations/cove-security-integration.yaml
+
+# Advanced TV & Media Control
+androidtv: !include integrations/advanced-tv-remote-integration.yaml
+webostv: !include integrations/advanced-tv-remote-integration.yaml
+
+# Voice Assistants (Alexa + Google Home)
+alexa_media: !include integrations/voice-assistants-integration.yaml
+google_assistant: !include integrations/voice-assistants-integration.yaml
+cast: !include integrations/voice-assistants-integration.yaml
+
+# Server Integrations (Node-RED, IPTV, MCP Hub, Proxmox)
+# These are included via rest_command and sensor platforms below
+
+# Android Device Integration
+mobile_app: !include integrations/android-device-integration.yaml
+
+# Custom Agent Integration
+# Included via rest_command and sensor platforms below
+
+# AI  Assistant Integration (OpenAI + Gemini)
+openai_conversation: !include integrations/ai-assistant-integration.yaml
+google_generative_ai_conversation: !include integrations/ai-assistant-integration.yaml
+
+# ============================================================================
+# MERGE PLATFORM CONFIGURATIONS
+# ============================================================================
+
+# Combine all REST commands from different integrations
+rest_command: !include_dir_merge_named integrations/rest_commands/
+
+# Combine all sensors
+sensor: !include_dir_merge_list integrations/sensors/
+
+# Combine all binary sensors
+binary_sensor: !include_dir_merge_list integrations/binary_sensors/
+
+# Combine all scripts
+script: !include_dir_merge_named integrations/scripts/
+
+# Combine all automations
+automation: !include_dir_merge_list integrations/automations/
+
+# Combine all groups
+group: !include_dir_merge_named integrations/groups/
+
+# ============================================================================
+# RECORDER OPTIMIZATION
+# ============================================================================
+
+recorder:
+  purge_keep_days: 7
+  commit_interval: 1
+  db_url: !secret db_url
+  exclude:
+    domains:
+      - automation
+      - updater
+      - camera
+    entity_globs:
+      - sensor.weather_*
+      - sensor.dark_sky_*
+    entities:
+      - sun.sun
+      - sensor.date
+      - sensor.time
+
+# History configuration
+history:
+  use_include_order: true
+  include:
+    domains:
+      - sensor
+      - switch
+      - media_player
+      - light
+      - binary_sensor
+      - device_tracker
+
+# ============================================================================
+# LOVELACE DASHBOARDS
+# ============================================================================
+
+lovelace:
+  mode: yaml
+  resources:
+    # HACS custom cards
+    - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
+      type: module
+    - url: /hacsfiles/button-card/button-card.js
+      type: module
+    - url: /hacsfiles/card-mod/card-mod.js
+      type: module
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+      type: module
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+  dashboards:
+    lovelace-main:
+      mode: yaml
+      title: "Home  Assistant Unified"
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
+      filename: dashboards/lovelace-main.yaml
+    lovelace-tv:
+      mode: yaml
+      title: "TV & Media Control"
+      icon: mdi:television
+      show_in_sidebar: true
+      filename: dashboards/lovelace-tv-advanced.yaml
+    lovelace-security:
+      mode: yaml
+      title: "Security & Cameras"
+      icon: mdi:shield-home
+      show_in_sidebar: true
+      filename: dashboards/lovelace-security.yaml
+    lovelace-mobile:
+      mode: yaml
+      title: "Mobile Device Control"
+      icon: mdi:cellphone
+      show_in_sidebar: true
+      filename: dashboards/lovelace-mobile.yaml
+
+# ============================================================================
+# FRONTEND CUSTOMIZATION
+# ============================================================================
+
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /hacsfiles/card-mod/card-mod.js
+
+# ============================================================================
+# TEXT-TO-SPEECH
+# ============================================================================
+
+tts:
+  - platform: google_translate
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+
+# ============================================================================
+# NOTIFICATIONS
+# ============================================================================
+
+notify:
+  # Mobile app notifications (auto-discovered)
+  - platform: mobile_app
+    name: "mobile_app_phone"
+
+# ============================================================================
+# DEVICE TRACKER
+# ============================================================================
+
+device_tracker:
+  - platform: ping
+    hosts:
+      android_phone: 192.168.1.50
+      android_tablet: 192.168.1.51
+      laptop: 192.168.1.52
+    count: 2
+    consider_home: 180
+
+# ============================================================================
+# WEATHER
+# ============================================================================
+
+weather:
+  - platform: openweathermap
+    api_key: !secret openweathermap_api_key
+    mode: daily
+
+# ============================================================================
+# STREAM (for camera viewing)
+# ============================================================================
+
+stream:
+
+# ============================================================================
+# ONVIF (for Yi/Kami cameras)
+# ============================================================================
+
+onvif:
+  - host: 192.168.1.150
+    name: "Yi Camera Living Room ONVIF"
+    username: admin
+    password: !secret yi_camera_password
+    port: 8080
+  - host: 192.168.1.151
+    name: "Yi Camera Front Door ONVIF"
+    username: admin
+    password: !secret yi_camera_password
+    port: 8080
+
+# ============================================================================
+# WAKE ON LAN (for TVs)
+# ============================================================================
+
+wake_on_lan:
+
+# ============================================================================
+# IPTV INTEGRATION
+# ============================================================================
+
+iptv:
+  - name: "IPTV Channels"
+    url: "http://192.168.1.201:8000/playlist.m3u8"
+    scan_interval: 3600
+
+# ============================================================================
+# PANEL IFRAME (for external dashboards)
+# ============================================================================
+
+panel_iframe:
+  agent_dashboard:
+    title: "Agent Dashboard"
+    url: "http://192.168.1.201:8888/dashboard"
+    icon: mdi:robot
+    require_admin: true
+  nodered:
+    title: "Node-RED"
+    url: "http://192.168.1.201:1880"
+    icon: mdi:sitemap
+    require_admin: true
+  proxmox:
+    title: "Proxmox Server"
+    url: "https://192.168.1.100:8006"
+    icon: mdi:server
+    require_admin: true
+
+# ============================================================================
+# INPUT BOOLEANS, NUMBERS, SELECTS
+# ============================================================================
+
+input_boolean: !include_dir_merge_named integrations/input_boolean/
+input_number: !include_dir_merge_named integrations/input_number/
+input_select: !include_dir_merge_named integrations/input_select/
+input_text: !include_dir_merge_named integrations/input_text /
+
+# ============================================================================
+# SHELL COMMANDS
+# ============================================================================
+
+shell_command: !include_dir_merge_named integrations/shell_commands/
+
+# ============================================================================
+# COUNTERS
+# ============================================================================
+
+counter: !include_dir_merge_named integrations/counters/
+
+# ============================================================================
+# NOTES:
+# 1. This file serves as a master include for all integrations
+# 2. Individual integration files are in integrations/ directory
+# 3. Platform-specific configs (sensors, automations) are merged from subdirectories
+# 4. Update secrets.yaml with required credentials
+# 5. Install HACS custom cards: mini-media-player, button-card, card-mod, auto-entities, layout-card
+# 6. Enable required integrations in UI: Integrations → Add Integration
+# 7. Restart Home Assistant after configuration changes
+# 8. Check configuration validity: Developer Tools → YAML → Check Configuration
+# ============================================================================

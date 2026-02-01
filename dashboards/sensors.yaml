@@ -1,0 +1,457 @@
+---
+# Dashboard Sensors
+# Template sensors for dashboard tracking and display
+# Created: February 1, 2026
+
+sensor:
+  # ============================================================================
+  # SYSTEM MONITORING SENSORS
+  # ============================================================================
+  
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /
+      - type: memory_use_percent
+      - type: processor_use
+      - type: last_boot
+      - type: ipv4_address
+        arg: eth0
+  
+  # ============================================================================
+  # HOME ASSISTANT STATUS SENSORS
+  # ============================================================================
+  
+  - platform: version
+    name: current_version
+    source: local
+  
+  - platform: version
+    name: latest_version
+    source: hassio
+  
+  - platform: uptime
+    name: uptime
+  
+  # Database size
+  - platform: sql
+    db_url: !secret db_url
+    queries:
+      - name: Database Size
+        query: "SELECT pg_size_pretty(pg_database_size('homeassistant'));"
+        column: pg_size_pretty
+  
+  # ============================================================================
+  # NETWORK MONITORING SENSORS
+  # ============================================================================
+  
+  - platform: ping
+    host: 8.8.8.8
+    name: ping_google
+    count: 2
+    scan_interval: 60
+  
+  - platform: ping
+    host: !secret proxmox_server_ip
+    name: ping_proxmox
+    count: 2
+    scan_interval: 60
+  
+  # ============================================================================
+  # ENTITY COUNT SENSORS
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      total_entities:
+        friendly_name: "Total Entities"
+        value_template: "{{ states | count }}"
+        icon_template: mdi:counter
+      
+      lights_count:
+        friendly_name: "Lights Count"
+        value_template: "{{ states.light | count }}"
+        icon_template: mdi:lightbulb
+      
+      switches_count:
+        friendly_name: "Switches Count"
+        value_template: "{{ states.switch | count }}"
+        icon_template: mdi:light-switch
+      
+      sensors_count:
+        friendly_name: "Sensors Count"
+        value_template: "{{ states.sensor | count }}"
+        icon_template: mdi:gauge
+      
+      automations_count:
+        friendly_name: "Automations Count"
+        value_template: "{{ states.automation | count }}"
+        icon_template: mdi:robot
+      
+      scripts_count:
+        friendly_name: "Scripts Count"
+        value_template: "{{ states.script | count }}"
+        icon_template: mdi:script-text
+      
+      devices_online:
+        friendly_name: "Devices Online"
+        value_template: >
+          {{ states.device_tracker 
+             | selectattr('state', 'eq', 'home') 
+             | list | count }}
+        icon_template: mdi:devices
+
+  # ============================================================================
+  # AI ASSISTANT SENSORS
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      ai_assistant_usage_today:
+        friendly_name: "AI Requests Today"
+        value_template: >
+          {{ states('counter.ai_assistant_requests_daily') }}
+        icon_template: mdi:robot
+      
+      openai_conversation_status:
+        friendly_name: "OpenAI Status"
+        value_template: >
+          {% if is_state('binary_sensor.openai_conversation_connected', 'on') %}
+            Connected
+          {% else %}
+            Disconnected
+          {% endif %}
+        icon_template: >
+          {% if is_state('binary_sensor.openai_conversation_connected', 'on') %}
+            mdi:check-circle
+          {% else %}
+            mdi:alert-circle
+          {% endif %}
+      
+      google_gemini_status:
+        friendly_name: "Google Gemini Status"
+        value_template: >
+          {% if is_state('binary_sensor.google_gemini_connected', 'on') %}
+            Connected
+          {% else %}
+            Disconnected
+          {% endif %}
+        icon_template: >
+          {% if is_state('binary_sensor.google_gemini_connected', 'on') %}
+            mdi:check-circle
+          {% else %}
+            mdi:alert-circle
+          {% endif %}
+
+  # ============================================================================
+  # AGENT STATUS SENSORS
+  # ============================================================================
+  
+  - platform: rest
+    name: ha_agent_status
+    resource: http://localhost:8888/api/status
+    method: GET
+    headers:
+      Authorization: "Bearer !secret agent_api_token"
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - running
+      - last_health_check
+      - last_sync
+      - integrations_healthy
+      - errors_count
+    scan_interval: 60
+  
+  - platform: template
+    sensors:
+      ha_agent_integrations_healthy:
+        friendly_name: "Healthy Integrations"
+        value_template: >
+          {{ state_attr('sensor.ha_agent_status', 'integrations_healthy') | default(0) }}
+        icon_template: mdi:puzzle-check
+      
+      ha_agent_last_health_check:
+        friendly_name: "Last Health Check"
+        value_template: >
+          {{ state_attr('sensor.ha_agent_status', 'last_health_check') | default('Never') }}
+        icon_template: mdi:heart-pulse
+      
+      ha_agent_last_github_sync:
+        friendly_name: "Last GitHub Sync"
+        value_template: >
+          {{ state_attr('sensor.ha_agent_status', 'last_sync') | default('Never') }}
+        icon_template: mdi:github
+      
+      ha_agent_auto_fixes_today:
+        friendly_name: "Auto-Fixes Today"
+        value_template: >
+          {{ states('counter.agent_auto_fixes_daily') }}
+        icon_template: mdi:wrench
+
+  # ============================================================================
+  # MOBILE DEVICE SENSORS (via Home Assistant Mobile App)
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      phone_battery_level:
+        friendly_name: "Phone Battery"
+        value_template: "{{ state_attr('sensor.phone_battery_state', 'level') }}"
+        unit_of_measurement: "%"
+        device_class: battery
+        icon_template: >
+          {% set battery_level = state_attr('sensor.phone_battery_state', 'level') | int %}
+          {% if battery_level > 90 %} mdi:battery
+          {% elif battery_level > 80 %} mdi:battery-90
+          {% elif battery_level > 70 %} mdi:battery-80
+          {% elif battery_level > 60 %} mdi:battery-70
+          {% elif battery_level > 50 %} mdi:battery-60
+          {% elif battery_level > 40 %} mdi:battery-50
+          {% elif battery_level > 30 %} mdi:battery-40
+          {% elif battery_level > 20 %} mdi:battery-30
+          {% elif battery_level > 10 %} mdi:battery-20
+          {% else %} mdi:battery-10
+          {% endif %}
+      
+      phone_wifi_connection:
+        friendly_name: "Phone WiFi"
+        value_template: "{{ state_attr('sensor.phone_wifi_connection', 'ssid') }}"
+        icon_template: mdi:wifi
+      
+      phone_location:
+        friendly_name: "Phone Location"
+        value_template: "{{ states('device_tracker.phone') }}"
+        icon_template: mdi:map-marker
+
+  # ============================================================================
+  # NOTIFICATION TRACKING SENSORS
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      last_notification_sent:
+        friendly_name: "Last Notification"
+        value_template: "{{ states('input_text.last_notification_text') }}"
+        icon_template: mdi:bell
+      
+      notification_count_today:
+        friendly_name: "Notifications Today"
+        value_template: "{{ states('counter.notifications_daily') }}"
+        icon_template: mdi:counter
+
+  # ============================================================================
+  # AUTOMATION STATUS SENSORS
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      automations_total:
+        friendly_name: "Total Automations"
+        value_template: "{{ states.automation | count }}"
+        icon_template: mdi:robot
+      
+      automations_triggered_today:
+        friendly_name: "Triggered Today"
+        value_template: "{{ states('counter.automations_triggered_daily') }}"
+        icon_template: mdi:play-circle
+      
+      automations_failed_today:
+        friendly_name: "Failed Today"
+        value_template: "{{ states('counter.automations_failed_daily') }}"
+        icon_template: mdi:alert-circle
+      
+      last_automation_triggered:
+        friendly_name: "Last Automation"
+        value_template: "{{ states('input_text.last_automation_triggered') }}"
+        icon_template: mdi:robot
+
+  # ============================================================================
+  # ERROR TRACKING SENSORS
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      error_count_today:
+        friendly_name: "Errors Today"
+        value_template: "{{ states('counter.errors_daily') }}"
+        icon_template: mdi:alert
+      
+      warning_count_today:
+        friendly_name: "Warnings Today"
+        value_template: "{{ states('counter.warnings_daily') }}"
+        icon_template: mdi:alert-outline
+      
+      last_error:
+        friendly_name: "Last Error"
+        value_template: "{{ states('input_text.last_error_message') }}"
+        icon_template: mdi:alert-circle
+
+  # ============================================================================
+  # INTEGRATION STATUS SENSORS
+  # ============================================================================
+  
+  - platform: template
+    sensors:
+      integration_count:
+        friendly_name: "Total Integrations"
+        value_template: >
+          {{ integration_entities('alexa_media') | count +
+             integration_entities('openai_conversation') | count +
+             integration_entities('google_generative_ai_conversation') | count +
+             integration_entities('ifttt') | count +
+             integration_entities('mobile_app') | count +
+             integration_entities('smartthings') | count }}
+        icon_template: mdi:puzzle
+
+# ============================================================================
+# BINARY SENSORS
+# ============================================================================
+
+binary_sensor:
+  # Integration connection status
+  - platform: template
+    sensors:
+      alexa_media_connected:
+        friendly_name: "Alexa Media Connected"
+        value_template: >
+          {{ states.media_player 
+             | selectattr('entity_id', 'search', 'echo') 
+             | list | count > 0 }}
+        icon_template: mdi:amazon-alexa
+      
+      openai_conversation_connected:
+        friendly_name: "OpenAI Connected"
+        value_template: >
+          {{ is_state_attr('conversation.openai', 'available', true) | default(false) }}
+        icon_template: mdi:robot
+      
+      google_gemini_connected:
+        friendly_name: "Google Gemini Connected"
+        value_template: >
+          {{ is_state_attr('conversation.google_generative_ai', 'available', true) | default(false) }}
+        icon_template: mdi:google
+      
+      ifttt_connected:
+        friendly_name: "IFTTT Connected"
+        value_template: true
+        icon_template: mdi:webhook
+      
+      join_connected:
+        friendly_name: "Join Connected"
+        value_template: true
+        icon_template: mdi:folder-network
+      
+      smartthings_connected:
+        friendly_name: "SmartThings Connected"
+        value_template: >
+          {{ states.switch 
+             | selectattr('entity_id', 'search', 'smartthings') 
+             | list | count > 0 }}
+        icon_template: mdi:samsung
+  
+  # Network device status
+  - platform: ping
+    host: !secret proxmox_server_ip
+    name: proxmox_server
+    count: 2
+    scan_interval: 60
+  
+  - platform: ping
+    host: 192.168.1.201
+    name: home_assistant_server
+    count: 2
+    scan_interval: 60
+  
+  # Agent status
+  - platform: template
+    sensors:
+      ha_agent_running:
+        friendly_name: "Agent Running"
+        value_template: >
+          {{ state_attr('sensor.ha_agent_status', 'running') | default(false) }}
+        icon_template: >
+          {% if state_attr('sensor.ha_agent_status', 'running') %}
+            mdi:robot
+          {% else %}
+            mdi:robot-off
+          {% endif %}
+
+# ============================================================================
+# INPUT HELPERS
+# ============================================================================
+
+input_text:
+  ai_assistant_response:
+    name: AI Assistant Response
+    max: 1000
+  
+  last_notification_text:
+    name: Last Notification Text
+    max: 255
+  
+  last_automation_triggered:
+    name: Last Automation Triggered
+    max: 100
+  
+  last_error_message:
+    name: Last Error Message
+    max: 500
+
+input_select:
+  ai_provider:
+    name: AI Provider
+    options:
+      - "OpenAI GPT-3.5"
+      - "Google Gemini"
+      - "Both (Consensus)"
+    initial: "OpenAI GPT-3.5"
+    icon: mdi:robot
+  
+  conversation_agent:
+    name: Conversation Agent
+    options:
+      - "OpenAI GPT-3.5"
+      - "Google Gemini"
+      - "Home Assistant Local"
+    initial: "OpenAI GPT-3.5"
+    icon: mdi:microphone
+
+# ============================================================================
+# COUNTERS
+# ============================================================================
+
+counter:
+  ai_assistant_requests_daily:
+    name: AI Assistant Requests (Daily)
+    icon: mdi:robot
+    restore: false
+  
+  agent_auto_fixes_daily:
+    name: Agent Auto-Fixes (Daily)
+    icon: mdi:wrench
+    restore: false
+  
+  notifications_daily:
+    name: Notifications Sent (Daily)
+    icon: mdi:bell
+    restore: false
+  
+  automations_triggered_daily:
+    name: Automations Triggered (Daily)
+    icon: mdi:play-circle
+    restore: false
+  
+  automations_failed_daily:
+    name: Automations Failed (Daily)
+    icon: mdi:alert-circle
+    restore: false
+  
+  errors_daily:
+    name: Errors (Daily)
+    icon: mdi:alert
+    restore: false
+  
+  warnings_daily:
+    name: Warnings (Daily)
+    icon: mdi:alert-outline
+    restore: false

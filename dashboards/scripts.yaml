@@ -1,0 +1,379 @@
+---
+# Dashboard Scripts
+# Automation scripts for dashboard actions
+# Created: February 1, 2026
+
+script:
+  # ============================================================================
+  # AI ASSISTANT SCRIPTS
+  # ============================================================================
+  
+  ask_ai_assistant:
+    alias: "Ask AI Assistant"
+    description: "Send question to AI assistant and get response"
+    fields:
+      question:
+        description: "Question to ask the AI"
+        example: "What is the weather today?"
+    sequence:
+      - service: openai_conversation.send_message
+        data:
+          message: "{{ question }}"
+        response_variable: ai_response
+      
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.ai_assistant_response
+        data:
+          value: "{{ ai_response.response.text }}"
+      
+      - service: notify.persistent_notification
+        data:
+          title: "AI Assistant"
+          message: "{{ ai_response.response.text }}"
+
+  # ============================================================================
+  # ROUTINE SCRIPTS
+  # ============================================================================
+  
+  good_morning:
+    alias: "Good Morning Routine"
+    description: "Morning automation routine"
+    sequence:
+      # Turn on lights gradually
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.bedroom
+            - light.kitchen
+        data:
+          brightness: 50
+          transition: 30
+      
+      # Open blinds if automated
+      - service: cover.open_cover
+        target:
+          entity_id: cover.bedroom_blinds
+      
+      # Set thermostat
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home
+        data:
+          temperature: 72
+      
+      # Announce weather via Alexa
+      - service: notify.alexa_media_living_room_echo
+        data:
+          data:
+            type: tts
+          message: >
+            Good morning! The current temperature is {{ states('sensor.temperature') }} degrees.
+            Today's forecast is {{ states('weather.home') }}.
+      
+      # Send morning notification
+      - service: notify.mobile_app_phone
+        data:
+          title: "Good Morning!"
+          message: "☀️ Have a great day!"
+  
+  good_night:
+    alias: "Good Night Routine"
+    description: "Night time automation routine"
+    sequence:
+      # Turn off all lights except bedroom
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room
+            - light.kitchen
+            - light.office
+      
+      # Dim bedroom lights
+      - service: light.turn_on
+        target:
+          entity_id: light.bedroom
+        data:
+          brightness: 20
+          transition: 10
+      
+      # Lock doors
+      - service: lock.lock
+        target:
+          entity_id:
+            - lock.front_door
+            - lock.back_door
+      
+      # Set thermostat to night mode
+      - service: climate.set_temperature
+        target:
+          entity_id: climate.home
+        data:
+          temperature: 68
+      
+      # Enable do not disturb on Alexa
+      - service: switch.turn_on
+        target:
+          entity_id:
+            - switch.living_room_echo_do_not_disturb
+            - switch.bedroom_echo_do_not_disturb
+      
+      # Send goodnight notification
+      - service: notify.mobile_app_phone
+        data:
+          title: "Good Night"
+          message: "🌙 Sleep well! All systems secured."
+  
+  away_mode:
+    alias: "Away Mode"
+    description: "Security mode when leaving home"
+    sequence:
+      # Turn off all lights
+      - service: light.turn_off
+        target:
+          entity_id: all
+      
+      # Turn off all media
+      - service: media_player.turn_off
+        target:
+          entity_id: all
+      
+      # Lock all doors
+      - service: lock.lock
+        target:
+          entity_id: all
+      
+      # Arm security system
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.home
+      
+      # Set thermostat to away mode
+      - service: climate.set_preset_mode
+        target:
+          entity_id: climate.home
+        data:
+          preset_mode: away
+      
+      # Send confirmation
+      - service: notify.mobile_app_phone
+        data:
+          title: "Away Mode Activated"
+          message: "🏠 Home secured. All systems on standby."
+      
+      # Trigger IFTTT webhook
+      - service: rest_command.ifttt_webhook
+        data:
+          event: "away_mode_activated"
+          value1: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+          value2: "Home Assistant"
+          value3: "Away Mode"
+  
+  im_home:
+    alias: "I'm Home Routine"
+    description: "Welcome home automation"
+    sequence:
+      # Turn on lights
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.living_room
+            - light.kitchen
+        data:
+          brightness: 200
+      
+      # Disarm security
+      - service: alarm_control_panel.alarm_disarm
+        target:
+          entity_id: alarm_control_panel.home
+        data:
+          code: !secret alarm_code
+      
+      # Set thermostat to home mode
+      - service: climate.set_preset_mode
+        target:
+          entity_id: climate.home
+        data:
+          preset_mode: home
+      
+      # Welcome announcement via Alexa
+      - service: notify.alexa_media
+        data:
+          data:
+            type: announce
+          message: "Welcome home!"
+          target:
+            - media_player.living_room_echo
+
+  # ============================================================================
+  # ALEXA ROUTINE SCRIPTS
+  # ============================================================================
+  
+  alexa_good_morning:
+    alias: "Alexa Good Morning"
+    description: "Trigger Alexa morning routine"
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.living_room_echo
+        data:
+          media_content_type: routine
+          media_content_id: "Good Morning"
+  
+  alexa_good_night:
+    alias: "Alexa Good Night"
+    description: "Trigger Alexa night routine"
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.bedroom_echo
+        data:
+          media_content_type: routine
+          media_content_id: "Good Night"
+  
+  alexa_im_leaving:
+    alias: "Alexa I'm Leaving"
+    description: "Trigger Alexa leaving routine"
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.living_room_echo
+        data:
+          media_content_type: routine
+          media_content_id: "I'm Leaving"
+  
+  alexa_im_home:
+    alias: "Alexa I'm Home"
+    description: "Trigger Alexa home routine"
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.living_room_echo
+        data:
+          media_content_type: routine
+          media_content_id: "I'm Home"
+
+  # ============================================================================
+  # TV CONTROL SCRIPTS
+  # ============================================================================
+  
+  tv_watch_netflix:
+    alias: "Watch Netflix on TV"
+    description: "Launch Netflix on Samsung TV"
+    sequence:
+      - service: media_player.turn_on
+        target:
+          entity_id: media_player.samsung_tv_living_room
+      
+      - delay:
+          seconds: 3
+      
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.samsung_tv_living_room
+        data:
+          source: "Netflix"
+  
+  tv_watch_youtube:
+    alias: "Watch YouTube on TV"
+    description: "Launch YouTube on Samsung TV"
+    sequence:
+      - service: media_player.turn_on
+        target:
+          entity_id: media_player.samsung_tv_living_room
+      
+      - delay:
+          seconds: 3
+      
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.samsung_tv_living_room
+        data:
+          source: "YouTube"
+
+  # ============================================================================
+  # MOBILE NOTIFICATION SCRIPTS
+  # ============================================================================
+  
+  send_critical_alert:
+    alias: "Send Critical Alert"
+    description: "Send high-priority notification to phone"
+    fields:
+      message:
+        description: "Alert message"
+        example: "Security alert detected!"
+    sequence:
+      - service: notify.mobile_app_phone
+        data:
+          title: "🚨 CRITICAL ALERT"
+          message: "{{ message }}"
+          data:
+            priority: high
+            ttl: 0
+            channel: Critical
+            actions:
+              - action: "ACKNOWLEDGE"
+                title: "Acknowledge"
+              - action: "VIEW_CAMERAS"
+                title: "View Cameras"
+      
+      # Also send via Join
+      - service: rest_command.join_notification
+        data:
+          deviceId: !secret join_device_id_primary
+          title: "🚨 CRITICAL ALERT"
+          text: "{{ message }}"
+  
+  request_phone_location:
+    alias: "Request Phone Location"
+    description: "Request current phone location"
+    sequence:
+      - service: notify.mobile_app_phone
+        data:
+          message: "request_location_update"
+      
+      - delay:
+          seconds: 5
+      
+      - service: notify.persistent_notification
+        data:
+          title: "Phone Location"
+          message: >
+            Phone is at: {{ states('sensor.phone_location') }}
+            Battery: {{ states('sensor.phone_battery_level') }}%
+
+  # ============================================================================
+  # AGENT CONTROL SCRIPTS
+  # ============================================================================
+  
+  agent_full_health_check:
+    alias: "Agent Full Health Check"
+    description: "Run comprehensive agent health check"
+    sequence:
+      - service: rest_command.agent_health_check
+      
+      - delay:
+          seconds: 2
+      
+      - service: rest_command.agent_check_integrations
+      
+      - service: notify.persistent_notification
+        data:
+          title: "Agent Health Check Complete"
+          message: "Check completed. View results in System Monitor dashboard."
+  
+  agent_sync_and_backup:
+    alias: "Agent Sync and Backup"
+    description: "Sync configuration to GitHub and backup"
+    sequence:
+      - service: rest_command.agent_generate_docs
+      
+      - delay:
+          seconds: 5
+      
+      - service: rest_command.agent_github_sync
+      
+      - service: notify.mobile_app_phone
+        data:
+          title: "Backup Complete"
+          message: "Configuration synced to GitHub successfully."

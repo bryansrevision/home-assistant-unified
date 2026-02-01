@@ -1,0 +1,284 @@
+# ============================================================================
+# CAMERA INTEGRATIONS
+# Yi Cameras, Kami Cameras, and Generic Camera Support
+# ============================================================================
+
+# Yi Home Cameras Integration
+# Yi cameras can be integrated via Generic Camera or ONVIF
+camera:
+  # Yi Camera - Living Room
+  - platform: generic
+    name: "Yi Camera Living Room"
+    still_image_url: "http://192.168.1.150/cgi-bin/snapshot.cgi?chn=0&u=admin&p={{ yi_camera_password }}"
+    stream_source: "rtsp://admin:{{ yi_camera_password }}@192.168.1.150/ch0_0.h264"
+    verify_ssl: false
+    framerate: 5
+    
+  # Yi Camera - Front Door
+  - platform: generic
+    name: "Yi Camera Front Door"
+    still_image_url: "http://192.168.1.151/cgi-bin/snapshot.cgi?chn=0&u=admin&p={{ yi_camera_password }}"
+    stream_source: "rtsp://admin:{{ yi_camera_password }}@192.168.1.151/ch0_0.h264"
+    verify_ssl: false
+    framerate: 5
+    
+  # Yi Camera - Backyard
+  - platform: generic
+    name: "Yi Camera Backyard"
+    still_image_url: "http://192.168.1.152/cgi-bin/snapshot.cgi?chn=0&u=admin&p={{ yi_camera_password }}"
+    stream_source: "rtsp://admin:{{ yi_camera_password }}@192.168.1.152/ch0_0.h264"
+    verify_ssl: false
+    framerate: 5
+    
+  # Kami Camera - Garage
+  - platform: generic
+    name: "Kami Camera Garage"
+    still_image_url: "http://192.168.1.153/snap.jpg"
+    stream_source: "rtsp://admin:{{ kami_camera_password }}@192.168.1.153:554/stream1"
+    verify_ssl: false
+    framerate: 5
+    
+  # Kami Camera - Driveway
+  - platform: generic
+    name: "Kami Camera Driveway"
+    still_image_url: "http://192.168.1.154/snap.jpg"
+    stream_source: "rtsp://admin:{{ kami_camera_password }}@192.168.1.154:554/stream1"
+    verify_ssl: false
+    framerate: 5
+
+# ONVIF Integration for Yi/Kami cameras (alternative method)
+# Provides better control including PTZ if supported
+onvif:
+  - host: 192.168.1.150
+    name: "Yi Camera Living Room ONVIF"
+    username: admin
+    password: !secret yi_camera_password
+    port: 8080
+    
+  - host: 192.168.1.151
+    name: "Yi Camera Front Door ONVIF"
+    username: admin
+    password: !secret yi_camera_password
+    port: 8080
+    
+  - host: 192.168.1.152
+    name: "Yi Camera Backyard ONVIF"
+    username: admin
+    password: !secret yi_camera_password
+    port: 8080
+    
+  - host: 192.168.1.153
+    name: "Kami Camera Garage ONVIF"
+    username: admin
+    password: !secret kami_camera_password
+    port: 8080
+    
+  - host: 192.168.1.154
+    name: "Kami Camera Driveway ONVIF"
+    username: admin
+    password: !secret kami_camera_password
+    port: 8080
+
+# Camera Motion Detection Binary Sensors
+binary_sensor:
+  # Yi Camera Motion Detection
+  - platform: template
+    sensors:
+      yi_camera_living_room_motion:
+        friendly_name: "Yi Camera Living Room Motion"
+        device_class: motion
+        value_template: >
+          {{ states('sensor.yi_camera_living_room_motion_detected') == 'on' }}
+        availability_template: >
+          {{ states('camera.yi_camera_living_room') not in ['unavailable', 'unknown'] }}
+          
+      yi_camera_front_door_motion:
+        friendly_name: "Yi Camera Front Door Motion"
+        device_class: motion
+        value_template: >
+          {{ states('sensor.yi_camera_front_door_motion_detected') == 'on' }}
+        availability_template: >
+          {{ states('camera.yi_camera_front_door') not in ['unavailable', 'unknown'] }}
+          
+      yi_camera_backyard_motion:
+        friendly_name: "Yi Camera Backyard Motion"
+        device_class: motion
+        value_template: >
+          {{ states('sensor.yi_camera_backyard_motion_detected') == 'on' }}
+        availability_template: >
+          {{ states('camera.yi_camera_backyard') not in ['unavailable', 'unknown'] }}
+          
+      # Kami Camera Motion Detection
+      kami_camera_garage_motion:
+        friendly_name: "Kami Camera Garage Motion"
+        device_class: motion
+        value_template: >
+          {{ states('sensor.kami_camera_garage_motion_detected') == 'on' }}
+        availability_template: >
+          {{ states('camera.kami_camera_garage') not in ['unavailable', 'unknown'] }}
+          
+      kami_camera_driveway_motion:
+        friendly_name: "Kami Camera Driveway Motion"
+        device_class: motion
+        value_template: >
+          {{ states('sensor.kami_camera_driveway_motion_detected') == 'on' }}
+        availability_template: >
+          {{ states('camera.kami_camera_driveway') not in ['unavailable', 'unknown'] }}
+
+# Camera Status Sensors
+sensor:
+  - platform: template
+    sensors:
+      cameras_online_count:
+        friendly_name: "Cameras Online"
+        value_template: >
+          {% set cameras = [
+            states('camera.yi_camera_living_room'),
+            states('camera.yi_camera_front_door'),
+            states('camera.yi_camera_backyard'),
+            states('camera.kami_camera_garage'),
+            states('camera.kami_camera_driveway')
+          ] %}
+          {{ cameras | reject('in', ['unavailable', 'unknown']) | list | count }}
+        unit_of_measurement: "cameras"
+        icon_template: mdi:cctv
+        
+      camera_system_status:
+        friendly_name: "Camera System Status"
+        value_template: >
+          {% set total = 5 %}
+          {% set online = states('sensor.cameras_online_count') | int(0) %}
+          {% if online == total %}
+            All cameras online
+          {% elif online == 0 %}
+            All cameras offline
+          {% else %}
+            {{ online }}/{{ total }} cameras online
+          {% endif %}
+        icon_template: >
+          {% set online = states('sensor.cameras_online_count') | int(0) %}
+          {% if online >= 4 %}
+            mdi:shield-check
+          {% elif online >= 2 %}
+            mdi:shield-half-full
+          {% else %}
+            mdi:shield-off
+          {% endif %}
+
+# Camera Recording Automations
+automation:
+  # Record on motion detection
+  - alias: "Camera - Record on Motion Detection"
+    id: camera_record_on_motion
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.yi_camera_living_room_motion
+          - binary_sensor.yi_camera_front_door_motion
+          - binary_sensor.yi_camera_backyard_motion
+          - binary_sensor.kami_camera_garage_motion
+          - binary_sensor.kami_camera_driveway_motion
+        to: 'on'
+    action:
+      - service: camera.record
+        data:
+          entity_id: "{{ trigger.entity_id | replace('binary_sensor.', 'camera.') | replace('_motion', '') }}"
+          filename: "/config/www/camera_recordings/{{ trigger.entity_id | replace('binary_sensor.', '') }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
+          duration: 30
+      - service: notify.mobile_app_phone
+        data:
+          title: "🎥 Motion Detected"
+          message: "{{ trigger.to_state.attributes.friendly_name }} detected motion"
+          data:
+            image: "/api/camera_proxy/{{ trigger.entity_id | replace('binary_sensor.', 'camera.') | replace('_motion', '') }}"
+            
+  # Send snapshot on motion
+  - alias: "Camera - Send Snapshot on Motion"
+    id: camera_send_snapshot_on_motion
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.yi_camera_front_door_motion
+          - binary_sensor.kami_camera_driveway_motion
+        to: 'on'
+    action:
+      - service: camera.snapshot
+        data:
+          entity_id: "{{ trigger.entity_id | replace('binary_sensor.', 'camera.') | replace('_motion', '') }}"
+          filename: "/config/www/camera_snapshots/latest_{{ trigger.entity_id | replace('binary_sensor.', '') }}.jpg"
+      - service: notify.mobile_app_phone
+        data:
+          title: "🚨 Front Area Motion"
+          message: "Motion detected at {{ trigger.to_state.attributes.friendly_name }}"
+          data:
+            image: "/local/camera_snapshots/latest_{{ trigger.entity_id | replace('binary_sensor.', '') }}.jpg"
+            
+  # Camera offline alert
+  - alias: "Camera - Offline Alert"
+    id: camera_offline_alert
+    trigger:
+      - platform: state
+        entity_id:
+          - camera.yi_camera_living_room
+          - camera.yi_camera_front_door
+          - camera.yi_camera_backyard
+          - camera.kami_camera_garage
+          - camera.kami_camera_driveway
+        to: 'unavailable'
+        for:
+          minutes: 5
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ Camera Offline"
+          message: "{{ trigger.to_state.attributes.friendly_name }} has been offline for 5 minutes"
+      - service: persistent_notification.create
+        data:
+          title: "Camera System Alert"
+          message: "{{ trigger.to_state.attributes.friendly_name }} is offline"
+          notification_id: "camera_offline_{{ trigger.entity_id }}"
+
+# Camera Groups
+group:
+  all_cameras:
+    name: "All Cameras"
+    entities:
+      - camera.yi_camera_living_room
+      - camera.yi_camera_front_door
+      - camera.yi_camera_backyard
+      - camera.kami_camera_garage
+      - camera.kami_camera_driveway
+      
+  yi_cameras:
+    name: "Yi Cameras"
+    entities:
+      - camera.yi_camera_living_room
+      - camera.yi_camera_front_door
+      - camera.yi_camera_backyard
+      
+  kami_cameras:
+    name: "Kami Cameras"
+    entities:
+      - camera.kami_camera_garage
+      - camera.kami_camera_driveway
+      
+  exterior_cameras:
+    name: "Exterior Cameras"
+    entities:
+      - camera.yi_camera_front_door
+      -camera.yi_camera_backyard
+      - camera.kami_camera_garage
+      - camera.kami_camera_driveway
+
+# Stream Component for Live Viewing
+stream:
+
+# ============================================================================
+# NOTES:
+# 1. Update camera IP addresses in configuration
+# 2. Add yi_camera_password and kami_camera_password to secrets.yaml
+# 3. Create directories: /config/www/camera_recordings and /config/www/camera_snapshots
+# 4. Install ffmpeg for stream processing: apt-get install ffmpeg
+# 5. Enable RTSP on Yi cameras via Yi Home app or custom firmware
+# 6. For Kami cameras, ensure cloud recording is disabled for local RTSP
+# ============================================================================

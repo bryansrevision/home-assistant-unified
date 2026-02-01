@@ -1,0 +1,392 @@
+---
+# AI Assistant Integration Configuration
+# Integrates OpenAI, Google Gemini, and other AI services
+# Last Updated: February 1, 2026
+
+################################################################################
+# OPENAI CONVERSATION / CHATGPT INTEGRATION
+################################################################################
+
+# OpenAI Conversation for AI-powered voice assistant
+openai_conversation:
+  api_key: !secret openai_api_key
+  model: "gpt-3.5-turbo"  # Using gpt-3.5-turbo (gpt-4 requires paid tier)
+  temperature: 0.7
+  max_tokens: 2000
+  top_p: 1.0
+  
+  # Conversation personality and instructions
+  prompt: >
+    You are a helpful home automation assistant integrated with Home Assistant.
+    You can control lights, switches, climate controls, and other smart devices.
+    You have access to sensor data, device states, and can execute automations.
+    Be concise but friendly in your responses.
+    When controlling devices, confirm the action taken.
+  
+  # Functions available to the AI
+  functions:
+    - spec:
+        name: turn_on_light
+        description: "Turn on a light"
+        parameters:
+          type: object
+          properties:
+            entity_id:
+              type: string
+              description: "The entity ID of the light"
+            brightness:
+              type: number
+              description: "Brightness level (0-255)"
+        call:
+          service: light.turn_on
+          data:
+            entity_id: "{{ entity_id }}"
+            brightness: "{{ brightness | default(255) }}"
+    
+    - spec:
+        name: turn_off_light
+        description: "Turn off a light"
+        parameters:
+          type: object
+          properties:
+            entity_id:
+              type: string
+              description: "The entity ID of the light"
+        call:
+          service: light.turn_off
+          data:
+            entity_id: "{{ entity_id }}"
+    
+    - spec:
+        name: set_temperature
+        description: "Set thermostat temperature"
+        parameters:
+          type: object
+          properties:
+            temperature:
+              type: number
+              description: "Target temperature"
+        call:
+          service: climate.set_temperature
+          data:
+            entity_id: climate.thermostat
+            temperature: "{{ temperature }}"
+    
+    - spec:
+        name: execute_script
+        description: "Execute a Home Assistant script"
+        parameters:
+          type: object
+          properties:
+            script_name:
+              type: string
+              description: "Name of the script to execute"
+        call:
+          service: script.turn_on
+          data:
+            entity_id: "script.{{ script_name }}"
+
+################################################################################
+# GOOGLE GEMINI CONVERSATION INTEGRATION
+################################################################################
+
+# Google Generative AI (Gemini) for natural conversations
+google_generative_ai_conversation:
+  api_key: !secret google_api_key
+  model: "gemini-1.5-pro"  # Options: gemini-1.5-pro, gemini-1.5-flash
+  temperature: 0.8
+  top_p: 0.95
+  top_k: 40
+  max_output_tokens: 2048
+  
+  # Conversation prompt
+  prompt: >
+    You are an intelligent home automation assistant powered by Google Gemini.
+    You help manage a smart home through Home Assistant.
+    You can analyze sensor data, control devices, and provide insights.
+    Respond naturally and conversationally.
+    When asked about device states, provide current information from sensors.
+  
+  # Chat history settings
+  chat_history: 10  # Number of previous messages to remember
+
+################################################################################
+# CONVERSATION INTEGRATION (UNIFIED)
+################################################################################
+
+# Unified conversation platform
+conversation:
+  # Default intent handler
+  intents:
+    HassLightsSet:
+      - "Turn the {name} lights {brightness}"
+      - "Set the {name} to {brightness}"
+    
+    HassClimateSetTemperature:
+      - "Set the temperature to {temperature}"
+      - "Make it {temperature} degrees"
+    
+    HassTurnOn:
+      - "Turn on {name}"
+      - "Switch on the {name}"
+    
+    HassTurnOff:
+      - "Turn off {name}"
+      - "Switch off the {name}"
+    
+    HassMediaPlay:
+      - "Play {media} on {device}"
+      - "Start playing {media}"
+    
+    HassMediaPause:
+      - "Pause {device}"
+      - "Stop {device}"
+
+################################################################################
+# AI ASSIST PIPELINE
+################################################################################
+
+# Assist pipeline for voice and text commands
+assist_pipeline:
+  pipelines:
+    - name: "OpenAI GPT-4"
+      language: "en"
+      conversation_engine: "openai_conversation"
+      conversation_id: "openai_gpt4"
+      stt_engine: "cloud"  # Speech-to-text
+      tts_engine: "google_translate"  # Text-to-speech
+    
+    - name: "Google Gemini"
+      language: "en"
+      conversation_engine: "google_generative_ai_conversation"
+      conversation_id: "google_gemini"
+      stt_engine: "cloud"
+      tts_engine: "google_translate"
+    
+    - name: "Local Processing"
+      language: "en"
+      conversation_engine: "conversation"
+      stt_engine: "whisper"  # Local Whisper model
+      tts_engine: "piper"  # Local TTS
+
+################################################################################
+# AI TASK AUTOMATION
+################################################################################
+
+# AI-powered task scheduling and automation
+ai_task:
+  # Enable AI task processing
+  enabled: true
+  
+  # AI providers configuration
+  providers:
+    openai:
+      enabled: true
+      model: "gpt-4"
+      temperature: 0.7
+    
+    google:
+      enabled: true
+      model: "gemini-1.5-pro"
+      temperature: 0.8
+  
+  # Task categories
+  categories:
+    - name: "energy_optimization"
+      description: "Optimize energy usage based on patterns"
+      enabled: true
+    
+    - name: "security_monitoring"
+      description: "Monitor security events and anomalies"
+      enabled: true
+    
+    - name: "comfort_automation"
+      description: "Adjust climate and lighting for comfort"
+      enabled: true
+    
+    - name: "predictive_maintenance"
+      description: "Predict device maintenance needs"
+      enabled: true
+
+################################################################################
+# INTENT SCRIPTS
+################################################################################
+
+# Scripts triggered by conversation intents
+intent_script:
+  TurnOnLights:
+    speech:
+      text: "Turning on {{ slots.name }}"
+    action:
+      service: light.turn_on
+      data:
+        entity_id: "light.{{ slots.name }}"
+        brightness_pct: "{{ slots.brightness | default(100) }}"
+  
+  TurnOffLights:
+    speech:
+      text: "Turning off {{ slots.name }}"
+    action:
+      service: light.turn_off
+      data:
+        entity_id: "light.{{ slots.name }}"
+  
+  SetTemperature:
+    speech:
+      text: "Setting temperature to {{ slots.temperature }} degrees"
+    action:
+      service: climate.set_temperature
+      data:
+        entity_id: climate.thermostat
+        temperature: "{{ slots.temperature }}"
+  
+  WhatIsTemperature:
+    speech:
+      text: >
+        The current temperature is {{ states('sensor.home_temperature') }} degrees.
+        The thermostat is set to {{ state_attr('climate.thermostat', 'temperature') }} degrees.
+  
+  WhatIsWeather:
+    speech:
+      text: >
+        The current weather is {{ states('weather.home') }}.
+        Temperature is {{ state_attr('weather.home', 'temperature') }} degrees.
+  
+  GoodMorning:
+    speech:
+      text: "Good morning! I'm turning on your morning scene."
+    action:
+      - service: scene.turn_on
+        data:
+          entity_id: scene.good_morning
+      - service: script.coffee_maker_start
+  
+  GoodNight:
+    speech:
+      text: "Good night! Activating night mode."
+    action:
+      - service: scene.turn_on
+        data:
+          entity_id: scene.good_night
+      - service: lock.lock
+        data:
+          entity_id: lock.front_door
+      - service: alarm_control_panel.alarm_arm_night
+        data:
+          entity_id: alarm_control_panel.home
+
+################################################################################
+# AI SENSORS & MONITORING
+################################################################################
+
+# Sensors for AI assistant activity
+sensor:
+  - platform: template
+    sensors:
+      openai_conversation_status:
+        friendly_name: "OpenAI Conversation Status"
+        value_template: >
+          {% if is_state('conversation.openai_gpt4', 'ready') %}
+            Available
+          {% else %}
+            Unavailable
+          {% endif %}
+        icon_template: mdi:robot
+      
+      google_gemini_status:
+        friendly_name: "Google Gemini Status"
+        value_template: >
+          {% if is_state('conversation.google_gemini', 'ready') %}
+            Available
+          {% else %}
+            Unavailable
+          {% endif %}
+        icon_template: mdi:google-assistant
+      
+      ai_assistant_usage:
+        friendly_name: "AI Assistant Daily Usage"
+        unit_of_measurement: "requests"
+        value_template: >
+          {{ states('counter.ai_assistant_requests') | int }}
+        icon_template: mdi:chart-line
+
+# Counter for tracking AI usage
+counter:
+  ai_assistant_requests:
+    name: "AI Assistant Requests Today"
+    icon: mdi:counter
+    initial: 0
+    step: 1
+    restore: false
+
+################################################################################
+# AI NOTIFICATIONS
+################################################################################
+
+# Notifications from AI assistants
+notify:
+  - name: ai_assistant_notify
+    platform: group
+    services:
+      - service: mobile_app_android_phone
+      - service: persistent_notification
+
+################################################################################
+# REST COMMANDS FOR AI SERVICES
+################################################################################
+
+rest_command:
+  # OpenAI API direct call
+  openai_api_call:
+    url: "https://api.openai.com/v1/chat/completions"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ openai_api_key }}"
+      Content-Type: "application/json"
+    payload: >
+      {
+        "model": "{{ model | default('gpt-4') }}",
+        "messages": {{ messages | tojson }},
+        "temperature": {{ temperature | default(0.7) }},
+        "max_tokens": {{ max_tokens | default(2000) }}
+      }
+  
+  # Google Gemini API call
+  gemini_api_call:
+    url: "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key={{ google_api_key }}"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    payload: >
+      {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "{{ prompt }}"
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "temperature": {{ temperature | default(0.8) }},
+          "topK": {{ top_k | default(40) }},
+          "topP": {{ top_p | default(0.95) }},
+          "maxOutputTokens": {{ max_tokens | default(2048) }}
+        }
+      }
+
+################################################################################
+# AUTOMATIONS FOR AI ASSISTANTS
+################################################################################
+
+# NOTE: AI-specific automations are in unified-automations.yaml
+# This section includes references for clarity
+
+# AI Assistant Automations:
+# - Reset daily usage counter at midnight
+# - Monitor API response times
+# - Alert on API errors or rate limits
+# - Log conversation patterns
+# - Optimize based on usage patterns
+
