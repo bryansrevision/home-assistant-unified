@@ -1,0 +1,77 @@
+---
+# Security Dashboard
+# Cove security system monitoring and controls
+
+title: Security
+views:
+  - title: Security
+    path: security
+    icon: mdi:shield-home
+    theme: Backend-selected
+    badges:
+      - entity: alarm_control_panel.cove_security_system
+      - entity: binary_sensor.cove_system_armed
+      - entity: binary_sensor.cove_any_sensor_open
+    cards:
+      - type: alarm-panel
+        entity: alarm_control_panel.cove_security_system
+        name: Cove Security System
+
+      - type: entities
+        title: 🛡️ System Status
+        entities:
+          - entity: sensor.cove_armed_state
+            name: Armed State
+          - entity: sensor.cove_sensors_open
+            name: Sensors Open
+          - entity: sensor.cove_battery_level
+            name: Battery Level
+          - entity: sensor.cove_ac_power
+            name: AC Power
+          - entity: binary_sensor.cove_low_battery
+            name: Low Battery
+          - entity: binary_sensor.cove_ac_power_status
+            name: AC Power Connected
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Arm Away
+            icon: mdi:shield-lock
+            tap_action:
+              action: call-service
+              service: script.cove_arm_away_script
+          - type: button
+            name: Arm Stay
+            icon: mdi:shield-home
+            tap_action:
+              action: call-service
+              service: script.cove_arm_stay_script
+          - type: button
+            name: Disarm
+            icon: mdi:shield-off
+            tap_action:
+              action: call-service
+              service: script.cove_disarm_script
+
+      - type: entities
+        title: 🚨 Alerts & Automations
+        entities:
+          - entity: input_boolean.cove_auto_arm_enabled
+            name: Auto-Arm Enabled
+          - entity: input_boolean.cove_notifications_enabled
+            name: Notifications Enabled
+          - entity: automation.cove_auto_arm_away
+            name: Auto Arm Away
+          - entity: automation.cove_auto_arm_stay_night
+            name: Auto Arm Stay (Night)
+          - entity: automation.cove_alert_sensor_open
+            name: Alert on Sensor Open
+
+      - type: picture-glance
+        title: Front Door Camera
+        entities:
+          - entity: binary_sensor.yi_camera_front_door_motion
+            name: Motion
+        camera_image: camera.yi_camera_front_door
+        camera_view: live

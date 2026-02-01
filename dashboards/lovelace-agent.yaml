@@ -1,0 +1,87 @@
+---
+# Agent Dashboard
+# Monitoring and controls for the custom HA agent
+
+title: Agent
+views:
+  - title: Agent
+    path: agent
+    icon: mdi:robot
+    theme: Backend-selected
+    badges:
+      - entity: binary_sensor.ha_agent_running
+      - entity: sensor.ha_agent_errors_count
+      - entity: sensor.ha_agent_integrations_healthy
+    cards:
+      - type: entities
+        title: 🤖 Agent Status
+        entities:
+          - entity: binary_sensor.ha_agent_running
+            name: Agent Running
+          - entity: sensor.ha_agent_uptime
+            name: Uptime
+          - entity: sensor.ha_agent_integrations_healthy
+            name: Healthy Integrations
+          - entity: sensor.ha_agent_errors_count
+            name: Errors
+          - entity: sensor.ha_agent_auto_fixes_count
+            name: Auto Fixes Today
+          - entity: sensor.ha_agent_last_health_check
+            name: Last Health Check
+          - entity: sensor.ha_agent_last_github_sync
+            name: Last GitHub Sync
+          - entity: sensor.ha_agent_version
+            name: Agent Version
+
+      - type: grid
+        title: Agent Actions
+        columns: 2
+        cards:
+          - type: button
+            name: Health Check
+            icon: mdi:heart-pulse
+            tap_action:
+              action: call-service
+              service: script.agent_full_health_check
+          - type: button
+            name: Check Integrations
+            icon: mdi:puzzle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_check_integrations
+          - type: button
+            name: Sync to GitHub
+            icon: mdi:github
+            tap_action:
+              action: call-service
+              service: script.agent_sync_and_backup
+          - type: button
+            name: Auto Fix
+            icon: mdi:wrench
+            tap_action:
+              action: call-service
+              service: script.agent_auto_fix
+          - type: button
+            name: Network Scan
+            icon: mdi:lan
+            tap_action:
+              action: call-service
+              service: script.agent_discover_devices
+          - type: button
+            name: Restart Agent
+            icon: mdi:restart
+            tap_action:
+              action: call-service
+              service: script.agent_restart_service
+
+      - type: entities
+        title: ⚙️ Agent Preferences
+        entities:
+          - entity: input_boolean.agent_auto_sync_enabled
+            name: Auto Sync Enabled
+          - entity: input_boolean.agent_auto_fix_enabled
+            name: Auto Fix Enabled
+          - entity: input_boolean.agent_notifications_enabled
+            name: Notifications Enabled
+          - entity: input_select.agent_log_level
+            name: Log Level

@@ -1,0 +1,91 @@
+---
+# Voice Assistants Dashboard
+# Alexa + Google Home status and controls
+
+title: Voice Assistants
+views:
+  - title: Voice Assistants
+    path: voice
+    icon: mdi:account-voice
+    theme: Backend-selected
+    badges:
+      - entity: sensor.total_voice_assistants_online
+      - entity: binary_sensor.alexa_media_connected
+      - entity: binary_sensor.google_home_connected
+    cards:
+      - type: entities
+        title: 🗣️ Voice Assistant Status
+        entities:
+          - entity: sensor.last_alexa_command
+            name: Last Alexa Command
+          - entity: sensor.alexa_active_devices
+            name: Alexa Active Devices
+          - entity: sensor.google_home_status
+            name: Google Home Status
+          - entity: sensor.total_voice_assistants_online
+            name: Assistants Online
+
+      - type: entities
+        title: 🔊 Alexa Devices
+        entities:
+          - entity: media_player.living_room_echo
+            name: Living Room Echo
+          - entity: media_player.bedroom_echo_dot
+            name: Bedroom Echo Dot
+          - entity: media_player.kitchen_echo_show
+            name: Kitchen Echo Show
+          - entity: media_player.office_echo
+            name: Office Echo
+
+      - type: entities
+        title: 🏠 Google Home Devices
+        entities:
+          - entity: media_player.google_home_kitchen
+            name: Google Home Kitchen
+          - entity: media_player.google_nest_hub
+            name: Google Nest Hub
+          - entity: media_player.chromecast_living_room
+            name: Chromecast Living Room
+          - entity: media_player.chromecast_bedroom
+            name: Chromecast Bedroom
+
+      - type: grid
+        title: Quick Commands
+        columns: 2
+        cards:
+          - type: button
+            name: Announce Everywhere
+            icon: mdi:bullhorn
+            tap_action:
+              action: call-service
+              service: script.announce_everywhere
+              service_data:
+                message: "Hello from Home Assistant"
+          - type: button
+            name: Alexa GitHub Status
+            icon: mdi:github
+            tap_action:
+              action: call-service
+              service: script.alexa_report_github_status
+          - type: button
+            name: Alexa Good Morning
+            icon: mdi:weather-sunny
+            tap_action:
+              action: call-service
+              service: script.alexa_good_morning
+          - type: button
+            name: Google Daily Report
+            icon: mdi:text-to-speech
+            tap_action:
+              action: call-service
+              service: script.google_home_daily_report
+
+      - type: entities
+        title: 🧭 GitHub Status
+        entities:
+          - entity: sensor.github_open_issues
+            name: Open Issues
+          - entity: sensor.github_active_workflows
+            name: Active Workflows
+          - entity: sensor.github_recent_commits
+            name: Recent Commits

@@ -1,0 +1,75 @@
+---
+# Servers & Services Dashboard
+# Monitoring for Proxmox, Node-RED, MCP Hub, IPTV, Cloud Sync
+
+title: Servers & Services
+views:
+  - title: Servers & Services
+    path: servers
+    icon: mdi:server
+    theme: Backend-selected
+    badges:
+      - entity: sensor.proxmox_cpu_usage
+      - entity: sensor.proxmox_memory_usage
+      - entity: sensor.nodered_uptime
+    cards:
+      - type: entities
+        title: 🖥️ Core Services
+        entities:
+          - entity: binary_sensor.nodered_running
+            name: Node-RED Running
+          - entity: binary_sensor.mcp_hub_online
+            name: MCP Hub Online
+          - entity: sensor.proxmox_server_status
+            name: Proxmox Status
+
+      - type: entities
+        title: 📊 Proxmox Metrics
+        entities:
+          - entity: sensor.proxmox_cpu_usage
+            name: CPU Usage
+          - entity: sensor.proxmox_memory_usage
+            name: Memory Usage
+          - entity: sensor.proxmox_vms_running
+            name: VMs Running
+
+      - type: entities
+        title: 🔄 Node-RED
+        entities:
+          - entity: sensor.nodered_flows_active
+            name: Active Flows
+          - entity: sensor.nodered_uptime
+            name: Uptime
+
+      - type: entities
+        title: 📺 IPTV
+        entities:
+          - entity: sensor.iptv_active_streams
+            name: Active Streams
+          - entity: media_player.iptv_channels
+            name: IPTV Player
+
+      - type: entities
+        title: ☁️ Cloud Sync
+        entities:
+          - entity: sensor.last_cloud_sync
+            name: Last Sync
+          - entity: sensor.cloud_sync_status
+            name: Sync Status
+
+      - type: grid
+        title: Actions
+        columns: 2
+        cards:
+          - type: button
+            name: Run Health Check
+            icon: mdi:stethoscope
+            tap_action:
+              action: call-service
+              service: script.server_health_check
+          - type: button
+            name: Run Cloud Sync
+            icon: mdi:cloud-sync
+            tap_action:
+              action: call-service
+              service: shell_command.cloud_sync_all

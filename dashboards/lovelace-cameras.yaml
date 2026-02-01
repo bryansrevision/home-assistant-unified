@@ -1,0 +1,81 @@
+---
+# Cameras Dashboard
+# Focused monitoring and control for all cameras
+
+title: Cameras
+views:
+  - title: Cameras
+    path: cameras
+    icon: mdi:cctv
+    theme: Backend-selected
+    badges:
+      - entity: sensor.cameras_online_count
+      - entity: sensor.camera_system_status
+    cards:
+      - type: entities
+        title: 🎥 Camera Status
+        entities:
+          - entity: sensor.cameras_online_count
+            name: Cameras Online
+          - entity: sensor.camera_system_status
+            name: System Status
+          - entity: binary_sensor.yi_camera_living_room_motion
+            name: Living Room Motion
+          - entity: binary_sensor.yi_camera_front_door_motion
+            name: Front Door Motion
+          - entity: binary_sensor.yi_camera_backyard_motion
+            name: Backyard Motion
+          - entity: binary_sensor.kami_camera_garage_motion
+            name: Garage Motion
+          - entity: binary_sensor.kami_camera_driveway_motion
+            name: Driveway Motion
+
+      - type: picture-glance
+        title: Front Door
+        entities:
+          - entity: binary_sensor.yi_camera_front_door_motion
+            name: Motion
+        camera_image: camera.yi_camera_front_door
+        camera_view: live
+
+      - type: picture-glance
+        title: Driveway
+        entities:
+          - entity: binary_sensor.kami_camera_driveway_motion
+            name: Motion
+        camera_image: camera.kami_camera_driveway
+        camera_view: live
+
+      - type: grid
+        title: Live Feeds
+        columns: 2
+        square: false
+        cards:
+          - type: picture-entity
+            entity: camera.yi_camera_living_room
+            name: Living Room
+            camera_view: live
+          - type: picture-entity
+            entity: camera.yi_camera_backyard
+            name: Backyard
+            camera_view: live
+          - type: picture-entity
+            entity: camera.kami_camera_garage
+            name: Garage
+            camera_view: live
+          - type: picture-entity
+            entity: camera.kami_camera_driveway
+            name: Driveway
+            camera_view: live
+
+      - type: entities
+        title: 📁 Camera Groups
+        entities:
+          - entity: group.all_cameras
+            name: All Cameras
+          - entity: group.yi_cameras
+            name: Yi Cameras
+          - entity: group.kami_cameras
+            name: Kami Cameras
+          - entity: group.exterior_cameras
+            name: Exterior Cameras

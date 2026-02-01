@@ -1,0 +1,69 @@
+---
+# Mobile Devices Dashboard
+# Android device status and controls
+
+title: Mobile Devices
+views:
+  - title: Mobile Devices
+    path: mobile
+    icon: mdi:cellphone
+    theme: Backend-selected
+    badges:
+      - entity: sensor.phone_battery_level
+      - entity: binary_sensor.phone_charging
+      - entity: sensor.phone_wifi_connection
+    cards:
+      - type: entities
+        title: 📱 Phone Status
+        entities:
+          - entity: sensor.phone_battery_level
+            name: Battery
+          - entity: binary_sensor.phone_charging
+            name: Charging
+          - entity: sensor.phone_wifi_connection
+            name: WiFi
+          - entity: sensor.phone_location
+            name: Location
+
+      - type: entities
+        title: 🎛️ Device Controls
+        entities:
+          - entity: switch.phone_wifi
+            name: WiFi
+          - entity: switch.phone_bluetooth
+            name: Bluetooth
+          - entity: switch.phone_do_not_disturb
+            name: Do Not Disturb
+          - entity: switch.phone_ringer_mode
+            name: Ringer Mode
+          - entity: number.phone_screen_brightness
+            name: Screen Brightness
+          - entity: number.phone_media_volume
+            name: Media Volume
+
+      - type: grid
+        title: Quick Actions
+        columns: 2
+        cards:
+          - type: button
+            name: Request Location
+            icon: mdi:map-marker
+            tap_action:
+              action: call-service
+              service: script.request_phone_location
+          - type: button
+            name: Send Critical Alert
+            icon: mdi:alert
+            tap_action:
+              action: call-service
+              service: script.send_critical_alert
+              service_data:
+                message: "Test critical alert"
+
+      - type: entities
+        title: 📬 Notifications
+        entities:
+          - entity: sensor.last_notification_sent
+            name: Last Notification
+          - entity: sensor.notification_count_today
+            name: Notifications Today

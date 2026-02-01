@@ -24,6 +24,48 @@ lovelace:
       icon: mdi:view-dashboard
       show_in_sidebar: true
       filename: dashboards/lovelace-main.yaml
+    lovelace-cameras:
+      mode: yaml
+      title: Cameras
+      icon: mdi:cctv
+      show_in_sidebar: true
+      filename: dashboards/lovelace-cameras.yaml
+    lovelace-security:
+      mode: yaml
+      title: Security
+      icon: mdi:shield-home
+      show_in_sidebar: true
+      filename: dashboards/lovelace-security.yaml
+    lovelace-tv:
+      mode: yaml
+      title: TV & Media
+      icon: mdi:television
+      show_in_sidebar: true
+      filename: dashboards/lovelace-tv-advanced.yaml
+    lovelace-voice:
+      mode: yaml
+      title: Voice Assistants
+      icon: mdi:account-voice
+      show_in_sidebar: true
+      filename: dashboards/lovelace-voice.yaml
+    lovelace-mobile:
+      mode: yaml
+      title: Mobile Devices
+      icon: mdi:cellphone
+      show_in_sidebar: true
+      filename: dashboards/lovelace-mobile.yaml
+    lovelace-servers:
+      mode: yaml
+      title: Servers & Services
+      icon: mdi:server
+      show_in_sidebar: true
+      filename: dashboards/lovelace-servers.yaml
+    lovelace-agent:
+      mode: yaml
+      title: Agent
+      icon: mdi:robot
+      show_in_sidebar: true
+      filename: dashboards/lovelace-agent.yaml
 
 # ============================================================================
 # FRONTEND CONFIGURATION

@@ -10,6 +10,7 @@ homeassistant:
   time_zone: !secret timezone
   internal_url: "http://192.168.1.201:8123"
   external_url: !secret external_url
+  packages: !include_dir_named ../dashboards
 
 # Enable HTTP
 http:
@@ -281,6 +282,16 @@ rest_command: !include ../integrations/join-integration.yaml
 ifttt: !include ../integrations/ifttt-webhooks.yaml
 automation ifttt: !include ../integrations/ifttt-webhooks.yaml
 
+# AI Assistant Integrations (OpenAI GPT-4, Google Gemini)
+openai_conversation: !include ../integrations/ai-assistant-integration.yaml
+google_generative_ai_conversation: !include ../integrations/ai-assistant-integration.yaml
+conversation: !include ../integrations/ai-assistant-integration.yaml
+assist_pipeline: !include ../integrations/ai-assistant-integration.yaml
+
+# Android Device Integration
+# Mobile app integration is enabled above, additional Android configs:
+# See integrations/android-device-integration.yaml for full configuration
+
 # Logger configuration
 logger:
   default: info
@@ -298,3 +309,6 @@ logger:
     homeassistant.components.icloud: info
     homeassistant.components.ifttt: info
     homeassistant.components.webhook: info
+    homeassistant.components.openai_conversation: info
+    homeassistant.components.google_generative_ai_conversation: info
+    homeassistant.components.conversation: info

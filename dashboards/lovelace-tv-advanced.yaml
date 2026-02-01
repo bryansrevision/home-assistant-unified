@@ -1,0 +1,105 @@
+---
+# TV & Media Dashboard
+# Advanced control for TVs and streaming devices
+
+title: TV & Media
+views:
+  - title: TV & Media
+    path: tv-media
+    icon: mdi:television
+    theme: Backend-selected
+    badges:
+      - entity: sensor.active_tvs_count
+      - entity: sensor.all_tvs_status
+    cards:
+      - type: entities
+        title: 📺 TV Status
+        entities:
+          - entity: sensor.active_tvs_count
+            name: Active TVs
+          - entity: sensor.all_tvs_status
+            name: Overall Status
+          - entity: sensor.shield_current_app
+            name: Shield Current App
+
+      - type: vertical-stack
+        cards:
+          - type: custom:mini-media-player
+            entity: media_player.google_tv_living_room
+            name: Google TV Living Room
+            artwork: cover
+            info: scroll
+          - type: custom:mini-media-player
+            entity: media_player.nvidia_shield
+            name: NVIDIA Shield
+            artwork: cover
+            info: scroll
+
+      - type: grid
+        title: Quick Actions
+        columns: 3
+        square: false
+        cards:
+          - type: button
+            name: Netflix
+            icon: mdi:netflix
+            tap_action:
+              action: call-service
+              service: script.launch_netflix
+              service_data:
+                tv_entity: media_player.google_tv_living_room
+          - type: button
+            name: YouTube
+            icon: mdi:youtube
+            tap_action:
+              action: call-service
+              service: script.launch_youtube
+              service_data:
+                tv_entity: media_player.google_tv_living_room
+                search_query: "Home Assistant"
+          - type: button
+            name: Movie Night
+            icon: mdi:movie-open
+            tap_action:
+              action: call-service
+              service: script.movie_night_single_tv
+              service_data:
+                main_tv: media_player.lg_tv_living_room
+          - type: button
+            name: Sports Mode
+            icon: mdi:soccer
+            tap_action:
+              action: call-service
+              service: script.sports_mode
+              service_data:
+                tv_entity: media_player.lg_tv_living_room
+          - type: button
+            name: Shield Gaming
+            icon: mdi:controller-classic
+            tap_action:
+              action: call-service
+              service: script.shield_gaming_mode
+          - type: button
+            name: All TVs Off
+            icon: mdi:television-off
+            tap_action:
+              action: call-service
+              service: script.all_tvs_off
+
+      - type: entities
+        title: 🖥️ All Media Players
+        entities:
+          - entity: media_player.google_tv_living_room
+            name: Google TV Living Room
+          - entity: media_player.google_tv_bedroom
+            name: Google TV Bedroom
+          - entity: media_player.nvidia_shield
+            name: NVIDIA Shield
+          - entity: media_player.lg_tv_living_room
+            name: LG TV Living Room
+          - entity: media_player.lg_tv_bedroom
+            name: LG TV Bedroom
+          - entity: media_player.samsung_tv_living_room
+            name: Samsung TV Living Room
+          - entity: media_player.samsung_tv_bedroom
+            name: Samsung TV Bedroom
