@@ -5,11 +5,11 @@ attributes:
   last_triggered: null
   mode: single
 context:
-  id: 01KG3K01YAJD5XK99PKN2QCK3Z
+  id: 01KGRM8MD692AFCHSNX2KJDMXF
   parent_id: null
   user_id: null
 entity_id: automation.entertainment_sync_lights_to_media
-last_changed: '2026-01-29T00:38:34.186929+00:00'
-last_reported: '2026-01-29T00:38:34.186929+00:00'
-last_updated: '2026-01-29T00:38:34.186929+00:00'
+last_changed: '2026-02-06T04:44:46.886559+00:00'
+last_reported: '2026-02-06T04:44:46.886559+00:00'
+last_updated: '2026-02-06T04:44:46.886559+00:00'
 state: 'on'

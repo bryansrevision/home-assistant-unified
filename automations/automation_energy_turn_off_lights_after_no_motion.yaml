@@ -5,11 +5,11 @@ attributes:
   last_triggered: '2026-01-28T06:37:39.800131+00:00'
   mode: single
 context:
-  id: 01KG3K01YBF3K07KCEN30N6TKP
+  id: 01KGRM8MD7RQJ1C8GMHACGD5NZ
   parent_id: null
   user_id: null
 entity_id: automation.energy_turn_off_lights_after_no_motion
-last_changed: '2026-01-29T00:38:34.187844+00:00'
-last_reported: '2026-01-29T00:38:34.187844+00:00'
-last_updated: '2026-01-29T00:38:34.187844+00:00'
+last_changed: '2026-02-06T04:44:46.887392+00:00'
+last_reported: '2026-02-06T04:44:46.887392+00:00'
+last_updated: '2026-02-06T04:44:46.887392+00:00'
 state: 'on'

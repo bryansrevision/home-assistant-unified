@@ -1,0 +1,15 @@
+attributes:
+  current: 0
+  friendly_name: Motion-Trigger-Ulefone
+  id: '1770021773469'
+  last_triggered: null
+  mode: single
+context:
+  id: 01KGRM8MD8WPHNAPTSWPRA00SA
+  parent_id: null
+  user_id: null
+entity_id: automation.motion_trigger_ulefone
+last_changed: '2026-02-06T04:44:46.888336+00:00'
+last_reported: '2026-02-06T04:44:46.888336+00:00'
+last_updated: '2026-02-06T04:44:46.888336+00:00'
+state: 'on'

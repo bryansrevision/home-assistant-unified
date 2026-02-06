@@ -2,14 +2,14 @@ attributes:
   current: 0
   friendly_name: Morning Briefing
   id: 5950dc83-7e94-4713-ba3b-b0c847d5e79d
-  last_triggered: null
+  last_triggered: '2026-02-02T12:00:00.056042+00:00'
   mode: single
 context:
-  id: 01KG3K01Y7Y2H80VBC9YZ885MS
+  id: 01KGRM8MD378A3NV28N0V7WAHD
   parent_id: null
   user_id: null
 entity_id: automation.morning_briefing
-last_changed: '2026-01-29T00:38:34.183815+00:00'
-last_reported: '2026-01-29T00:38:34.183815+00:00'
-last_updated: '2026-01-29T00:38:34.183815+00:00'
+last_changed: '2026-02-06T04:44:46.883771+00:00'
+last_reported: '2026-02-06T04:44:46.883771+00:00'
+last_updated: '2026-02-06T04:44:46.883771+00:00'
 state: 'on'

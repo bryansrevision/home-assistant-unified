@@ -2,14 +2,14 @@ attributes:
   current: 0
   friendly_name: Nightly Status Report
   id: 988a70b1-2ffa-4155-9600-11c3e4f50f75
-  last_triggered: '2026-01-31T04:00:00.428305+00:00'
+  last_triggered: '2026-02-06T04:00:00.499118+00:00'
   mode: single
 context:
-  id: 01KG93AYEFK7MMB1ZMG0P3C608
+  id: 01KGRM8MD4CX7M6E2EKY5DW938
   parent_id: null
   user_id: null
 entity_id: automation.nightly_status_report
-last_changed: '2026-01-29T00:38:34.184355+00:00'
-last_reported: '2026-01-31T04:00:20.431727+00:00'
-last_updated: '2026-01-31T04:00:20.431727+00:00'
+last_changed: '2026-02-06T04:44:46.884311+00:00'
+last_reported: '2026-02-06T04:44:46.884311+00:00'
+last_updated: '2026-02-06T04:44:46.884311+00:00'
 state: 'on'

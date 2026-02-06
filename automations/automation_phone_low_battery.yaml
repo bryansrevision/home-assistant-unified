@@ -5,11 +5,11 @@ attributes:
   last_triggered: '2026-01-25T17:16:09.779026+00:00'
   mode: single
 context:
-  id: 01KG3K01Y7FPVTWJYZW1M98GXZ
+  id: 01KGRM8MD30JXZ1Q6CJW1P11F1
   parent_id: null
   user_id: null
 entity_id: automation.phone_low_battery
-last_changed: '2026-01-29T00:38:34.183637+00:00'
-last_reported: '2026-01-29T00:38:34.183637+00:00'
-last_updated: '2026-01-29T00:38:34.183637+00:00'
+last_changed: '2026-02-06T04:44:46.883355+00:00'
+last_reported: '2026-02-06T04:44:46.883355+00:00'
+last_updated: '2026-02-06T04:44:46.883355+00:00'
 state: 'on'

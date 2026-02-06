@@ -5,11 +5,11 @@ attributes:
   last_triggered: null
   mode: single
 context:
-  id: 01KG3K01YB2RN3TJ3EYN51QZX3
+  id: 01KGRM8MD7AVT5N5GDB6Z6E8T9
   parent_id: null
   user_id: null
 entity_id: automation.entertainment_adjust_streaming_quality
-last_changed: '2026-01-29T00:38:34.187670+00:00'
-last_reported: '2026-01-29T00:38:34.187670+00:00'
-last_updated: '2026-01-29T00:38:34.187670+00:00'
+last_changed: '2026-02-06T04:44:46.887163+00:00'
+last_reported: '2026-02-06T04:44:46.887163+00:00'
+last_updated: '2026-02-06T04:44:46.887163+00:00'
 state: 'on'

@@ -5,11 +5,11 @@ attributes:
   last_triggered: null
   mode: single
 context:
-  id: 01KG3K01YBCRGC68BNHE8QRD9C
+  id: 01KGRM8MD6MYJV2N1Z2AEZS5H9
   parent_id: null
   user_id: null
 entity_id: automation.entertainment_music_follows_you
-last_changed: '2026-01-29T00:38:34.187452+00:00'
-last_reported: '2026-01-29T00:38:34.187452+00:00'
-last_updated: '2026-01-29T00:38:34.187452+00:00'
+last_changed: '2026-02-06T04:44:46.886961+00:00'
+last_reported: '2026-02-06T04:44:46.886961+00:00'
+last_updated: '2026-02-06T04:44:46.886961+00:00'
 state: 'on'

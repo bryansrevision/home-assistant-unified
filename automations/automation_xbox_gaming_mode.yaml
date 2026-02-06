@@ -5,11 +5,11 @@ attributes:
   last_triggered: null
   mode: single
 context:
-  id: 01KG3K01Y860FQM9AA2J3EX2MK
+  id: 01KGRM8MD3P2QQPTJR560GQBC0
   parent_id: null
   user_id: null
 entity_id: automation.xbox_gaming_mode
-last_changed: '2026-01-29T00:38:34.184011+00:00'
-last_reported: '2026-01-29T00:38:34.184011+00:00'
-last_updated: '2026-01-29T00:38:34.184011+00:00'
+last_changed: '2026-02-06T04:44:46.883970+00:00'
+last_reported: '2026-02-06T04:44:46.883970+00:00'
+last_updated: '2026-02-06T04:44:46.883970+00:00'
 state: 'on'

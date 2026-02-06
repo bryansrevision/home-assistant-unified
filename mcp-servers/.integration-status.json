@@ -6,7 +6,7 @@
   },
   "integration": {
     "ha_version": "2025.12.5",
-    "entities_count": 328,
+    "entities_count": 307,
     "domains": [
       "ai_task",
       "automation",
@@ -20,6 +20,7 @@
       "notify",
       "person",
       "remote",
+      "scene",
       "script",
       "sensor",
       "stt",
@@ -27,12 +28,11 @@
       "switch",
       "todo",
       "tts",
-      "weather",
       "zone"
     ],
-    "baseline_export": "c:\\Users\\Dylan\\Dev\\.WorkSpace\\HomeAssistant\\home-assistant-unified\\backups\\state-exports\\baseline.json",
+    "baseline_export": "C:\\Users\\Dylan\\Dev\\.WorkSpace\\HomeAssistant\\home-assistant-unified\\backups\\state-exports\\baseline.json",
     "initialized": true,
-    "timestamp": "2026-01-31T08:56:17.479205"
+    "timestamp": "2026-02-06T06:55:57.298807"
   },
-  "timestamp": "2026-01-31T08:56:17.479219"
+  "timestamp": "2026-02-06T06:55:57.298819"
 }
