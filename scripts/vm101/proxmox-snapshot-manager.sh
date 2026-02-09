@@ -33,11 +33,11 @@ cleanup_snapshots() {
     
     echo "🗑️  Cleaning up old snapshots for VM ${vm_id}"
     
-    ssh "${PROXMOX_USER}@${PROXMOX_HOST}" << 'EOF'
-    snapshots=$(qm listsnapshot ${vm_id} | grep -o 'auto_[0-9_]*' | sort | head -n -7)
-    for snap in $snapshots; do
-        echo "Deleting: $snap"
-        qm delsnapshot ${vm_id} $snap
+    ssh "${PROXMOX_USER}@${PROXMOX_HOST}" bash -s << EOF
+    snapshots=\$(qm listsnapshot ${vm_id} | grep -o 'auto_[0-9_]*' | sort | head -n -7)
+    for snap in \$snapshots; do
+        echo "Deleting: \$snap"
+        qm delsnapshot ${vm_id} \$snap
     done
 EOF
 }

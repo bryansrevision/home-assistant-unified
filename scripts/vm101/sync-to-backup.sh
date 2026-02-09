@@ -23,7 +23,8 @@ create_primary_backup() {
             "name": "sync_backup_'$(date +%Y%m%d_%H%M%S)'"
         }'
     
-    sleep 10  # Wait for backup to complete
+    # Wait for backup to complete - adjust if needed for large systems
+    sleep 10
 }
 
 # Get latest backup
