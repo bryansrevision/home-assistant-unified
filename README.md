@@ -24,6 +24,8 @@ unified, well-organized system:
 
 | Component | Details |
 |-----------|---------|
+| **Home Assistant (Primary)** | VM 102: 192.168.1.134:8123 (263 entities) |
+| **Home Assistant (Backup)** | VM 101: 192.168.1.201:8123 (Hot Standby) |
 | **Home Assistant** | 192.168.1.134:8123 (263 entities) |
 | **Proxmox Host** | 192.168.1.185:8006 |
 | **Automation Engine** | Port 5000 (Flask/Python) |
@@ -110,6 +112,7 @@ home-assistant-unified/
 - Resource monitoring
 - Automated alerts
 - API integration
+- **High-Availability Backup**: VM 101 (192.168.1.201) configured as hot standby for VM 102 (192.168.1.134)
 
 ### Wearables Support
 - Omi Device Kit 2 integration
@@ -129,6 +132,8 @@ home-assistant-unified/
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Android Setup](docs/guides/android-setup.md)
 - [Proxmox Integration](docs/guides/proxmox-setup.md)
+- [VM 101 Backup System](docs/operations/vm101-backup-system.md)
+- [Failover Procedures](docs/operations/failover-procedure.md)
 - [MCP Configuration](docs/guides/mcp-setup.md)
 - [AI Control Guide](docs/guides/ai-control.md)
 - [Wearables Setup](docs/guides/wearables-setup.md)

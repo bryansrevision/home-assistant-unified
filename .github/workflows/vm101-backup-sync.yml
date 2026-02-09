@@ -1,0 +1,41 @@
+---
+name: VM 101 Backup Sync
+
+'on':
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROXMOX_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Sync Configuration
+        env:
+          HA_PRIMARY_TOKEN: ${{ secrets.HA_PRIMARY_TOKEN }}
+          HA_BACKUP_TOKEN: ${{ secrets.HA_BACKUP_TOKEN }}
+        run: |
+          chmod +x scripts/vm101/sync-to-backup.sh
+          ./scripts/vm101/sync-to-backup.sh
+
+      - name: Verify Backup Health
+        run: |
+          chmod +x scripts/vm101/monitor-ha-health.sh
+          ./scripts/vm101/monitor-ha-health.sh
+
+      - name: Create Summary
+        run: |
+          echo "## VM 101 Backup Sync Report" >> $GITHUB_STEP_SUMMARY
+          echo "Date: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "Status: ✅ Complete" >> $GITHUB_STEP_SUMMARY
