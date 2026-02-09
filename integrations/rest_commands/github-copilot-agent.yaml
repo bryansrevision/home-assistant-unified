@@ -1,3 +1,6 @@
+# GitHub Copilot Agent REST Commands
+# Integrates with copilot-agent-mcp.py server
+
 copilot_agent_execute:
   url: "http://192.168.1.201:8888/api/execute"
   method: POST
@@ -7,7 +10,37 @@ copilot_agent_execute:
   payload: >
     {
       "command": "{{ states('input_text.copilot_agent_command') }}",
-      "params": {{ states('input_text.copilot_agent_params') }}
+      "params": {{ states('input_text.copilot_agent_params') | default('{}') }}
     }
   content_type: "application/json"
   timeout: 60
+
+copilot_agent_health:
+  url: "http://192.168.1.201:8888/api/health"
+  method: GET
+  headers:
+    Content-Type: "application/json"
+  timeout: 10
+
+copilot_agent_get_states:
+  url: "http://192.168.1.201:8888/api/states?domain={{ domain | default('') }}"
+  method: GET
+  headers:
+    Content-Type: "application/json"
+  timeout: 30
+
+copilot_agent_call_service:
+  url: "http://192.168.1.201:8888/api/services/{{ domain }}/{{ service }}"
+  method: POST
+  headers:
+    Content-Type: "application/json"
+  payload: "{{ data | default('{}') }}"
+  content_type: "application/json"
+  timeout: 30
+
+copilot_agent_history:
+  url: "http://192.168.1.201:8888/api/history?limit={{ limit | default(20) }}"
+  method: GET
+  headers:
+    Content-Type: "application/json"
+  timeout: 10

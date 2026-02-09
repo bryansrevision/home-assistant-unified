@@ -1,0 +1,49 @@
+# Copilot Agent Input Helpers
+# For natural language commands from dashboards
+
+input_text:
+  copilot_agent_command:
+    name: Copilot Agent Command
+    initial: ""
+    max: 500
+    icon: mdi:robot
+    mode: text
+
+  copilot_agent_params:
+    name: Copilot Agent Params
+    initial: "{}"
+    max: 1000
+    icon: mdi:code-json
+    mode: text
+
+  copilot_agent_last_result:
+    name: Copilot Last Result
+    initial: ""
+    max: 2000
+    icon: mdi:message-reply-text
+    mode: text
+
+input_select:
+  copilot_agent_target_domain:
+    name: Target Domain
+    options:
+      - light
+      - switch
+      - automation
+      - script
+      - scene
+      - media_player
+      - climate
+      - cover
+      - fan
+      - vacuum
+      - lock
+      - camera
+    initial: light
+    icon: mdi:domain
+
+input_boolean:
+  copilot_agent_enabled:
+    name: Copilot Agent Enabled
+    initial: true
+    icon: mdi:robot-outline

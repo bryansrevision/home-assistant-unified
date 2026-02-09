@@ -229,24 +229,64 @@ views:
                 params: "{\"name\":\"automation_name_here\"}"
 
       - type: entities
-        title: 🧠 Copilot Agent Inputs
+        title: 🧠 GitHub Copilot Agent
         entities:
+          - entity: input_boolean.copilot_agent_enabled
+            name: Copilot Agent Enabled
           - entity: input_text.copilot_agent_command
             name: Copilot Command
           - entity: input_text.copilot_agent_params
             name: Copilot Params (JSON)
+          - entity: input_select.copilot_agent_target_domain
+            name: Target Domain
+          - entity: input_text.copilot_agent_last_result
+            name: Last Result
 
       - type: grid
         title: 🧰 Copilot Agent Actions
-        columns: 2
+        columns: 3
         square: false
         cards:
           - type: button
-            name: Run Copilot Command
-            icon: mdi:assistant
+            name: Execute Command
+            icon: mdi:play
             tap_action:
               action: call-service
               service: rest_command.copilot_agent_execute
+          - type: button
+            name: Health Check
+            icon: mdi:heart-pulse
+            tap_action:
+              action: call-service
+              service: rest_command.copilot_agent_health
+          - type: button
+            name: Get States
+            icon: mdi:format-list-bulleted
+            tap_action:
+              action: call-service
+              service: rest_command.copilot_agent_get_states
+          - type: button
+            name: View History
+            icon: mdi:history
+            tap_action:
+              action: call-service
+              service: rest_command.copilot_agent_history
+
+      - type: markdown
+        content: |
+          ### 💡 Copilot Command Examples
+          | Command | Description |
+          |---------|-------------|
+          | `turn on living room` | Turn on lights/switches |
+          | `get states` | List all entity states |
+          | `activate scene movie` | Activate a scene |
+          | `set temperature 72` | Set thermostat |
+          | `play media` | Control media player |
+          | `trigger automation.x` | Trigger automation |
+          | `run script morning` | Execute a script |
+          | `notify Hello world` | Send notification |
+          
+          **Webhook:** `http://192.168.1.201:8123/api/webhook/copilot_agent_command`
 
       - type: entities
         title: 🔌 MCP Server Connections

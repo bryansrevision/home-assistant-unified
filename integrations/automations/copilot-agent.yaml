@@ -1,0 +1,107 @@
+# Copilot Agent Automations
+# Handle webhook commands and execute Copilot agent actions
+
+automation:
+  - id: copilot_agent_execute_command
+    alias: "Copilot Agent - Execute Command"
+    description: "Execute Copilot agent command when input changes"
+    trigger:
+      - platform: state
+        entity_id: input_text.copilot_agent_command
+    condition:
+      - condition: state
+        entity_id: input_boolean.copilot_agent_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ trigger.to_state.state | length > 0 }}"
+    action:
+      - service: rest_command.copilot_agent_execute
+      - delay:
+          seconds: 2
+      - service: persistent_notification.create
+        data:
+          title: "Copilot Agent"
+          message: "Executed: {{ states('input_text.copilot_agent_command') }}"
+          notification_id: copilot_agent_result
+
+  - id: copilot_agent_webhook_handler
+    alias: "Copilot Agent - Webhook Handler"
+    description: "Handle incoming webhook commands from Copilot CLI"
+    trigger:
+      - platform: webhook
+        webhook_id: copilot_agent_command
+        allowed_methods:
+          - POST
+        local_only: false
+    action:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ trigger.json.command | default('') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: "{{ trigger.json.params | default('{}') | to_json }}"
+      - delay:
+          milliseconds: 500
+      - service: rest_command.copilot_agent_execute
+      - service: logbook.log
+        data:
+          name: "Copilot Agent"
+          message: "Webhook command: {{ trigger.json.command }}"
+          entity_id: input_boolean.copilot_agent_enabled
+
+  - id: copilot_agent_health_check
+    alias: "Copilot Agent - Health Check"
+    description: "Periodic health check of Copilot Agent MCP server"
+    trigger:
+      - platform: time_pattern
+        minutes: "/15"
+    action:
+      - service: rest_command.copilot_agent_health
+      - service: logbook.log
+        data:
+          name: "Copilot Agent"
+          message: "Health check completed"
+          entity_id: input_boolean.copilot_agent_enabled
+
+script:
+  copilot_quick_command:
+    alias: "Copilot Quick Command"
+    description: "Execute a quick Copilot agent command"
+    mode: single
+    fields:
+      command:
+        description: "Command to execute"
+        example: "turn on living room lights"
+      params:
+        description: "Optional parameters as JSON"
+        example: '{"entity_id": "light.living_room"}'
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ command }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: "{{ params | default('{}') }}"
+      - delay:
+          milliseconds: 500
+      - service: rest_command.copilot_agent_execute
+
+  copilot_get_status:
+    alias: "Copilot Get Status"
+    description: "Get Copilot Agent MCP server status"
+    mode: single
+    sequence:
+      - service: rest_command.copilot_agent_health
+      - service: persistent_notification.create
+        data:
+          title: "Copilot Agent Status"
+          message: "Health check sent. Check logs for result."
+          notification_id: copilot_status
