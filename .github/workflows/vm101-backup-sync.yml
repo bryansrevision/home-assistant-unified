@@ -6,6 +6,9 @@ name: VM 101 Backup Sync
     - cron: '0 */6 * * *'  # Every 6 hours
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   sync-backup:
     runs-on: ubuntu-latest
