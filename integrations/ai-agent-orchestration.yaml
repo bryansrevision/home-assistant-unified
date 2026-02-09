@@ -1,0 +1,682 @@
+# ============================================================================
+# UNIFIED AI AGENT ORCHESTRATION
+# Integrates Copilot CLI, OpenAI, Gemini, MCP Hub, and HA automations
+# ============================================================================
+
+# ============================================================================
+# AI AGENT REGISTRY & CONTROL
+# ============================================================================
+
+input_boolean:
+  ai_orchestration_enabled:
+    name: "AI Orchestration Enabled"
+    initial: true
+    icon: mdi:robot-industrial
+
+  ai_copilot_cli_enabled:
+    name: "Copilot CLI Enabled"
+    initial: true
+    icon: mdi:github
+
+  ai_openai_agent_enabled:
+    name: "OpenAI Agent Enabled"
+    initial: true
+    icon: mdi:brain
+
+  ai_gemini_agent_enabled:
+    name: "Gemini Agent Enabled"
+    initial: true
+    icon: mdi:google
+
+  ai_local_llm_enabled:
+    name: "Local LLM Enabled"
+    initial: false
+    icon: mdi:server
+
+  ai_task_queue_enabled:
+    name: "Task Queue Enabled"
+    initial: true
+    icon: mdi:format-list-checks
+
+input_select:
+  ai_primary_agent:
+    name: "Primary AI Agent"
+    options:
+      - "copilot"
+      - "openai"
+      - "gemini"
+      - "local"
+      - "auto"
+    initial: "auto"
+    icon: mdi:robot
+
+  ai_task_priority:
+    name: "Task Priority"
+    options:
+      - "low"
+      - "normal"
+      - "high"
+      - "critical"
+    initial: "normal"
+    icon: mdi:priority-high
+
+  ai_execution_mode:
+    name: "Execution Mode"
+    options:
+      - "immediate"
+      - "queued"
+      - "scheduled"
+      - "confirmation_required"
+    initial: "immediate"
+    icon: mdi:play-circle
+
+input_text:
+  ai_current_task:
+    name: "Current AI Task"
+    initial: ""
+    max: 500
+    icon: mdi:clipboard-text
+
+  ai_task_context:
+    name: "Task Context"
+    initial: "{}"
+    max: 2000
+    icon: mdi:code-json
+
+  ai_last_response:
+    name: "Last AI Response"
+    initial: ""
+    max: 2000
+    icon: mdi:message-reply
+
+input_number:
+  ai_task_timeout:
+    name: "Task Timeout (seconds)"
+    min: 5
+    max: 300
+    initial: 60
+    step: 5
+    icon: mdi:timer
+
+# ============================================================================
+# AI TASK QUEUE
+# ============================================================================
+
+counter:
+  ai_tasks_pending:
+    name: "Pending Tasks"
+    initial: 0
+    icon: mdi:clock-outline
+
+  ai_tasks_completed:
+    name: "Completed Tasks"
+    initial: 0
+    icon: mdi:check-circle
+
+  ai_tasks_failed:
+    name: "Failed Tasks"
+    initial: 0
+    icon: mdi:alert-circle
+
+# ============================================================================
+# UNIFIED AI COMMAND PROCESSOR
+# ============================================================================
+
+script:
+  # Main AI command processor - routes to appropriate agent
+  ai_process_command:
+    alias: "AI - Process Command"
+    description: "Route command to the appropriate AI agent"
+    mode: queued
+    max: 10
+    fields:
+      command:
+        description: "Command to process"
+        example: "turn on living room lights"
+      agent:
+        description: "Agent to use (auto, copilot, openai, gemini)"
+        example: "auto"
+      context:
+        description: "Additional context"
+        example: '{"room": "living_room"}'
+    sequence:
+      - service: counter.increment
+        target:
+          entity_id: counter.ai_tasks_pending
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.ai_current_task
+        data:
+          value: "{{ command }}"
+      - choose:
+          # Route to Copilot
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: template
+                    value_template: "{{ agent == 'copilot' }}"
+                  - condition: and
+                    conditions:
+                      - condition: template
+                        value_template: "{{ agent == 'auto' }}"
+                      - condition: state
+                        entity_id: input_boolean.ai_copilot_cli_enabled
+                        state: "on"
+            sequence:
+              - service: script.ai_copilot_execute
+                data:
+                  command: "{{ command }}"
+                  context: "{{ context | default('{}') }}"
+          # Route to OpenAI
+          - conditions:
+              - condition: or
+                conditions:
+                  - condition: template
+                    value_template: "{{ agent == 'openai' }}"
+                  - condition: and
+                    conditions:
+                      - condition: template
+                        value_template: "{{ agent == 'auto' }}"
+                      - condition: state
+                        entity_id: input_boolean.ai_openai_agent_enabled
+                        state: "on"
+                      - condition: state
+                        entity_id: input_boolean.ai_copilot_cli_enabled
+                        state: "off"
+            sequence:
+              - service: script.ai_openai_execute
+                data:
+                  command: "{{ command }}"
+                  context: "{{ context | default('{}') }}"
+          # Route to Gemini
+          - conditions:
+              - condition: template
+                value_template: "{{ agent == 'gemini' }}"
+            sequence:
+              - service: script.ai_gemini_execute
+                data:
+                  command: "{{ command }}"
+                  context: "{{ context | default('{}') }}"
+        default:
+          - service: script.ai_fallback_execute
+            data:
+              command: "{{ command }}"
+      - service: counter.decrement
+        target:
+          entity_id: counter.ai_tasks_pending
+      - service: counter.increment
+        target:
+          entity_id: counter.ai_tasks_completed
+
+  # Copilot CLI execution
+  ai_copilot_execute:
+    alias: "AI - Copilot Execute"
+    mode: queued
+    fields:
+      command:
+        description: "Command for Copilot"
+      context:
+        description: "Context JSON"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ command }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: "{{ context }}"
+      - service: rest_command.copilot_agent_execute
+      - service: logbook.log
+        data:
+          name: "AI Copilot"
+          message: "Executed: {{ command }}"
+
+  # OpenAI execution
+  ai_openai_execute:
+    alias: "AI - OpenAI Execute"
+    mode: queued
+    fields:
+      command:
+        description: "Command for OpenAI"
+      context:
+        description: "Context JSON"
+    sequence:
+      - service: conversation.process
+        data:
+          text: "{{ command }}"
+          agent_id: conversation.openai
+        response_variable: ai_response
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.ai_last_response
+        data:
+          value: "{{ ai_response.response.speech.plain.speech }}"
+      - service: logbook.log
+        data:
+          name: "AI OpenAI"
+          message: "Response: {{ ai_response.response.speech.plain.speech[:100] }}"
+
+  # Gemini execution
+  ai_gemini_execute:
+    alias: "AI - Gemini Execute"
+    mode: queued
+    fields:
+      command:
+        description: "Command for Gemini"
+      context:
+        description: "Context JSON"
+    sequence:
+      - service: conversation.process
+        data:
+          text: "{{ command }}"
+          agent_id: conversation.google_generative_ai
+        response_variable: ai_response
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.ai_last_response
+        data:
+          value: "{{ ai_response.response.speech.plain.speech }}"
+      - service: logbook.log
+        data:
+          name: "AI Gemini"
+          message: "Response: {{ ai_response.response.speech.plain.speech[:100] }}"
+
+  # Fallback execution (direct HA)
+  ai_fallback_execute:
+    alias: "AI - Fallback Execute"
+    mode: queued
+    fields:
+      command:
+        description: "Command to parse"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ 'turn on' in command.lower() }}"
+            sequence:
+              - service: homeassistant.turn_on
+                target:
+                  entity_id: "{{ command | regex_findall('\\b(light|switch|fan)\\.[\\w_]+\\b') | first | default('light.living_room') }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ 'turn off' in command.lower() }}"
+            sequence:
+              - service: homeassistant.turn_off
+                target:
+                  entity_id: "{{ command | regex_findall('\\b(light|switch|fan)\\.[\\w_]+\\b') | first | default('light.living_room') }}"
+        default:
+          - service: persistent_notification.create
+            data:
+              title: "AI Command Not Understood"
+              message: "Could not process: {{ command }}"
+
+  # Multi-step task execution
+  ai_execute_task:
+    alias: "AI - Execute Multi-Step Task"
+    mode: queued
+    fields:
+      task_name:
+        description: "Task name"
+      steps:
+        description: "List of steps as JSON array"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.ai_current_task
+        data:
+          value: "{{ task_name }}"
+      - repeat:
+          for_each: "{{ steps }}"
+          sequence:
+            - service: script.ai_process_command
+              data:
+                command: "{{ repeat.item.command }}"
+                agent: "{{ repeat.item.agent | default('auto') }}"
+                context: "{{ repeat.item.context | default('{}') }}"
+            - delay:
+                seconds: "{{ repeat.item.delay | default(1) }}"
+      - service: notify.mobile_app_phone
+        data:
+          title: "Task Complete"
+          message: "{{ task_name }} finished with {{ steps | length }} steps"
+
+# ============================================================================
+# AI ACTION HANDLERS
+# ============================================================================
+
+script:
+  # Home control actions
+  ai_action_lights:
+    alias: "AI Action - Lights"
+    fields:
+      action:
+        example: "on"
+      target:
+        example: "living_room"
+      brightness:
+        example: 80
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'on' }}"
+            sequence:
+              - service: light.turn_on
+                target:
+                  area_id: "{{ target }}"
+                data:
+                  brightness_pct: "{{ brightness | default(100) }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'off' }}"
+            sequence:
+              - service: light.turn_off
+                target:
+                  area_id: "{{ target }}"
+
+  ai_action_climate:
+    alias: "AI Action - Climate"
+    fields:
+      action:
+        example: "set_temperature"
+      temperature:
+        example: 72
+      mode:
+        example: "cool"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'set_temperature' }}"
+            sequence:
+              - service: climate.set_temperature
+                target:
+                  entity_id: climate.thermostat
+                data:
+                  temperature: "{{ temperature }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'set_mode' }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                target:
+                  entity_id: climate.thermostat
+                data:
+                  hvac_mode: "{{ mode }}"
+
+  ai_action_media:
+    alias: "AI Action - Media"
+    fields:
+      action:
+        example: "play"
+      target:
+        example: "media_player.living_room_tv"
+      content:
+        example: "Netflix"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'play' }}"
+            sequence:
+              - service: media_player.media_play
+                target:
+                  entity_id: "{{ target }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'pause' }}"
+            sequence:
+              - service: media_player.media_pause
+                target:
+                  entity_id: "{{ target }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'volume' }}"
+            sequence:
+              - service: media_player.volume_set
+                target:
+                  entity_id: "{{ target }}"
+                data:
+                  volume_level: "{{ content | float / 100 }}"
+
+  ai_action_security:
+    alias: "AI Action - Security"
+    fields:
+      action:
+        example: "arm"
+      mode:
+        example: "away"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'arm' and mode == 'away' }}"
+            sequence:
+              - service: alarm_control_panel.alarm_arm_away
+                target:
+                  entity_id: alarm_control_panel.home_alarm
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'arm' and mode == 'night' }}"
+            sequence:
+              - service: alarm_control_panel.alarm_arm_night
+                target:
+                  entity_id: alarm_control_panel.home_alarm
+          - conditions:
+              - condition: template
+                value_template: "{{ action == 'disarm' }}"
+            sequence:
+              - service: alarm_control_panel.alarm_disarm
+                target:
+                  entity_id: alarm_control_panel.home_alarm
+
+  ai_action_notify:
+    alias: "AI Action - Notify"
+    fields:
+      message:
+        example: "Hello from AI"
+      target:
+        example: "mobile"
+      priority:
+        example: "normal"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ target == 'mobile' }}"
+            sequence:
+              - service: notify.mobile_app_phone
+                data:
+                  title: "AI Notification"
+                  message: "{{ message }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ target == 'all' }}"
+            sequence:
+              - service: notify.notify
+                data:
+                  title: "AI Notification"
+                  message: "{{ message }}"
+
+# ============================================================================
+# TERMINAL/CLI INTEGRATION
+# ============================================================================
+
+shell_command:
+  # Execute shell commands from AI
+  ai_shell_execute: "{{ command }}"
+  
+  # Git operations
+  ai_git_pull: "cd /config && git pull origin master"
+  ai_git_status: "cd /config && git status"
+  ai_git_commit: "cd /config && git add -A && git commit -m '{{ message }}'"
+  
+  # System operations
+  ai_system_restart: "ha core restart"
+  ai_system_update: "ha core update"
+  ai_addon_restart: "ha addons restart {{ addon }}"
+
+script:
+  # Terminal command executor
+  ai_terminal_execute:
+    alias: "AI - Terminal Execute"
+    mode: single
+    fields:
+      command:
+        description: "Shell command to execute"
+        example: "ls -la /config"
+    sequence:
+      - service: shell_command.ai_shell_execute
+        data:
+          command: "{{ command }}"
+      - service: logbook.log
+        data:
+          name: "AI Terminal"
+          message: "Executed: {{ command }}"
+
+  # Git sync via AI
+  ai_git_sync:
+    alias: "AI - Git Sync"
+    sequence:
+      - service: shell_command.ai_git_pull
+      - service: notify.mobile_app_phone
+        data:
+          title: "Git Sync"
+          message: "Configuration synced from GitHub"
+
+# ============================================================================
+# WEBHOOK ENDPOINTS FOR EXTERNAL AI
+# ============================================================================
+
+automation:
+  # Main AI webhook
+  - id: ai_webhook_handler
+    alias: "AI - Webhook Handler"
+    trigger:
+      - platform: webhook
+        webhook_id: ai_command
+        allowed_methods:
+          - POST
+    action:
+      - service: script.ai_process_command
+        data:
+          command: "{{ trigger.json.command }}"
+          agent: "{{ trigger.json.agent | default('auto') }}"
+          context: "{{ trigger.json.context | default('{}') | to_json }}"
+
+  # Task webhook
+  - id: ai_task_webhook
+    alias: "AI - Task Webhook"
+    trigger:
+      - platform: webhook
+        webhook_id: ai_task
+        allowed_methods:
+          - POST
+    action:
+      - service: script.ai_execute_task
+        data:
+          task_name: "{{ trigger.json.task_name }}"
+          steps: "{{ trigger.json.steps }}"
+
+  # Action webhook
+  - id: ai_action_webhook
+    alias: "AI - Action Webhook"
+    trigger:
+      - platform: webhook
+        webhook_id: ai_action
+        allowed_methods:
+          - POST
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.json.type == 'lights' }}"
+            sequence:
+              - service: script.ai_action_lights
+                data:
+                  action: "{{ trigger.json.action }}"
+                  target: "{{ trigger.json.target }}"
+                  brightness: "{{ trigger.json.brightness | default(100) }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.json.type == 'climate' }}"
+            sequence:
+              - service: script.ai_action_climate
+                data:
+                  action: "{{ trigger.json.action }}"
+                  temperature: "{{ trigger.json.temperature | default(72) }}"
+                  mode: "{{ trigger.json.mode | default('auto') }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.json.type == 'security' }}"
+            sequence:
+              - service: script.ai_action_security
+                data:
+                  action: "{{ trigger.json.action }}"
+                  mode: "{{ trigger.json.mode | default('away') }}"
+
+# ============================================================================
+# AI STATUS SENSORS
+# ============================================================================
+
+template:
+  - sensor:
+      - name: "AI Orchestration Status"
+        unique_id: ai_orchestration_status
+        state: >
+          {% if is_state('input_boolean.ai_orchestration_enabled', 'on') %}
+            Active
+          {% else %}
+            Disabled
+          {% endif %}
+        icon: mdi:robot-industrial
+
+      - name: "AI Primary Agent"
+        unique_id: ai_primary_agent_sensor
+        state: "{{ states('input_select.ai_primary_agent') }}"
+        icon: mdi:robot
+
+      - name: "AI Tasks Pending"
+        unique_id: ai_tasks_pending_sensor
+        state: "{{ states('counter.ai_tasks_pending') }}"
+        unit_of_measurement: "tasks"
+        icon: mdi:clock-outline
+
+      - name: "AI Tasks Today"
+        unique_id: ai_tasks_today
+        state: "{{ states('counter.ai_tasks_completed') }}"
+        unit_of_measurement: "tasks"
+        icon: mdi:check-circle
+
+      - name: "AI Success Rate"
+        unique_id: ai_success_rate
+        state: >
+          {% set completed = states('counter.ai_tasks_completed') | int %}
+          {% set failed = states('counter.ai_tasks_failed') | int %}
+          {% set total = completed + failed %}
+          {% if total > 0 %}
+            {{ ((completed / total) * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        icon: mdi:percent
+
+      - name: "AI Agents Online"
+        unique_id: ai_agents_online
+        state: >
+          {% set count = 0 %}
+          {% if is_state('input_boolean.ai_copilot_cli_enabled', 'on') %}{% set count = count + 1 %}{% endif %}
+          {% if is_state('input_boolean.ai_openai_agent_enabled', 'on') %}{% set count = count + 1 %}{% endif %}
+          {% if is_state('input_boolean.ai_gemini_agent_enabled', 'on') %}{% set count = count + 1 %}{% endif %}
+          {% if is_state('input_boolean.ai_local_llm_enabled', 'on') %}{% set count = count + 1 %}{% endif %}
+          {{ count }}
+        unit_of_measurement: "agents"
+        icon: mdi:robot-outline
+
+# ============================================================================
+# END OF UNIFIED AI AGENT ORCHESTRATION
+# ============================================================================

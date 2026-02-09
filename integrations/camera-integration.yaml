@@ -289,7 +289,7 @@ group:
     name: "Exterior Cameras"
     entities:
       - camera.yi_camera_front_door
-      -camera.yi_camera_backyard
+      - camera.yi_camera_backyard
       - camera.kami_camera_garage
       - camera.kami_camera_driveway
 

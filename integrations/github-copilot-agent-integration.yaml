@@ -1,0 +1,488 @@
+# ============================================================================
+# GITHUB COPILOT AGENT INTEGRATION
+# Links Copilot CLI with Home Assistant ecosystem
+# Provides bidirectional control and automation capabilities
+# ============================================================================
+
+# ============================================================================
+# INPUT HELPERS FOR COPILOT AGENT
+# ============================================================================
+
+input_boolean:
+  copilot_agent_enabled:
+    name: "Copilot Agent Enabled"
+    initial: true
+    icon: mdi:github
+
+  copilot_auto_execute:
+    name: "Copilot Auto Execute"
+    initial: false
+    icon: mdi:auto-fix
+
+  copilot_voice_integration:
+    name: "Copilot Voice Integration"
+    initial: true
+    icon: mdi:microphone
+
+input_text:
+  copilot_agent_command:
+    name: "Copilot Agent Command"
+    initial: ""
+    max: 500
+    icon: mdi:console
+    mode: text
+
+  copilot_agent_params:
+    name: "Copilot Agent Params"
+    initial: "{}"
+    max: 1000
+    icon: mdi:code-json
+    mode: text
+
+  copilot_agent_last_result:
+    name: "Copilot Last Result"
+    initial: ""
+    max: 2000
+    icon: mdi:message-reply-text
+    mode: text
+
+  copilot_agent_context:
+    name: "Copilot Context"
+    initial: "home_assistant"
+    max: 100
+    icon: mdi:tag
+
+input_select:
+  copilot_agent_mode:
+    name: "Copilot Agent Mode"
+    options:
+      - "interactive"
+      - "automation"
+      - "voice"
+      - "scheduled"
+      - "webhook"
+    initial: "interactive"
+    icon: mdi:cog
+
+  copilot_target_domain:
+    name: "Target Domain"
+    options:
+      - "light"
+      - "switch"
+      - "automation"
+      - "script"
+      - "scene"
+      - "media_player"
+      - "climate"
+      - "cover"
+      - "lock"
+      - "camera"
+      - "notify"
+      - "all"
+    initial: "all"
+    icon: mdi:domain
+
+# ============================================================================
+# COPILOT AGENT AUTOMATIONS
+# ============================================================================
+
+automation:
+  # Execute command when input changes
+  - id: copilot_execute_on_input
+    alias: "Copilot - Execute on Input Change"
+    trigger:
+      - platform: state
+        entity_id: input_text.copilot_agent_command
+    condition:
+      - condition: state
+        entity_id: input_boolean.copilot_agent_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ trigger.to_state.state | length > 0 }}"
+    action:
+      - service: rest_command.copilot_agent_execute
+      - delay:
+          seconds: 2
+      - service: logbook.log
+        data:
+          name: "Copilot Agent"
+          message: "Executed: {{ states('input_text.copilot_agent_command') }}"
+          entity_id: input_boolean.copilot_agent_enabled
+
+  # Webhook handler for external Copilot commands
+  - id: copilot_webhook_handler
+    alias: "Copilot - Webhook Handler"
+    trigger:
+      - platform: webhook
+        webhook_id: copilot_agent_command
+        allowed_methods:
+          - POST
+        local_only: false
+    action:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ trigger.json.command | default('') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: "{{ trigger.json.params | default('{}') | to_json }}"
+      - delay:
+          milliseconds: 500
+      - service: rest_command.copilot_agent_execute
+
+  # Voice-triggered Copilot commands
+  - id: copilot_voice_command
+    alias: "Copilot - Voice Command Handler"
+    trigger:
+      - platform: event
+        event_type: assist_response
+        event_data:
+          intent: "copilot_command"
+    condition:
+      - condition: state
+        entity_id: input_boolean.copilot_voice_integration
+        state: "on"
+    action:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ trigger.event.data.text }}"
+
+  # Health check every 15 minutes
+  - id: copilot_health_check
+    alias: "Copilot - Health Check"
+    trigger:
+      - platform: time_pattern
+        minutes: "/15"
+    condition:
+      - condition: state
+        entity_id: input_boolean.copilot_agent_enabled
+        state: "on"
+    action:
+      - service: rest_command.copilot_agent_health
+
+  # Notify on Copilot errors
+  - id: copilot_error_notification
+    alias: "Copilot - Error Notification"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.copilot_agent_online
+        to: "off"
+        for:
+          minutes: 5
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ Copilot Agent Offline"
+          message: "GitHub Copilot Agent has been offline for 5 minutes"
+
+  # Log all Copilot commands
+  - id: copilot_command_logger
+    alias: "Copilot - Command Logger"
+    trigger:
+      - platform: state
+        entity_id: input_text.copilot_agent_command
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.state | length > 0 }}"
+    action:
+      - service: logbook.log
+        data:
+          name: "Copilot"
+          message: "Command: {{ trigger.to_state.state }}"
+          entity_id: input_boolean.copilot_agent_enabled
+
+# ============================================================================
+# COPILOT AGENT SCRIPTS
+# ============================================================================
+
+script:
+  # Quick command execution
+  copilot_quick_command:
+    alias: "Copilot Quick Command"
+    description: "Execute a Copilot command with parameters"
+    mode: single
+    fields:
+      command:
+        description: "Command to execute"
+        example: "turn on living room lights"
+      params:
+        description: "Optional parameters as JSON"
+        example: '{"entity_id": "light.living_room"}'
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ command }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: "{{ params | default('{}') }}"
+      - delay:
+          milliseconds: 500
+      - service: rest_command.copilot_agent_execute
+
+  # Get all states via Copilot
+  copilot_get_states:
+    alias: "Copilot Get States"
+    description: "Get entity states via Copilot agent"
+    fields:
+      domain:
+        description: "Domain to filter (optional)"
+        example: "light"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "get states"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: '{"domain": "{{ domain | default("") }}"}'
+      - service: rest_command.copilot_agent_execute
+
+  # Control entities via Copilot
+  copilot_control_entity:
+    alias: "Copilot Control Entity"
+    description: "Control an entity via Copilot"
+    fields:
+      action:
+        description: "Action (turn_on, turn_off, toggle)"
+        example: "turn_on"
+      entity_id:
+        description: "Entity to control"
+        example: "light.living_room"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "{{ action }} {{ entity_id.split('.')[1] | replace('_', ' ') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: '{"entity_id": "{{ entity_id }}"}'
+      - service: rest_command.copilot_agent_execute
+
+  # Run automation via Copilot
+  copilot_trigger_automation:
+    alias: "Copilot Trigger Automation"
+    fields:
+      automation_id:
+        description: "Automation entity ID"
+        example: "automation.welcome_home"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "trigger automation"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_params
+        data:
+          value: '{"entity_id": "{{ automation_id }}"}'
+      - service: rest_command.copilot_agent_execute
+
+  # Copilot status report
+  copilot_status_report:
+    alias: "Copilot Status Report"
+    description: "Get Copilot agent status report"
+    sequence:
+      - service: rest_command.copilot_agent_health
+      - service: rest_command.copilot_agent_history
+      - service: notify.mobile_app_phone
+        data:
+          title: "Copilot Status"
+          message: >
+            Agent: {{ states('binary_sensor.copilot_agent_online') }}
+            Commands Today: {{ states('sensor.copilot_commands_today') }}
+            Last Command: {{ states('input_text.copilot_agent_command') }}
+
+  # Sync with GitHub
+  copilot_github_sync:
+    alias: "Copilot GitHub Sync"
+    description: "Sync HA config with GitHub repository"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "sync github"
+      - service: rest_command.copilot_agent_execute
+      - service: notify.mobile_app_phone
+        data:
+          title: "GitHub Sync"
+          message: "Home Assistant config synced with GitHub"
+
+# ============================================================================
+# COPILOT AGENT SENSORS
+# ============================================================================
+
+template:
+  - binary_sensor:
+      - name: "Copilot Agent Online"
+        unique_id: copilot_agent_online
+        device_class: connectivity
+        state: >
+          {{ is_state('input_boolean.copilot_agent_enabled', 'on') }}
+        icon: >
+          {% if is_state('input_boolean.copilot_agent_enabled', 'on') %}
+            mdi:github
+          {% else %}
+            mdi:github-face
+          {% endif %}
+
+  - sensor:
+      - name: "Copilot Agent Status"
+        unique_id: copilot_agent_status
+        state: >
+          {% if is_state('input_boolean.copilot_agent_enabled', 'on') %}
+            Active
+          {% else %}
+            Disabled
+          {% endif %}
+        icon: mdi:robot
+
+      - name: "Copilot Agent Mode"
+        unique_id: copilot_agent_mode_sensor
+        state: "{{ states('input_select.copilot_agent_mode') }}"
+        icon: mdi:cog
+
+      - name: "Copilot Last Command"
+        unique_id: copilot_last_command
+        state: "{{ states('input_text.copilot_agent_command')[:50] }}"
+        icon: mdi:console
+
+      - name: "Copilot Commands Today"
+        unique_id: copilot_commands_today
+        state: "{{ state_attr('automation.copilot_execute_on_input', 'current') | default(0) }}"
+        unit_of_measurement: "commands"
+        icon: mdi:counter
+
+# ============================================================================
+# COPILOT WEBHOOK ENDPOINTS
+# For external integration (e.g., from Copilot CLI)
+# ============================================================================
+
+# Webhook: POST http://192.168.1.134:8123/api/webhook/copilot_agent_command
+# Body: {"command": "turn on lights", "params": {"entity_id": "light.living_room"}}
+
+# Webhook: POST http://192.168.1.134:8123/api/webhook/copilot_voice_command
+# Body: {"text": "Hey Copilot, turn on the living room lights"}
+
+automation:
+  - id: copilot_voice_webhook
+    alias: "Copilot - Voice Webhook"
+    trigger:
+      - platform: webhook
+        webhook_id: copilot_voice_command
+        allowed_methods:
+          - POST
+    action:
+      - service: conversation.process
+        data:
+          text: "{{ trigger.json.text }}"
+          agent_id: conversation.home_assistant
+
+# ============================================================================
+# INTEGRATION WITH MCP HUB
+# ============================================================================
+
+rest_command:
+  # Register Copilot agent with MCP Hub
+  copilot_register_mcp:
+    url: !secret mcp_hub_execute_url
+    method: POST
+    headers:
+      Authorization: !secret mcp_hub_api_token
+      Content-Type: "application/json"
+    payload: >
+      {
+        "command": "register_agent",
+        "params": {
+          "agent_id": "github_copilot",
+          "agent_type": "copilot",
+          "endpoint": "http://192.168.1.134:8888",
+          "capabilities": ["control", "query", "automation"]
+        }
+      }
+
+  # Send command to MCP Hub from Copilot
+  copilot_mcp_command:
+    url: !secret mcp_hub_execute_url
+    method: POST
+    headers:
+      Authorization: !secret mcp_hub_api_token
+      Content-Type: "application/json"
+    payload: >
+      {
+        "command": "{{ command }}",
+        "params": {{ params | tojson }},
+        "source": "github_copilot"
+      }
+
+# ============================================================================
+# INTEGRATION WITH PROXMOX
+# ============================================================================
+
+script:
+  copilot_proxmox_status:
+    alias: "Copilot - Proxmox Status"
+    description: "Get Proxmox VM status via Copilot"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "get proxmox status"
+      - service: rest_command.copilot_agent_execute
+
+  copilot_restart_vm:
+    alias: "Copilot - Restart VM"
+    description: "Restart a Proxmox VM via Copilot"
+    fields:
+      vmid:
+        description: "VM ID to restart"
+        example: "102"
+    sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.copilot_agent_command
+        data:
+          value: "restart vm {{ vmid }}"
+      - service: rest_command.copilot_agent_execute
+
+# ============================================================================
+# INTEGRATION WITH NODE-RED
+# ============================================================================
+
+automation:
+  - id: copilot_nodered_bridge
+    alias: "Copilot - Node-RED Bridge"
+    trigger:
+      - platform: state
+        entity_id: input_text.copilot_agent_command
+    condition:
+      - condition: template
+        value_template: "{{ 'nodered' in trigger.to_state.state.lower() or 'node-red' in trigger.to_state.state.lower() }}"
+    action:
+      - service: rest_command.nodered_trigger_flow
+        data:
+          flow_id: "copilot_handler"
+          data:
+            command: "{{ states('input_text.copilot_agent_command') }}"
+            params: "{{ states('input_text.copilot_agent_params') }}"
+
+# ============================================================================
+# END OF GITHUB COPILOT AGENT INTEGRATION
+# ============================================================================

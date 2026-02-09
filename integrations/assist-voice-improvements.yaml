@@ -1,0 +1,423 @@
+# ============================================================================
+# ASSIST & VOICE IMPROVEMENTS
+# Ask Question actions, AI rate limiting, centralized voice responses
+# ============================================================================
+
+# ============================================================================
+# AI RATE LIMITING & CONTROL
+# ============================================================================
+
+input_boolean:
+  ai_enabled:
+    name: "AI Assistants Enabled"
+    initial: true
+    icon: mdi:robot
+
+  ai_openai_enabled:
+    name: "OpenAI Enabled"
+    initial: true
+    icon: mdi:brain
+
+  ai_gemini_enabled:
+    name: "Google Gemini Enabled"
+    initial: true
+    icon: mdi:google
+
+  assist_ask_question_enabled:
+    name: "Assist Ask Question Enabled"
+    initial: true
+    icon: mdi:message-question
+
+input_number:
+  ai_monthly_budget:
+    name: "AI Monthly Budget (USD)"
+    min: 0
+    max: 100
+    step: 5
+    initial: 20
+    unit_of_measurement: "$"
+    icon: mdi:currency-usd
+
+  ai_daily_request_limit:
+    name: "AI Daily Request Limit"
+    min: 0
+    max: 500
+    step: 10
+    initial: 100
+    icon: mdi:counter
+
+counter:
+  ai_requests_today:
+    name: "AI Requests Today"
+    initial: 0
+    step: 1
+    icon: mdi:counter
+
+  ai_requests_month:
+    name: "AI Requests This Month"
+    initial: 0
+    step: 1
+    icon: mdi:calendar-month
+
+# ============================================================================
+# AI RATE LIMITING AUTOMATIONS
+# ============================================================================
+
+automation:
+  # Disable AI when daily limit exceeded
+  - id: ai_daily_limit_exceeded
+    alias: "AI - Daily Limit Exceeded"
+    trigger:
+      - platform: template
+        value_template: >
+          {{ states('counter.ai_requests_today') | int >= states('input_number.ai_daily_request_limit') | int }}
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.ai_enabled
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ AI Limit Reached"
+          message: "Daily AI request limit exceeded. AI disabled until reset."
+      - service: persistent_notification.create
+        data:
+          title: "AI Rate Limit"
+          message: "Daily AI request limit reached. AI disabled until midnight."
+          notification_id: ai_limit
+
+  # Reset daily counter at midnight
+  - id: ai_reset_daily_counter
+    alias: "AI - Reset Daily Counter"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    action:
+      - service: counter.reset
+        target:
+          entity_id: counter.ai_requests_today
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.ai_enabled
+      - service: persistent_notification.dismiss
+        data:
+          notification_id: ai_limit
+
+  # Reset monthly counter on 1st of month
+  - id: ai_reset_monthly_counter
+    alias: "AI - Reset Monthly Counter"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    condition:
+      - condition: template
+        value_template: "{{ now().day == 1 }}"
+    action:
+      - service: counter.reset
+        target:
+          entity_id: counter.ai_requests_month
+
+  # Increment counter on AI request
+  - id: ai_track_openai_request
+    alias: "AI - Track OpenAI Request"
+    trigger:
+      - platform: event
+        event_type: call_service
+        event_data:
+          domain: openai_conversation
+    action:
+      - service: counter.increment
+        target:
+          entity_id: 
+            - counter.ai_requests_today
+            - counter.ai_requests_month
+
+  - id: ai_track_gemini_request
+    alias: "AI - Track Gemini Request"
+    trigger:
+      - platform: event
+        event_type: call_service
+        event_data:
+          domain: google_generative_ai_conversation
+    action:
+      - service: counter.increment
+        target:
+          entity_id: 
+            - counter.ai_requests_today
+            - counter.ai_requests_month
+
+# ============================================================================
+# ASSIST ASK QUESTION AUTOMATIONS
+# Interactive voice confirmations using HA 2025.7 features
+# ============================================================================
+
+automation:
+  # Ask to arm security when everyone leaves
+  - id: assist_ask_arm_security
+    alias: "Assist - Ask to Arm Security"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.anyone_home
+        to: "off"
+        for:
+          minutes: 2
+    condition:
+      - condition: state
+        entity_id: input_boolean.assist_ask_question_enabled
+        state: "on"
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: alarm_control_panel.home_alarm
+            state: "armed_away"
+    action:
+      - service: conversation.process
+        data:
+          text: "Everyone has left. Should I arm the security system?"
+          agent_id: conversation.home_assistant
+      - wait_for_trigger:
+          - platform: event
+            event_type: assist_response
+            event_data:
+              response_type: "affirmative"
+        timeout:
+          seconds: 30
+        continue_on_timeout: true
+      - if:
+          - condition: template
+            value_template: "{{ wait.trigger is not none }}"
+        then:
+          - service: alarm_control_panel.alarm_arm_away
+            target:
+              entity_id: alarm_control_panel.home_alarm
+          - service: notify.mobile_app_phone
+            data:
+              title: "🔒 Security Armed"
+              message: "Security system armed via voice confirmation"
+
+  # Ask which lights to turn on
+  - id: assist_ask_which_lights
+    alias: "Assist - Ask Which Lights"
+    trigger:
+      - platform: event
+        event_type: assist_request
+        event_data:
+          intent: "turn_on_lights"
+    action:
+      - service: conversation.process
+        data:
+          text: "Which room's lights would you like to turn on? Living room, bedroom, or kitchen?"
+          agent_id: conversation.home_assistant
+
+  # Confirm before running expensive automations
+  - id: assist_confirm_vacation_mode
+    alias: "Assist - Confirm Vacation Mode"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.vacation_mode
+        to: "on"
+    action:
+      - service: conversation.process
+        data:
+          text: "Vacation mode will turn off all lights and arm security. Confirm?"
+          agent_id: conversation.home_assistant
+
+# ============================================================================
+# CENTRALIZED VOICE RESPONSE SCRIPTS
+# Unified scripts callable from Alexa, Google, Siri
+# ============================================================================
+
+input_select:
+  voice_routine:
+    name: "Voice Routine"
+    options:
+      - "Good Morning"
+      - "Good Night"
+      - "Leaving Home"
+      - "Arriving Home"
+      - "Movie Time"
+      - "Bedtime"
+      - "Wake Up"
+      - "Dinner Time"
+      - "Work Mode"
+      - "Relaxation"
+    icon: mdi:script-text
+
+script:
+  # Universal routine executor
+  voice_execute_routine:
+    alias: "Voice - Execute Routine"
+    description: "Execute any routine from any voice assistant"
+    mode: single
+    fields:
+      routine:
+        description: "Routine name to execute"
+        example: "Good Morning"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ routine == 'Good Morning' }}"
+            sequence:
+              - service: script.routine_good_morning
+          - conditions:
+              - condition: template
+                value_template: "{{ routine == 'Good Night' }}"
+            sequence:
+              - service: script.routine_good_night
+          - conditions:
+              - condition: template
+                value_template: "{{ routine == 'Leaving Home' }}"
+            sequence:
+              - service: script.routine_leaving_home
+          - conditions:
+              - condition: template
+                value_template: "{{ routine == 'Arriving Home' }}"
+            sequence:
+              - service: script.routine_arriving_home
+          - conditions:
+              - condition: template
+                value_template: "{{ routine == 'Movie Time' }}"
+            sequence:
+              - service: script.routine_movie_time
+        default:
+          - service: notify.mobile_app_phone
+            data:
+              title: "Unknown Routine"
+              message: "Routine '{{ routine }}' not found"
+
+  # Good Morning routine
+  routine_good_morning:
+    alias: "Routine - Good Morning"
+    sequence:
+      - service: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_pct: 70
+          color_temp: 350
+      - service: media_player.volume_set
+        target:
+          entity_id: media_player.living_room_speaker
+        data:
+          volume_level: 0.3
+      - service: tts.speak
+        target:
+          entity_id: tts.google_translate
+        data:
+          media_player_entity_id: media_player.living_room_speaker
+          message: "Good morning! Today is {{ now().strftime('%A, %B %d') }}."
+
+  # Good Night routine
+  routine_good_night:
+    alias: "Routine - Good Night"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id: all
+      - service: alarm_control_panel.alarm_arm_night
+        target:
+          entity_id: alarm_control_panel.home_alarm
+      - service: lock.lock
+        target:
+          entity_id: all
+      - service: media_player.turn_off
+        target:
+          entity_id: all
+
+  # Leaving Home routine
+  routine_leaving_home:
+    alias: "Routine - Leaving Home"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id: all
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.thermostat
+        data:
+          hvac_mode: "eco"
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.home_alarm
+
+  # Arriving Home routine
+  routine_arriving_home:
+    alias: "Routine - Arriving Home"
+    sequence:
+      - service: alarm_control_panel.alarm_disarm
+        target:
+          entity_id: alarm_control_panel.home_alarm
+      - service: light.turn_on
+        target:
+          area_id: entryway
+        data:
+          brightness_pct: 100
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.thermostat
+        data:
+          hvac_mode: "auto"
+
+  # Movie Time routine
+  routine_movie_time:
+    alias: "Routine - Movie Time"
+    sequence:
+      - service: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_pct: 10
+          rgb_color: [255, 180, 100]
+      - service: media_player.turn_on
+        target:
+          entity_id: media_player.living_room_tv
+
+# ============================================================================
+# AI USAGE SENSORS
+# ============================================================================
+
+template:
+  - sensor:
+      - name: "AI Requests Today"
+        unique_id: ai_requests_today_sensor
+        state: "{{ states('counter.ai_requests_today') }}"
+        unit_of_measurement: "requests"
+        icon: mdi:counter
+
+      - name: "AI Requests This Month"
+        unique_id: ai_requests_month_sensor
+        state: "{{ states('counter.ai_requests_month') }}"
+        unit_of_measurement: "requests"
+        icon: mdi:calendar-month
+
+      - name: "AI Daily Usage Percent"
+        unique_id: ai_daily_usage_pct
+        state: >
+          {% set used = states('counter.ai_requests_today') | int %}
+          {% set limit = states('input_number.ai_daily_request_limit') | int %}
+          {% if limit > 0 %}
+            {{ ((used / limit) * 100) | round(1) }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "%"
+        icon: mdi:percent
+
+      - name: "AI Status"
+        unique_id: ai_status_sensor
+        state: >
+          {% if is_state('input_boolean.ai_enabled', 'on') %}
+            Active
+          {% else %}
+            Disabled
+          {% endif %}
+        icon: >
+          {% if is_state('input_boolean.ai_enabled', 'on') %}
+            mdi:robot
+          {% else %}
+            mdi:robot-off
+          {% endif %}
+
+# ============================================================================
+# END OF ASSIST & VOICE IMPROVEMENTS
+# ============================================================================

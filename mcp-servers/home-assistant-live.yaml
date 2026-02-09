@@ -12,9 +12,9 @@ mcp_servers:
     # Server Connection Details
     connection:
       protocol: "http"
-      host: "192.168.1.201"
+      host: "192.168.1.134"
       port: 8123
-      base_url: "http://192.168.1.201:8123/api"
+      base_url: "http://192.168.1.134:8123/api"
       timeout: 30
       retry_attempts: 5
 
@@ -211,7 +211,7 @@ mcp_servers:
     connection:
       protocol: "http"
       # Access Proxmox through HA API
-      base_url: "http://192.168.1.201:8123/api/services"
+      base_url: "http://192.168.1.134:8123/api/services"
 
     # Proxmox API calls routed through HA
     integration:

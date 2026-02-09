@@ -13,7 +13,7 @@ automation:
     trigger:
       - platform: webhook
         webhook_id: nodered_trigger
-       allowed_methods:
+        allowed_methods:
           - POST
           - GET
     action:
@@ -96,7 +96,7 @@ binary_sensor:
 # IPTV Channels via M3U Playlist
 iptv:
   - name: "IPTV Channels"
-    url: "http://192.168.1.201:8000/playlist.m3u8"  # Update with actual IPTV source
+    url: !secret iptv_playlist_url
     scan_interval: 3600
     
 # Alternative: Individual IPTV Sources
@@ -108,11 +108,11 @@ media_source:
 camera:
   - platform: ffmpeg
     name: "IPTV Security Feed 1"
-    input: "http://192.168.1.201:8000/stream1.m3u8"
+    input: !secret iptv_stream1_url
     
   - platform: ffmpeg
     name: "IPTV Security Feed 2"
-    input: "http://192.168.1.201:8000/stream2.m3u8"
+    input: !secret iptv_stream2_url
 
 # IPTV Channel Sensors
 sensor:

@@ -8,7 +8,7 @@ homeassistant:
   elevation: !secret home_elevation
   unit_system: metric
   time_zone: !secret timezone
-  internal_url: "http://192.168.1.201:8123"
+  internal_url: !secret home_assistant_url
   external_url: !secret external_url
   packages: !include_dir_named ../dashboards
 
@@ -109,8 +109,8 @@ zone:
 
 # MQTT Configuration for Mosquitto and Zigbee2MQTT
 mqtt:
-  broker: 192.168.1.201
-  port: 1883
+  broker: !secret mqtt_broker
+  port: !secret mqtt_port
   username: !secret mqtt_username
   password: !secret mqtt_password
   discovery: true
@@ -125,7 +125,7 @@ mqtt:
 # REST Commands for external services
 rest_command:
   ai_automation_trigger:
-    url: "http://192.168.1.201:5000/api/automation/trigger"
+    url: !secret ai_automation_trigger_url
     method: POST
     headers:
       Authorization: !secret ai_automation_token
@@ -133,7 +133,7 @@ rest_command:
     payload: '{"automation_id": "{{ automation_id }}", "trigger": "{{ trigger }}", "data": {{ data | tojson }}}'
 
   mcp_hub_command:
-    url: "http://192.168.1.201:3000/api/command"
+    url: !secret mcp_hub_execute_url
     method: POST
     headers:
       Authorization: !secret mcp_hub_token
@@ -169,7 +169,7 @@ sensor:
   # MCP Hub Status
   - platform: rest
     name: "MCP Hub Status"
-    resource: "http://192.168.1.201:3000/api/status"
+    resource: !secret mcp_hub_status_url
     method: GET
     headers:
       Authorization: !secret mcp_hub_token
@@ -183,7 +183,7 @@ sensor:
   # AI Automation Status
   - platform: rest
     name: "AI Automation Status"
-    resource: "http://192.168.1.201:5000/api/status"
+    resource: !secret ai_automation_status_url
     method: GET
     headers:
       Authorization: !secret ai_automation_token
