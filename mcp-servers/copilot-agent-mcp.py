@@ -32,7 +32,7 @@ load_dotenv(env_file, override=True)
 @dataclass
 class HAConfig:
     """Home Assistant configuration"""
-    url: str = os.getenv("HOME_ASSISTANT_URL", "http://192.168.1.201:8123")
+    url: str = os.getenv("HOME_ASSISTANT_URL", "http://192.168.1.134:8123")
     token: str = os.getenv("HOME_ASSISTANT_TOKEN", "")
     
     @property

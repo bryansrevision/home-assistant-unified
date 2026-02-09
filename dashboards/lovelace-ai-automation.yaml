@@ -286,7 +286,7 @@ views:
           | `run script morning` | Execute a script |
           | `notify Hello world` | Send notification |
           
-          **Webhook:** `http://192.168.1.201:8123/api/webhook/copilot_agent_command`
+          **Webhook:** `http://192.168.1.134:8123/api/webhook/copilot_agent_command`
 
       - type: entities
         title: 🔌 MCP Server Connections

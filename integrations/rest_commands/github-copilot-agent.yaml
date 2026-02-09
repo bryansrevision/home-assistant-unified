@@ -2,7 +2,7 @@
 # Integrates with copilot-agent-mcp.py server
 
 copilot_agent_execute:
-  url: "http://192.168.1.201:8888/api/execute"
+  url: "http://192.168.1.134:8888/api/execute"
   method: POST
   headers:
     Authorization: "Bearer !secret agent_api_token"
@@ -16,21 +16,21 @@ copilot_agent_execute:
   timeout: 60
 
 copilot_agent_health:
-  url: "http://192.168.1.201:8888/api/health"
+  url: "http://192.168.1.134:8888/api/health"
   method: GET
   headers:
     Content-Type: "application/json"
   timeout: 10
 
 copilot_agent_get_states:
-  url: "http://192.168.1.201:8888/api/states?domain={{ domain | default('') }}"
+  url: "http://192.168.1.134:8888/api/states?domain={{ domain | default('') }}"
   method: GET
   headers:
     Content-Type: "application/json"
   timeout: 30
 
 copilot_agent_call_service:
-  url: "http://192.168.1.201:8888/api/services/{{ domain }}/{{ service }}"
+  url: "http://192.168.1.134:8888/api/services/{{ domain }}/{{ service }}"
   method: POST
   headers:
     Content-Type: "application/json"
@@ -39,7 +39,7 @@ copilot_agent_call_service:
   timeout: 30
 
 copilot_agent_history:
-  url: "http://192.168.1.201:8888/api/history?limit={{ limit | default(20) }}"
+  url: "http://192.168.1.134:8888/api/history?limit={{ limit | default(20) }}"
   method: GET
   headers:
     Content-Type: "application/json"

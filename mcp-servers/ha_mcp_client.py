@@ -49,7 +49,7 @@ class MCPConfig:
     def from_env(cls) -> "MCPConfig":
         """Load configuration from environment variables"""
         return cls(
-            host=os.getenv("HA_HOST", "192.168.1.201"),
+            host=os.getenv("HA_HOST", "192.168.1.134"),
             port=int(os.getenv("HA_PORT", "8123")),
             token=os.getenv("HOME_ASSISTANT_TOKEN", ""),
             protocol=os.getenv("HA_PROTOCOL", "http"),

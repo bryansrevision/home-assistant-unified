@@ -18,7 +18,7 @@ async def test_connection():
                     env_vars[key.strip()] = value.strip()
     
     token = env_vars.get("HOME_ASSISTANT_TOKEN", os.getenv("HOME_ASSISTANT_TOKEN", ""))
-    url = env_vars.get("HOME_ASSISTANT_URL", os.getenv("HOME_ASSISTANT_URL", "http://192.168.1.201:8123"))
+    url = env_vars.get("HOME_ASSISTANT_URL", os.getenv("HOME_ASSISTANT_URL", "http://192.168.1.134:8123"))
     
     print(f"URL: {url}")
     print(f"Token: {token[:30]}...")
