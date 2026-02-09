@@ -9,15 +9,20 @@
 
 ### For First-Time Users
 1. **[README.md](./README.md)** - Project overview and architecture
-2. **[QUICKSTART.md](./QUICKSTART.md)** - 5-minute setup guide
+2. **[QUICKSTART.md](./QUICKSTART.md)** - 5-minute unified setup guide
 3. **[QUICK-REFERENCE.md](./QUICK-REFERENCE.md)** - Command cheat sheet
+
+**Note:** There are multiple quick start guides for different purposes:
+- [QUICKSTART.md](./QUICKSTART.md) - Unified Home Assistant setup (5 min)
+- [docs/QUICKSTART.md](./docs/QUICKSTART.md) - MCP integration setup
+- [docs/guides/QUICKSTART.md](./docs/guides/QUICKSTART.md) - MQTT & backup setup
 
 ### For MCP Integration (NEW!)
 1.
    **[MCP Live Server Integration Guide](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md)**
    - Complete MCP setup
-2. **[SERVER-UPDATE.md](./SERVER-UPDATE.md)** - Deployment walkthrough
-3. **[DEPLOYMENT_COMPLETE.md](./DEPLOYMENT_COMPLETE.md)** - Full summary
+2. **[SERVER-UPDATE.md](./docs/SERVER-UPDATE.md)** - Deployment walkthrough
+3. **[MCP Servers README](./mcp-servers/README.md)** - MCP directory overview
 
 
 
@@ -27,16 +32,16 @@
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | [README.md](./README.md) | Project overview, features, architecture | Everyone |
-| [QUICKSTART.md](./QUICKSTART.md) | 5-minute setup | New users |
-| [INSTALLATION.md](./INSTALLATION.md) | Detailed installation | System admins |
+| [QUICKSTART.md](./QUICKSTART.md) | 5-minute unified setup | New users |
+| [docs/QUICKSTART.md](./docs/QUICKSTART.md) | MCP integration setup | Developers |
 | [QUICK-REFERENCE.md](./QUICK-REFERENCE.md) | Command cheat sheet | Power users |
 
 ### 🔗 MCP Integration (NEW!)
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | [MCP-LIVE-SERVER-INTEGRATION.md](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md) | Complete MCP guide | Developers |
-| [SERVER-UPDATE.md](./SERVER-UPDATE.md) | Deployment & alignment | Operators |
-| [DEPLOYMENT_COMPLETE.md](./DEPLOYMENT_COMPLETE.md) | Summary & checklist | Project leads |
+| [SERVER-UPDATE.md](./docs/SERVER-UPDATE.md) | Deployment & alignment | Operators |
+| [MCP Servers README](./mcp-servers/README.md) | MCP directory overview | All users |
 
 ### ⚙️ Configuration & Setup
 | Document | Purpose | Location |
@@ -49,8 +54,8 @@
 ### 🔄 Synchronization
 | Document | Purpose | Audience |
 |----------|---------|----------|
-| [SYNC_GUIDE.md](./SYNC_GUIDE.md) | Repository sync strategy | Maintainers |
-| Automation sync | Deployment pipeline | All users |
+| [SYNC_GUIDE.md](./docs/SYNC_GUIDE.md) | Repository sync strategy | Maintainers |
+| [align-server.py](./scripts/README.md) | Server sync tool | Developers |
 | State export | Backup & recovery | Operators |
 
 ### 📱 Integrations
@@ -60,6 +65,7 @@
 | Proxmox integration | VM/LXC management | integrations/proxmox/ |
 | Wearables integration | Omi MCP setup | integrations/wearables/ |
 | MQTT integration | Event streaming | services/mqtt/ |
+| Technical guides | Detailed integration docs | [docs/technical/](./docs/technical/README.md) |
 
 ### 🛠️ Automation Engine
 | Document | Purpose | Location |
@@ -102,11 +108,12 @@ home-assistant-unified/
 ### MCP Integration (NEW!)
 ```
 mcp-servers/
-├── home-assistant-live.yaml              # Live server config
+├── home-assistant-live.yaml              # Live server config (PRIMARY)
 ├── ha_mcp_client.py                      # Async MCP client
 ├── init_mcp_integration.py                # Setup script
 ├── MCP-LIVE-SERVER-INTEGRATION.md         # Integration guide
 ├── .integration-status.json               # Status file
+├── README.md                              # MCP directory overview
 └── ha-mcp-config.yaml                    # Legacy config
 ```
 
@@ -137,9 +144,28 @@ integrations/
 scripts/
 ├── align-server.py                       # Server sync tool
 ├── setup/                                # Setup scripts
-└── maintenance/                          # Maintenance scripts
+├── maintenance/                          # Maintenance scripts
+├── vm101/                                # VM 101 backup scripts
+└── README.md                             # Scripts overview
 
 Initialize-MCPIntegration.ps1             # Windows setup
+```
+
+### Documentation
+```
+docs/
+├── README.md                             # Documentation overview
+├── COMPREHENSIVE-DEPLOYMENT-GUIDE.md     # Full deployment guide
+├── SERVER-UPDATE.md                      # Server update procedures
+├── SYNC_GUIDE.md                         # Repository sync guide
+├── technical/                            # Technical documentation
+│   ├── README.md                         # Technical docs overview
+│   ├── AUTOMATION_GUIDE.md               # Automation guide
+│   ├── architecture.md                   # Architecture overview
+│   ├── security.md                       # Security docs
+│   └── guides/                           # Integration guides
+└── guides/                               # Platform guides
+    └── README.md                         # Guides overview
 ```
 
 ### Data & Logs
@@ -262,16 +288,16 @@ docker ps
 
 | Need | Solution |
 |------|----------|
-| Get started quickly | → [QUICKSTART.md](./QUICKSTART.md) |
+| Get started quickly | → [QUICKSTART.md](./QUICKSTART.md) (Unified 5-min) |
 | Set up MCP integration | → [MCP-LIVE-SERVER-INTEGRATION.md](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md) |
-| Deploy to production | → [SERVER-UPDATE.md](./SERVER-UPDATE.md) |
+| Deploy to production | → [SERVER-UPDATE.md](./docs/SERVER-UPDATE.md) |
 | Use command-line tools | → [QUICK-REFERENCE.md](./QUICK-REFERENCE.md) |
-| Understand architecture | → [README.md](./README.md) |
-| Sync with source repos | → [SYNC_GUIDE.md](./SYNC_GUIDE.md) |
+| Understand architecture | → [README.md](./README.md) or [docs/technical/architecture.md](./docs/technical/architecture.md) |
+| Sync with source repos | → [SYNC_GUIDE.md](./docs/SYNC_GUIDE.md) |
 | Fix a problem | → [MCP-LIVE-SERVER-INTEGRATION.md#troubleshooting](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md#troubleshooting) |
-| Understand the code | → [API Reference](#python-modules) |
-| See deployment status | → [DEPLOYMENT_COMPLETE.md](./DEPLOYMENT_COMPLETE.md) |
+| Understand the code | → [docs/technical/](./docs/technical/README.md) |
 | Get a command cheat sheet | → [QUICK-REFERENCE.md](./QUICK-REFERENCE.md) |
+| Browse documentation | → [docs/README.md](./docs/README.md) |
 
 
 
@@ -304,8 +330,9 @@ docker ps
 
 | Date | Changes | Reference |
 |------|---------|-----------|
-| 2026-01-31 | MCP integration added | [DEPLOYMENT_COMPLETE.md](./DEPLOYMENT_COMPLETE.md) |
-| 2026-01-30 | Repository consolidation | [INTEGRATION_NOTES.md](./INTEGRATION_NOTES.md) |
+| 2026-02-09 | Documentation reorganization | Fixed nested docs/, added README files |
+| 2026-01-31 | MCP integration added | MCP-LIVE-SERVER-INTEGRATION.md |
+| 2026-01-30 | Repository consolidation | archive/INTEGRATION_NOTES.md |
 | - | Previous updates | Git history |
 
 
@@ -392,7 +419,7 @@ tail -f logs/ha-sync.log
 
 
 
-**📚 Last Updated:** January 31, 2026  
+**Last Updated:** February 9, 2026  
 **📊 Documentation Quality:** ⭐⭐⭐⭐⭐  
 **🎯 Production Ready:** ✅ YES  
 

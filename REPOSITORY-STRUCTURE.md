@@ -1,6 +1,6 @@
 # 📁 Home Assistant Unified - Repository Structure
 
-**Last Updated**: February 6, 2026
+**Last Updated**: February 9, 2026
 
 This document provides a comprehensive overview of the repository organization.
 
@@ -29,24 +29,36 @@ home-assistant-unified/
 │   └── ...                               # Synced from HA server
 │
 ├── 📂 mcp-servers/                       # MCP integration
+│   ├── README.md                         # MCP directory overview
 │   ├── ha_mcp_client.py                  # MCP Python client (391 lines)
 │   ├── init_mcp_integration.py           # Integration initializer
-│   ├── home-assistant-live.yaml          # MCP configuration
+│   ├── home-assistant-live.yaml          # MCP configuration (PRIMARY)
 │   ├── MCP-LIVE-SERVER-INTEGRATION.md    # MCP documentation
 │   └── .integration-status.json          # Current MCP status
 │
 ├── 📂 scripts/                           # Utility scripts
+│   ├── README.md                         # Scripts overview
 │   ├── align-server.py                   # Server sync tool
 │   ├── mcp-quick-connect.py              # Quick MCP test
 │   ├── setup/                            # Setup scripts
+│   ├── vm101/                            # VM 101 backup scripts
 │   ├── debug_env.py                      # Environment debugger
 │   └── test_ha_connection.py             # Connection tester
 │
 ├── 📂 docs/                              # Detailed documentation
+│   ├── README.md                         # Documentation overview
 │   ├── COMPREHENSIVE-DEPLOYMENT-GUIDE.md # Complete deployment guide
 │   ├── COPILOT-DEPLOYMENT-INSTRUCTIONS.md# GitHub Copilot deployment
 │   ├── SERVER-UPDATE.md                  # Server update procedures
 │   ├── SYNC_GUIDE.md                     # Repository sync guide
+│   ├── technical/                        # Technical documentation
+│   │   ├── README.md                     # Technical docs overview
+│   │   ├── AUTOMATION_GUIDE.md           # Automation guide
+│   │   ├── architecture.md               # System architecture
+│   │   ├── security.md                   # Security docs
+│   │   └── guides/                       # Integration guides
+│   ├── guides/                           # Platform guides
+│   │   └── README.md                     # Guides overview
 │   └── *.md                              # Additional guides
 │
 ├── 📂 integrations/                      # Integration modules
@@ -155,6 +167,8 @@ home-assistant-unified/
 - **Deployment**: Comprehensive deployment procedures
 - **Integration**: MCP, Proxmox, Android, wearables setup
 - **Operations**: Sync procedures, troubleshooting, maintenance
+- **Technical**: In-depth technical documentation in `technical/` subdirectory
+- **Guides**: Platform-specific guides in `guides/` subdirectory
 
 ### `/integrations/` - Platform Integrations
 
@@ -308,6 +322,6 @@ Format: `[service]-[type].[ext]`
 For a complete list of all documentation files, see
 [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md).
 
-**Repository Structure Version**: 2.0  
-**Last Reorganization**: February 6, 2026  
+**Repository Structure Version**: 2.1  
+**Last Reorganization**: February 9, 2026  
 **Maintainer**: bryansrevision

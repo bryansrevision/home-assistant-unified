@@ -36,15 +36,20 @@ unified, well-organized system:
 > **⚡ New to this repo?** Check out our
 > [**5-Minute Quick Start Guide**](./QUICKSTART.md) for the fastest setup!
 
+> **📚 Multiple Quick Starts Available:**
+> - [**QUICKSTART.md**](./QUICKSTART.md) - Unified Home Assistant setup (recommended)
+> - [**docs/QUICKSTART.md**](./docs/QUICKSTART.md) - MCP integration specific
+> - [**docs/guides/QUICKSTART.md**](./docs/guides/QUICKSTART.md) - MQTT & backup setup
+
 > **🔗 NEW:** MCP integration with live server! See
 > [**MCP Live Server Integration**](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md)
 > for real-time sync.
 
 For repository synchronization with source repos, see
-[**Sync Guide**](./SYNC_GUIDE.md).
+[**Sync Guide**](./docs/SYNC_GUIDE.md).
 
 For server alignment and deployment, see
-[**Server Update Guide**](./SERVER-UPDATE.md).
+[**Server Update Guide**](./docs/SERVER-UPDATE.md).
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -125,9 +130,24 @@ home-assistant-unified/
 
 ## 📖 Documentation
 
-- [Quick Start Guide](docs/QUICKSTART.md)
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [Android Setup](docs/guides/android-setup.md)
+### Essential Documentation
+- **[Documentation Index](./DOCUMENTATION-INDEX.md)** - Complete documentation index
+- **[Quick Start Guide](./QUICKSTART.md)** - Unified 5-minute setup
+- **[Quick Reference](./QUICK-REFERENCE.md)** - Command cheat sheet
+- **[Repository Structure](./REPOSITORY-STRUCTURE.md)** - File organization guide
+
+### Integration Guides
+- **[MCP Live Server Integration](./mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md)** - MCP setup
+- **[Server Update Guide](./docs/SERVER-UPDATE.md)** - Deployment & sync
+- **[Sync Guide](./docs/SYNC_GUIDE.md)** - Repository sync
+
+### Technical Documentation
+- **[Architecture Overview](./docs/technical/architecture.md)** - System architecture
+- **[Security Guide](./docs/technical/security.md)** - Security best practices
+- **[Automation Guide](./docs/technical/AUTOMATION_GUIDE.md)** - Creating automations
+- **[Android Setup](./docs/technical/android-setup.md)** - Android integration
+
+For a complete list of all documentation, see [DOCUMENTATION-INDEX.md](./DOCUMENTATION-INDEX.md).
 - [Proxmox Integration](docs/guides/proxmox-setup.md)
 - [MCP Configuration](docs/guides/mcp-setup.md)
 - [AI Control Guide](docs/guides/ai-control.md)
