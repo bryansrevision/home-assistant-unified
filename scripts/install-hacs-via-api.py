@@ -103,7 +103,7 @@ async def install_hacs():
                             "`cd /config && wget -O - https://get.hacs.xyz | bash -`\n\n"
                             "**Step 3:** Settings → System → Restart\n\n"
                             "**Step 4:** Settings → Devices & Services → Add Integration → HACS\n\n"
-                            "[Full Guide](http://192.168.1.201:8123)"
+                            "[Full Guide](http://192.168.1.134:8123)"
                         ),
                         "notification_id": "hacs_install_guide"
                     }

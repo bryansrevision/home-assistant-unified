@@ -22,7 +22,7 @@
 #### Phase 3: MCP Integration
 
 - ✅ MCP server deployed (`ha_mcp_client.py`)
-- ✅ Live server connection established (192.168.1.201:8123)
+- ✅ Live server connection established (192.168.1.134:8123)
 - ✅ 328 entities synced from live server
 - ✅ 27 automations synchronized
 - ✅ JWT Bearer token validated and secure
@@ -120,7 +120,7 @@ Outgoing Automations:
 
    ```bash
    # Test IFTTT service trigger
-   curl http://192.168.1.201:8123/api/services/ifttt/trigger \
+   curl http://192.168.1.134:8123/api/services/ifttt/trigger \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"event":"test","value1":"Hello"}'

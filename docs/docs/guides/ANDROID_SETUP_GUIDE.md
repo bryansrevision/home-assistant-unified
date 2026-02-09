@@ -14,7 +14,7 @@
 ## Overview
 
 This guide walks you through integrating your Android device with your complete home automation infrastructure, including:
-- **Home Assistant** (192.168.1.201:8123)
+- **Home Assistant** (192.168.1.134:8123)
 - **Proxmox VE** (192.168.1.185:8006)
 - **Unified MCP Hub** (Port 3000)
 - **MQTT Broker** (Port 1883)
@@ -45,7 +45,7 @@ Local Network:
   DNS: 192.168.1.1 (or 8.8.8.8)
 
 Home Assistant:
-  Local URL: http://192.168.1.201:8123
+  Local URL: http://192.168.1.134:8123
   External URL (if configured): _______
   Long-Lived Access Token: _______ (generate in HA profile)
 
@@ -102,7 +102,7 @@ Install these apps from Google Play Store:
 #### 1.2 Initial Configuration
 1. **Select Connection Method**:
    - Tap "Manual Setup"
-   - Enter your Home Assistant URL: `http://192.168.1.201:8123`
+   - Enter your Home Assistant URL: `http://192.168.1.134:8123`
    - If you're already on your home WiFi, the app may auto-detect your instance
 
 2. **Login**:

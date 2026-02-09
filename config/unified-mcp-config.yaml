@@ -25,7 +25,7 @@ mcpServers:
     args:
       - "mcp-server-home-assistant"
     env:
-      HOME_ASSISTANT_URL: "http://192.168.1.201:8123"
+      HOME_ASSISTANT_URL: "http://192.168.1.134:8123"
       HOME_ASSISTANT_TOKEN: "${HOME_ASSISTANT_TOKEN}"
     
     # Capabilities
@@ -339,7 +339,7 @@ mcpServers:
 # MQTT BRIDGE CONFIGURATION
 # ================================================
 mqtt:
-  broker: "192.168.1.201"
+  broker: "192.168.1.134"
   port: 1883
   username: "${MQTT_USER}"
   password: "${MQTT_PASSWORD}"
@@ -376,7 +376,7 @@ mqtt:
 # ================================================
 influxdb:
   enabled: true
-  host: "192.168.1.201"
+  host: "192.168.1.134"
   port: 8086
   database: "home_automation"
   username: "admin"

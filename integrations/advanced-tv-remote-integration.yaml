@@ -10,7 +10,7 @@ androidtv:
   - name: "Google TV Living Room"
     host: 192.168.1.225
     port: 5555
-    adb_server_ip: 192.168.1.201  # HA server IP running ADB
+    adb_server_ip: 192.168.1.134  # HA server IP running ADB
     adb_server_port: 5037
     apps:
       com.netflix.ninja: "Netflix"
@@ -24,7 +24,7 @@ androidtv:
   - name: "Google TV Bedroom"
     host: 192.168.1.226
     port: 5555
-    adb_server_ip: 192.168.1.201
+    adb_server_ip: 192.168.1.134
     adb_server_port: 5037
     apps:
       com.netflix.ninja: "Netflix"
@@ -37,7 +37,7 @@ androidtv:
   - name: "NVIDIA Shield"
     host: 192.168.1.227
     port: 5555
-    adb_server_ip: 192.168.1.201
+    adb_server_ip: 192.168.1.134
     adb_server_port: 5037
     device_class: androidtv
     state_detection_rules:
@@ -88,7 +88,7 @@ webostv:
 rest_command:
   # Google TV Commands via ADB
   google_tv_send_key:
-    url: "http://192.168.1.201:8888/api/adb/send_key"
+    url: "http://192.168.1.134:8888/api/adb/send_key"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -96,7 +96,7 @@ rest_command:
 
   # Google TV Touchpad / Mouse via ADB bridge
   google_tv_send_input:
-    url: "http://192.168.1.201:8888/api/adb/input"
+    url: "http://192.168.1.134:8888/api/adb/input"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"

@@ -24,7 +24,7 @@ unified, well-organized system:
 
 | Component | Details |
 |-----------|---------|
-| **Home Assistant** | 192.168.1.201:8123 (263 entities) |
+| **Home Assistant** | 192.168.1.134:8123 (263 entities) |
 | **Proxmox Host** | 192.168.1.185:8006 |
 | **Automation Engine** | Port 5000 (Flask/Python) |
 | **MQTT Broker** | Port 1883 (Mosquitto) |

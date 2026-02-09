@@ -6,7 +6,7 @@ on:
       old_ip:
         description: 'Old IP address'
         required: true
-        default: '192.168.1.201'
+        default: '192.168.1.134'
       new_ip:
         description: 'New IP address'
         required: true

@@ -36,7 +36,7 @@ Create custom integration for IR control:
 # IR Remote Controls via Home Assistant
 rest_command:
   send_ir_command:
-    url: 'http://192.168.1.201:8123/api/webhook/ir_command'
+    url: 'http://192.168.1.134:8123/api/webhook/ir_command'
     method: POST
     content_type: 'application/json'
     payload: '{"device": "{{ device }}", "command": "{{ command }}"}'

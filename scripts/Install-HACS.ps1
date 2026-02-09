@@ -2,7 +2,7 @@
 # Downloads and installs HACS (Home Assistant Community Store)
 
 param(
-    [string]$HAConfigPath = "\\192.168.1.201\config",
+    [string]$HAConfigPath = "\\192.168.1.134\config",
     [switch]$SkipRestart
 )
 
@@ -196,7 +196,7 @@ if (-not $SkipRestart) {
                     "Authorization" = "Bearer $token"
                     "Content-Type" = "application/json"
                 }
-                Invoke-RestMethod -Uri "http://192.168.1.201:8123/api/services/homeassistant/restart" `
+                Invoke-RestMethod -Uri "http://192.168.1.134:8123/api/services/homeassistant/restart" `
                     -Method POST -Headers $headers -Body "{}" | Out-Null
                 Write-Host "✅ Restart triggered successfully" -ForegroundColor Green
                 Write-Host "   Home Assistant will be back online in ~30-60 seconds" -ForegroundColor Gray

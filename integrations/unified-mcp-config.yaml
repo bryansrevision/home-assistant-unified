@@ -15,7 +15,7 @@ mcp_homeassistant:
   command: "homeassistant"
   enabled: true
   config:
-    url: "http://192.168.1.201:8123"
+    url: "http://192.168.1.134:8123"
     auth_header: !secret homeassistant_mcp_auth
     features:
       - entity_state_retrieval
@@ -278,7 +278,7 @@ health_checks:
 
   checks:
     homeassistant:
-      endpoint: "http://192.168.1.201:8123/api"
+      endpoint: "http://192.168.1.134:8123/api"
       method: "GET"
       expected_status: 200
       timeout: 10

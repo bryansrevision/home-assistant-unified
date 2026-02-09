@@ -11,7 +11,7 @@ Connect via MCP
 
 The Home Assistant repository has been **fully updated** with comprehensive MCP
 (Model Context Protocol) integration for bidirectional real-time synchronization
-with the live server at `192.168.1.201:8123`.
+with the live server at `192.168.1.134:8123`.
 
 ### ✨ What Was Delivered
 
@@ -108,7 +108,7 @@ with the live server at `192.168.1.201:8123`.
 ```
 ┌─────────────────────────────────────┐
 │  Home Assistant Live Server         │
-│  192.168.1.201:8123                 │
+│  192.168.1.134:8123                 │
 │  • 263+ Entities                    │
 │  • Automations                      │
 │  • Scenes & Scripts                 │
@@ -156,7 +156,7 @@ with the live server at `192.168.1.201:8123`.
 - [ ] Verify Home Assistant version (2024.1+)
 - [ ] Generate long-lived token in Home Assistant settings
 - [ ] Update `config/.env` with token and credentials
-- [ ] Verify network connectivity to 192.168.1.201:8123
+- [ ] Verify network connectivity to 192.168.1.134:8123
 - [ ] Check Python 3.8+ installed and accessible
 
 ### Deployment
@@ -342,7 +342,7 @@ tail -100 logs/mcp-server.log
 
 | Objective | Status | Evidence |
 |-----------|--------|----------|
-| Update Home Assistant Server | ✅ | MCP client connects to 192.168.1.201:8123 |
+| Update Home Assistant Server | ✅ | MCP client connects to 192.168.1.134:8123 |
 | Align repo with live server | ✅ | Bidirectional sync tool with diagnostics |
 | Connect via MCP | ✅ | Full MCP server config and client library |
 | Real-time sync | ✅ | 5-second entity sync + event streaming |
@@ -414,7 +414,7 @@ tail -50 logs/ha-sync.log | grep ERROR
 | Issue | Command to Try |
 |-------|-----------------|
 | Token expired | Regenerate in HA settings, update .env |
-| Connection failed | Check firewall: `curl http://192.168.1.201:8123` |
+| Connection failed | Check firewall: `curl http://192.168.1.134:8123` |
 | Sync conflicts | Review with `git diff automations/` |
 | MQTT not working | `docker ps` to verify broker running |
 | InfluxDB errors | Check connection in .env, verify port 8086 |

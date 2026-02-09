@@ -1,7 +1,7 @@
 # Home Assistant Integration Review
 
 **Date:** January 31, 2026  
-**Server:** 192.168.1.201:8123  
+**Server:** 192.168.1.134:8123  
 **Version:** Home Assistant 2025.12.5  
 **Status:** ✅ Live and Connected
 

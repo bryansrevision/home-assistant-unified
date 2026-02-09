@@ -107,13 +107,13 @@ views:
             icon: mdi:sitemap
             tap_action:
               action: url
-              url_path: "http://192.168.1.201:1880"
+              url_path: "http://192.168.1.134:1880"
           - type: button
             name: MCP Hub
             icon: mdi:robot
             tap_action:
               action: url
-              url_path: "http://192.168.1.201:8765"
+              url_path: "http://192.168.1.134:8765"
 
       - type: iframe
         title: Proxmox Console
@@ -122,5 +122,5 @@ views:
 
       - type: iframe
         title: Node-RED Console
-        url: "http://192.168.1.201:1880"
+        url: "http://192.168.1.134:1880"
         aspect_ratio: 60%

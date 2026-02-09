@@ -2,7 +2,7 @@
 # Downloads HACS and uploads via File System API
 
 param(
-    [string]$HAHost = "192.168.1.201",
+    [string]$HAHost = "192.168.1.134",
     [string]$HAPort = "8123",
     [string]$Token = $env:HOME_ASSISTANT_TOKEN
 )

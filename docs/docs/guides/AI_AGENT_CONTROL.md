@@ -44,7 +44,7 @@ automation:
 # REST Commands for AI Processing
 rest_command:
   ai_process_sms:
-    url: 'http://192.168.1.201:5000/api/ai/process_sms'
+    url: 'http://192.168.1.134:5000/api/ai/process_sms'
     method: POST
     content_type: 'application/json'
     payload: >
@@ -59,7 +59,7 @@ rest_command:
       }
 
   ai_send_sms_response:
-    url: 'http://192.168.1.201:3000/api/sms/send'
+    url: 'http://192.168.1.134:3000/api/sms/send'
     method: POST
     content_type: 'application/json'
     payload: >
