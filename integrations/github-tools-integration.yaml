@@ -1,0 +1,80 @@
+# ============================================================================
+# GITHUB TOOLS INTEGRATION
+# Repo info, issues, and workflow helpers via GitHub REST API
+# ============================================================================
+
+input_text:
+  github_issue_title:
+    name: "GitHub Issue Title"
+    initial: "Home Assistant Task"
+    max: 255
+
+  github_issue_body:
+    name: "GitHub Issue Body"
+    initial: "Created from Home Assistant"
+    max: 4096
+
+  github_issue_labels:
+    name: "GitHub Issue Labels (comma-separated)"
+    initial: "home-assistant,automation"
+    max: 255
+
+  github_owner:
+    name: "GitHub Owner"
+    initial: "bryansrevision"
+    max: 255
+
+  github_repo:
+    name: "GitHub Repo"
+    initial: "home-assistant-unified"
+    max: 255
+
+rest_command:
+  github_repo_info:
+    url: "https://api.github.com/repos/{{ states('input_text.github_owner') | default('bryansrevision') }}/{{ states('input_text.github_repo') | default('home-assistant-unified') }}"
+    method: GET
+    headers:
+      Authorization: !secret github_token_header
+      Accept: "application/vnd.github+json"
+    timeout: 20
+
+  github_list_issues:
+    url: "https://api.github.com/repos/{{ states('input_text.github_owner') | default('bryansrevision') }}/{{ states('input_text.github_repo') | default('home-assistant-unified') }}/issues?state=open&per_page=20"
+    method: GET
+    headers:
+      Authorization: !secret github_token_header
+      Accept: "application/vnd.github+json"
+    timeout: 20
+
+  github_create_issue:
+    url: "https://api.github.com/repos/{{ states('input_text.github_owner') | default('bryansrevision') }}/{{ states('input_text.github_repo') | default('home-assistant-unified') }}/issues"
+    method: POST
+    headers:
+      Authorization: !secret github_token_header
+      Accept: "application/vnd.github+json"
+      Content-Type: "application/json"
+    payload: >
+      {
+        "title": "{{ states('input_text.github_issue_title') }}",
+        "body": "{{ states('input_text.github_issue_body') }}",
+        "labels": {{ states('input_text.github_issue_labels').split(',') | map('trim') | list | tojson }}
+      }
+    content_type: "application/json"
+    timeout: 30
+
+script:
+  github_create_issue_quick:
+    alias: "GitHub - Create Issue"
+    description: "Create GitHub issue using input_text fields"
+    sequence:
+      - service: rest_command.github_create_issue
+
+  github_refresh_repo_info:
+    alias: "GitHub - Refresh Repo Info"
+    description: "Query GitHub repo info"
+    sequence:
+      - service: rest_command.github_repo_info
+
+# NOTE:
+# - github_token_header in secrets.yaml should be in the format: "token <PAT>"
+# - This integration uses input_text for repo targeting to avoid hardcoding

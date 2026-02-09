@@ -91,13 +91,13 @@ views:
             icon: mdi:cellphone-link
             tap_action:
               action: url
-              url_path: "http://192.168.1.134:8090"
+              url_path: !secret android_remote_view_url
           - type: button
             name: iOS Shortcuts Console
             icon: mdi:apple
             tap_action:
               action: url
-              url_path: "http://192.168.1.134:8091"
+              url_path: !secret ios_shortcuts_url
 
       - type: entities
         title: 🧭 Notes
