@@ -1,0 +1,126 @@
+---
+# Command & Control Center
+# Unified management UI for Home Assistant + Proxmox + services
+
+title: Control Center
+views:
+  - title: Control Center
+    path: control_center
+    icon: mdi:console
+    theme: Backend-selected
+    badges:
+      - entity: sensor.proxmox_vms_running
+      - entity: sensor.nodered_flows_active
+      - entity: binary_sensor.mcp_hub_online
+    cards:
+      - type: markdown
+        content: |
+          ## 🧭 Command & Control Center
+          Unified operations dashboard for Home Assistant, Proxmox, and services.
+
+      - type: entities
+        title: 🏠 Home Assistant Core
+        entities:
+          - entity: sensor.current_version
+            name: Current Version
+          - entity: sensor.latest_version
+            name: Latest Version
+          - entity: sensor.uptime
+            name: Uptime
+          - entity: sensor.database_size
+            name: Database Size
+          - entity: sensor.total_entities
+            name: Total Entities
+          - entity: sensor.automations_count
+            name: Automations
+
+      - type: entities
+        title: 🖥️ Proxmox Overview
+        entities:
+          - entity: sensor.proxmox_server_status
+            name: Cluster Status
+          - entity: sensor.proxmox_cpu_usage
+            name: CPU Usage
+          - entity: sensor.proxmox_memory_usage
+            name: Memory Usage
+          - entity: sensor.proxmox_vms_running
+            name: VMs Running
+
+      - type: entities
+        title: 🔌 Services & Integrations
+        entities:
+          - entity: binary_sensor.nodered_running
+            name: Node-RED Running
+          - entity: sensor.node_red_status
+            name: Node-RED Status
+          - entity: sensor.nodered_flows_active
+            name: Node-RED Flows
+          - entity: binary_sensor.mqtt_broker_online
+            name: MQTT Broker Online
+          - entity: binary_sensor.mcp_hub_online
+            name: MCP Hub Online
+          - entity: sensor.mcp_hub_active_agents
+            name: MCP Active Agents
+          - entity: sensor.mcp_hub_total_requests
+            name: MCP Total Requests
+
+      - type: grid
+        title: 🚀 Quick Ops
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Health Check
+            icon: mdi:heart-pulse
+            tap_action:
+              action: call-service
+              service: script.agent_full_health_check
+          - type: button
+            name: Check Integrations
+            icon: mdi:puzzle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_check_integrations
+          - type: button
+            name: Network Scan
+            icon: mdi:lan
+            tap_action:
+              action: call-service
+              service: rest_command.agent_network_scan
+          - type: button
+            name: Sync & Backup
+            icon: mdi:github
+            tap_action:
+              action: call-service
+              service: script.agent_sync_and_backup
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Open Proxmox
+            icon: mdi:server
+            tap_action:
+              action: url
+              url_path: "https://192.168.1.100:8006"
+          - type: button
+            name: Open Node-RED
+            icon: mdi:sitemap
+            tap_action:
+              action: url
+              url_path: "http://192.168.1.201:1880"
+          - type: button
+            name: MCP Hub
+            icon: mdi:robot
+            tap_action:
+              action: url
+              url_path: "http://192.168.1.201:8765"
+
+      - type: iframe
+        title: Proxmox Console
+        url: "https://192.168.1.100:8006"
+        aspect_ratio: 75%
+
+      - type: iframe
+        title: Node-RED Console
+        url: "http://192.168.1.201:1880"
+        aspect_ratio: 60%

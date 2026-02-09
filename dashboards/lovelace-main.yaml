@@ -316,6 +316,102 @@ views:
             name: Bedroom
           - entity: media_player.kitchen_display
             name: Kitchen Display
+
+      # Quick TV Remote (Google TV / Android TV)
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🎛️ Quick TV Remote
+              Target: {{ states('input_select.favorite_tv') }}
+          - type: entities
+            entities:
+              - entity: input_select.favorite_tv
+                name: Target TV
+              - entity: input_select.favorite_streaming_service
+                name: Favorite App
+              - type: button
+                name: Launch Favorite App
+                icon: mdi:play-circle
+                tap_action:
+                  action: call-service
+                  service: script.tv_set_favorite_source
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                icon: mdi:chevron-up
+                name: Up
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_UP
+              - type: button
+                icon: mdi:home
+                name: Home
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_HOME
+              - type: button
+                icon: mdi:menu
+                name: Menu
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_MENU
+              - type: button
+                icon: mdi:chevron-left
+                name: Left
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_LEFT
+              - type: button
+                icon: mdi:circle-outline
+                name: Select
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_CENTER
+              - type: button
+                icon: mdi:chevron-right
+                name: Right
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_RIGHT
+              - type: button
+                icon: mdi:chevron-down
+                name: Down
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_DOWN
+              - type: button
+                icon: mdi:arrow-left-circle
+                name: Back
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_BACK
+              - type: button
+                icon: mdi:power
+                name: Power
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_POWER
       
       # Apple TV
       - type: media-control
@@ -418,6 +514,31 @@ views:
                 entity_id: 
                   - switch.living_room_echo_do_not_disturb
                   - switch.bedroom_echo_do_not_disturb
+
+      # Alexa Drop In
+      - type: entities
+        title: 📞 Alexa Drop In
+        entities:
+          - type: button
+            name: "Drop In - All Echo Devices"
+            icon: mdi:phone-in-talk
+            tap_action:
+              action: call-service
+              service: script.alexa_drop_in_all
+          - type: button
+            name: "Drop In - Bedroom Echo Dot"
+            icon: mdi:phone-in-talk
+            tap_action:
+              action: call-service
+              service: script.alexa_drop_in_bedroom_dot
+          - type: button
+            name: "Drop In - Living Room Echo"
+            icon: mdi:phone-in-talk
+            tap_action:
+              action: call-service
+              service: script.alexa_drop_in_specific
+              service_data:
+                device: media_player.living_room_echo
       
       # Alexa Routines
       - type: entities
@@ -566,6 +687,30 @@ views:
                 value1: "Test"
                 value2: "Value 2"
                 value3: "Value 3"
+
+          - type: button
+            name: "IFTTT: Doorbell Pressed"
+            icon: mdi:doorbell
+            tap_action:
+              action: call-service
+              service: rest_command.ifttt_trigger_event
+              service_data:
+                event: "doorbell_pressed"
+                value1: "Front Door"
+                value2: "{{ now().strftime('%H:%M:%S') }}"
+                value3: "motion"
+
+          - type: button
+            name: "IFTTT: Movie Night"
+            icon: mdi:movie-open
+            tap_action:
+              action: call-service
+              service: rest_command.ifttt_trigger_event
+              service_data:
+                event: "movie_night"
+                value1: "Living Room"
+                value2: "{{ states('media_player.google_tv_living_room') }}"
+                value3: "start"
       
       # Message History
       - type: entities
@@ -828,6 +973,19 @@ views:
             name: Join
           - entity: binary_sensor.smartthings_connected
             name: SmartThings
+
+      # Automation Services
+      - type: entities
+        title: 🧩 Automation Services
+        entities:
+          - entity: binary_sensor.nodered_running
+            name: Node-RED Running
+          - entity: sensor.node_red_status
+            name: Node-RED Status
+          - entity: sensor.nodered_flows_active
+            name: Node-RED Flows
+          - entity: binary_sensor.mqtt_broker_online
+            name: MQTT Broker Online
       
       # Entity Count
       - type: entities

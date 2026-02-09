@@ -1,0 +1,49 @@
+sms_target_number:
+  name: "SMS Target Number"
+  initial: "xxx-xxx-xxxx"
+  max: 32
+
+sms_message:
+  name: "SMS Message"
+  initial: "Hello"
+  max: 512
+
+call_target_number:
+  name: "Call Target Number"
+  initial: "xxx-xxx-xxxx"
+  max: 32
+
+android_device_name:
+  name: "Android Device Name"
+  initial: "android_phone"
+  max: 64
+
+iphone_device_name:
+  name: "iPhone Device Name"
+  initial: "iphone"
+  max: 64
+
+join_device_id_primary:
+  name: "Join Device ID (Primary)"
+  initial: ""
+  max: 128
+
+last_sms_from:
+  name: "Last SMS From"
+  initial: ""
+  max: 64
+
+last_sms_message:
+  name: "Last SMS Message"
+  initial: ""
+  max: 1024
+
+last_android_notification:
+  name: "Last Android Notification"
+  initial: ""
+  max: 1024
+
+last_ios_event:
+  name: "Last iOS Event"
+  initial: ""
+  max: 1024

@@ -93,6 +93,23 @@ rest_command:
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
     payload: '{"device": "{{ device }}", "key": "{{ key }}"}'
+
+  # Google TV Touchpad / Mouse via ADB bridge
+  google_tv_send_input:
+    url: "http://192.168.1.201:8888/api/adb/input"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ home_assistant_token }}"
+    payload: >
+      {
+        "device": "{{ device }}",
+        "type": "{{ input_type }}",
+        "x": "{{ x | default(960) }}",
+        "y": "{{ y | default(540) }}",
+        "x2": "{{ x2 | default(960) }}",
+        "y2": "{{ y2 | default(540) }}",
+        "text": "{{ text | default('') }}"
+      }
     
   # NVIDIA Shield Game Mode Toggle
   shield_game_mode_toggle:
@@ -155,6 +172,135 @@ sensor:
 # TV CONTROL SCRIPTS
 # ============================================================================
 script:
+  # Send raw key to selected TV (ADB/Android TV)
+  tv_send_key:
+    alias: "TV Send Key"
+    fields:
+      key:
+        description: "Android TV/ADB key code (e.g., KEYCODE_DPAD_UP)"
+      device:
+        description: "Optional device name override"
+    variables:
+      device_name: >
+        {% if device is defined and device | length > 0 %}
+          {{ device }}
+        {% else %}
+          {{ states('input_select.favorite_tv') }}
+        {% endif %}
+    sequence:
+      - service: rest_command.google_tv_send_key
+        data:
+          device: "{{ device_name }}"
+          key: "{{ key }}"
+
+  # Touchpad: Tap
+  tv_tap:
+    alias: "TV Tap"
+    fields:
+      x:
+        description: "X coordinate"
+      y:
+        description: "Y coordinate"
+      device:
+        description: "Optional device name override"
+    variables:
+      device_name: >
+        {% if device is defined and device | length > 0 %}
+          {{ device }}
+        {% else %}
+          {{ states('input_select.favorite_tv') }}
+        {% endif %}
+    sequence:
+      - service: rest_command.google_tv_send_input
+        data:
+          device: "{{ device_name }}"
+          input_type: "tap"
+          x: "{{ x | default(960) }}"
+          y: "{{ y | default(540) }}"
+
+  # Touchpad: Swipe
+  tv_swipe:
+    alias: "TV Swipe"
+    fields:
+      x:
+        description: "Start X"
+      y:
+        description: "Start Y"
+      x2:
+        description: "End X"
+      y2:
+        description: "End Y"
+      device:
+        description: "Optional device name override"
+    variables:
+      device_name: >
+        {% if device is defined and device | length > 0 %}
+          {{ device }}
+        {% else %}
+          {{ states('input_select.favorite_tv') }}
+        {% endif %}
+    sequence:
+      - service: rest_command.google_tv_send_input
+        data:
+          device: "{{ device_name }}"
+          input_type: "swipe"
+          x: "{{ x | default(960) }}"
+          y: "{{ y | default(800) }}"
+          x2: "{{ x2 | default(960) }}"
+          y2: "{{ y2 | default(280) }}"
+
+  # Touchpad: Text input (on-screen keyboard must be focused)
+  tv_text_input:
+    alias: "TV Text Input"
+    fields:
+      text:
+        description: "Text to input"
+      device:
+        description: "Optional device name override"
+    variables:
+      device_name: >
+        {% if device is defined and device | length > 0 %}
+          {{ device }}
+        {% else %}
+          {{ states('input_select.favorite_tv') }}
+        {% endif %}
+    sequence:
+      - service: rest_command.google_tv_send_input
+        data:
+          device: "{{ device_name }}"
+          input_type: "text"
+          text: "{{ text }}"
+
+  # Select source based on favorite TV + streaming service selectors
+  tv_set_favorite_source:
+    alias: "TV Set Favorite Source"
+    sequence:
+      - variables:
+          tv_name: "{{ states('input_select.favorite_tv') }}"
+          source_name: "{{ states('input_select.favorite_streaming_service') }}"
+          target_entity: >
+            {% if tv_name == 'Google TV Living Room' %}
+              media_player.google_tv_living_room
+            {% elif tv_name == 'Google TV Bedroom' %}
+              media_player.google_tv_bedroom
+            {% elif tv_name == 'NVIDIA Shield' %}
+              media_player.nvidia_shield
+            {% elif tv_name == 'LG TV Living Room' %}
+              media_player.lg_tv_living_room
+            {% elif tv_name == 'LG TV Bedroom' %}
+              media_player.lg_tv_bedroom
+            {% elif tv_name == 'Samsung TV Living Room' %}
+              media_player.samsung_tv_living_room
+            {% elif tv_name == 'Samsung TV Bedroom' %}
+              media_player.samsung_tv_bedroom
+            {% else %}
+              media_player.google_tv_living_room
+            {% endif %}
+      - service: media_player.select_source
+        target:
+          entity_id: "{{ target_entity }}"
+        data:
+          source: "{{ source_name }}"
   # Launch Netflix on any TV
   launch_netflix:
     alias: "Launch Netflix"

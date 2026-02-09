@@ -1,0 +1,69 @@
+graph_send_mail:
+  url: "https://graph.microsoft.com/v1.0/me/sendMail"
+  method: POST
+  headers:
+    Authorization: "Bearer {{ states('input_text.graph_access_token') }}"
+    Content-Type: "application/json"
+  payload: >
+    {
+      "message": {
+        "subject": "{{ states('input_text.graph_mail_subject') }}",
+        "body": {
+          "contentType": "Text",
+          "content": "{{ states('input_text.graph_mail_body') }}"
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "address": "{{ states('input_text.graph_mail_to') }}"
+            }
+          }
+        ]
+      }
+    }
+  content_type: "application/json"
+  timeout: 30
+
+graph_create_todo_task:
+  url: "https://graph.microsoft.com/v1.0/me/todo/lists/{{ states('input_text.graph_todo_list_id') }}/tasks"
+  method: POST
+  headers:
+    Authorization: "Bearer {{ states('input_text.graph_access_token') }}"
+    Content-Type: "application/json"
+  payload: >
+    {
+      "title": "{{ states('input_text.graph_task_title') }}"
+    }
+  content_type: "application/json"
+  timeout: 30
+
+graph_create_event:
+  url: "https://graph.microsoft.com/v1.0/me/events"
+  method: POST
+  headers:
+    Authorization: "Bearer {{ states('input_text.graph_access_token') }}"
+    Content-Type: "application/json"
+  payload: >
+    {
+      "subject": "Home Assistant Event",
+      "start": {
+        "dateTime": "{{ now().strftime('%Y-%m-%dT%H:%M:%S') }}",
+        "timeZone": "America/New_York"
+      },
+      "end": {
+        "dateTime": "{{ (now() + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S') }}",
+        "timeZone": "America/New_York"
+      }
+    }
+  content_type: "application/json"
+  timeout: 30
+
+graph_onedrive_upload:
+  url: "https://graph.microsoft.com/v1.0/me/drive/root:{{ states('input_text.graph_onedrive_path') }}:/content"
+  method: PUT
+  headers:
+    Authorization: "Bearer {{ states('input_text.graph_access_token') }}"
+    Content-Type: "text/plain"
+  payload: "{{ states('input_text.graph_file_content') }}"
+  content_type: "text/plain"
+  timeout: 60

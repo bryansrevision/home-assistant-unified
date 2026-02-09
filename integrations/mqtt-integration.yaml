@@ -1,0 +1,23 @@
+# ============================================================================
+# MQTT INTEGRATION
+# ============================================================================
+
+mqtt:
+  broker: !secret mqtt_broker
+  port: !secret mqtt_port
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  discovery: true
+  birth_message:
+    topic: "homeassistant/status"
+    payload: "online"
+  will_message:
+    topic: "homeassistant/status"
+    payload: "offline"
+
+binary_sensor:
+  - platform: ping
+    name: "MQTT Broker Online"
+    host: !secret mqtt_broker
+    count: 2
+    scan_interval: 30

@@ -1,17 +1,16 @@
 ---
-# Security Dashboard
-# Cove security system monitoring and controls
+# Home Security Command Center
 
-title: Security
+title: Security Command Center
 views:
-  - title: Security
-    path: security
+  - title: Security Command Center
+    path: security_command_center
     icon: mdi:shield-home
     theme: Backend-selected
     badges:
       - entity: alarm_control_panel.cove_security_system
-      - entity: binary_sensor.cove_system_armed
-      - entity: binary_sensor.cove_any_sensor_open
+      - entity: sensor.cameras_online_count
+      - entity: sensor.camera_system_status
     cards:
       - type: alarm-panel
         entity: alarm_control_panel.cove_security_system
@@ -30,11 +29,12 @@ views:
             name: AC Power
           - entity: binary_sensor.cove_low_battery
             name: Low Battery
-          - entity: binary_sensor.cove_ac_power_status
-            name: AC Power Connected
+          - entity: binary_sensor.cove_any_sensor_open
+            name: Any Sensor Open
 
-      - type: horizontal-stack
-        cards:
+      - type: entities
+        title: 🚨 Quick Actions
+        entities:
           - type: button
             name: Arm Away
             icon: mdi:shield-lock
@@ -53,42 +53,42 @@ views:
             tap_action:
               action: call-service
               service: script.cove_disarm_script
-
-      - type: entities
-        title: 🚨 Alerts & Automations
-        entities:
-          - entity: input_boolean.cove_auto_arm_enabled
-            name: Auto-Arm Enabled
-          - entity: input_boolean.cove_notifications_enabled
-            name: Notifications Enabled
-          - entity: automation.cove_auto_arm_away
-            name: Auto Arm Away
-          - entity: automation.cove_auto_arm_stay_night
-            name: Auto Arm Stay (Night)
-          - entity: automation.cove_alert_sensor_open
-            name: Alert on Sensor Open
-
-      - type: picture-glance
-        title: Front Door Camera
-        entities:
-          - entity: binary_sensor.yi_camera_front_door_motion
-            name: Motion
-        camera_image: camera.yi_camera_front_door
-        camera_view: live
-
-      - type: entities
-        title: 🔔 Doorbell Camera Controls
-        entities:
-          - entity: camera.yi_camera_front_door
-            name: Doorbell Camera
           - type: button
-            name: Doorbell Announce (Alexa)
+            name: Doorbell Announce
             icon: mdi:bullhorn
             tap_action:
               action: call-service
               service: script.alexa_announce_all
               service_data:
                 message: "Someone is at the front door."
+
+      - type: grid
+        title: 📷 Live Cameras
+        columns: 2
+        square: false
+        cards:
+          - type: picture-entity
+            name: Front Door
+            entity: camera.yi_camera_front_door
+            camera_view: live
+          - type: picture-entity
+            name: Driveway
+            entity: camera.kami_camera_driveway
+            camera_view: live
+          - type: picture-entity
+            name: Living Room
+            entity: camera.yi_camera_living_room
+            camera_view: live
+          - type: picture-entity
+            name: Backyard
+            entity: camera.yi_camera_backyard
+            camera_view: live
+
+      - type: entities
+        title: 🔔 Doorbell Controls
+        entities:
+          - entity: camera.yi_camera_front_door
+            name: Doorbell Camera
           - type: button
             name: Take Snapshot
             icon: mdi:camera
@@ -108,17 +108,3 @@ views:
                 entity_id: camera.yi_camera_front_door
                 filename: "/config/www/camera_recordings/doorbell_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
                 duration: 30
-
-      - type: grid
-        title: 📷 Exterior Cameras
-        columns: 2
-        square: false
-        cards:
-          - type: picture-entity
-            name: Front Door
-            entity: camera.yi_camera_front_door
-            camera_view: live
-          - type: picture-entity
-            name: Driveway
-            entity: camera.kami_camera_driveway
-            camera_view: live

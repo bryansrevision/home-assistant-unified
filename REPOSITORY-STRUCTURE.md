@@ -4,8 +4,6 @@
 
 This document provides a comprehensive overview of the repository organization.
 
-
-
 ## 🗂️ Root Directory Structure
 
 ```
@@ -88,11 +86,10 @@ home-assistant-unified/
     └── *.md                              # Old deployment reports
 ```
 
-
-
 ## 🎯 Key Files & Their Purpose
 
 ### Essential Documentation (Root)
+
 | File | Purpose | Audience |
 |------|---------|----------|
 | `README.md` | Project overview, features, quick start | All users |
@@ -102,6 +99,7 @@ home-assistant-unified/
 | `CONTRIBUTING.md` | Contribution guidelines | Contributors |
 
 ### MCP Integration
+
 | File | Purpose | Type |
 |------|---------|------|
 | `ha_mcp_client.py` | Python MCP client library | Code |
@@ -110,6 +108,7 @@ home-assistant-unified/
 | `MCP-LIVE-SERVER-INTEGRATION.md` | MCP documentation | Docs |
 
 ### Scripts & Tools
+
 | File | Purpose | Usage |
 |------|---------|-------|
 | `align-server.py` | Sync with HA server | `python scripts/align-server.py sync-pull` |
@@ -117,17 +116,17 @@ home-assistant-unified/
 | `Initialize-MCPIntegration.ps1` | PowerShell setup | `.\Initialize-MCPIntegration.ps1` |
 
 ### Configuration
+
 | File | Purpose | Location |
 |------|---------|----------|
 | `.env` | Environment variables | `config/.env` (gitignored) |
 | `.env.example` | Environment template | Root / config/ |
 | `configuration.yaml` | Main HA config | `core/configuration.yaml` |
 
-
-
 ## 📊 Directory Purposes
 
 ### `/automations/` - Automation Definitions
+
 - **Count**: 29 YAML files
 - **Synced**: Yes (bidirectional with HA server)
 - **Categories**:
@@ -138,103 +137,116 @@ home-assistant-unified/
   - Routines (morning briefing, nightly report)
 
 ### `/mcp-servers/` - MCP Integration
+
 - **Purpose**: Model Context Protocol server integration
 - **Key Component**: Live bidirectional sync with HA server
 - **Status**: Initialized and connected (192.168.1.201:8123)
 - **Entities**: 307 entities across 21 domains
 
 ### `/scripts/` - Automation & Utilities
+
 - **Setup scripts**: Initial configuration and deployment
 - **Sync tools**: `align-server.py` for server synchronization
 - **Debug tools**: Environment debugging and connection testing
 - **Health checks**: Status verification and diagnostics
 
 ### `/docs/` - Detailed Guides
+
 - **Deployment**: Comprehensive deployment procedures
 - **Integration**: MCP, Proxmox, Android, wearables setup
 - **Operations**: Sync procedures, troubleshooting, maintenance
 
 ### `/integrations/` - Platform Integrations
+
 - **android/**: Native Android app and device configs
 - **proxmox/**: VM/LXC management scripts
 - **wearables/**: Omi Device Kit 2 integration
 - **mqtt/**: MQTT broker configurations
 
 ### `/automation-engine/` - AI Engine
+
 - **Technology**: Python/Flask application
 - **Purpose**: AI-powered automation processing
 - **Features**: Natural language control, scene management
 - **Providers**: OpenAI, Gemini, Grok support
 
 ### `/backups/` - State & Configuration Backups
+
 - **State Exports**: Timestamped HA state snapshots
 - **Baseline**: Reference state for comparison
 - **Frequency**: On-demand and automated
 - **Format**: JSON with full entity states
 
 ### `/archive/` - Historical Records
+
 - **Purpose**: Keep historical documentation for reference
 - **Contents**: Old deployment reports, integration notes
 - **Archived**: February 6, 2026
 - **Reason**: Documentation consolidation
 
-
-
 ## 🔄 File Organization Principles
 
 ### 1. **Root Directory** - Essential Only
+
 - Keep only essential documentation (README, QUICKSTART, etc.)
 - Move detailed guides to `docs/`
 - Archive historical documents to `archive/`
 
 ### 2. **Configuration Separation**
+
 - Environment variables: `config/.env` (gitignored)
 - HA core config: `core/` directory
 - Service configs: `services/` directory
 
 ### 3. **Logical Grouping**
+
 - Related files in dedicated directories
 - Clear naming conventions (automation_*, script_*, etc.)
 - Consistent file extensions
 
 ### 4. **Version Control**
-- `.gitignore` for sensitive files (.env, logs, __pycache__)
+
+- `.gitignore` for sensitive files (.env, logs, **pycache**)
 - Track configuration templates (.env.example)
 - Commit automation syncs regularly
-
-
 
 ## 📝 File Naming Conventions
 
 ### Automations
+
 Format: `automation_[category]_[name].yaml`
+
 - Examples:
   - `automation_presence_welcome_home.yaml`
   - `automation_energy_peak_hours_notification.yaml`
   - `automation_entertainment_movie_mode_on.yaml`
 
 ### Scripts
+
 Format: `[purpose]-[action].py` or `[purpose]_[action].py`
+
 - Examples:
   - `align-server.py`
   - `mcp-quick-connect.py`
   - `init_mcp_integration.py`
 
 ### Documentation
+
 Format: `[TOPIC]-[TYPE].md` or `[TOPIC].md`
+
 - Examples:
   - `MCP-LIVE-SERVER-INTEGRATION.md`
   - `COMPREHENSIVE-DEPLOYMENT-GUIDE.md`
   - `REPOSITORY-STRUCTURE.md` (this file)
 
 ### Configuration
+
 Format: `[service]-[type].[ext]`
+
 - Examples:
   - `home-assistant-live.yaml`
   - `.env.example`
   - `docker-compose.yml`
-
-
 
 ## 🔍 Finding Files
 
@@ -264,39 +276,37 @@ Format: `[service]-[type].[ext]`
 | Dashboards | `dashboards/` |
 | Backups | `backups/` |
 
-
-
 ## 🚀 Navigation Quick Links
 
 **Getting Started:**
+
 - [Main README](README.md) - Start here
 - [Quick Start Guide](QUICKSTART.md) - 5-minute setup
 - [Quick Reference](QUICK-REFERENCE.md) - Command cheat sheet
 
 **Detailed Guides:**
+
 - [Deployment Guide](docs/COMPREHENSIVE-DEPLOYMENT-GUIDE.md)
 - [MCP Integration](mcp-servers/MCP-LIVE-SERVER-INTEGRATION.md)
 - [Sync Guide](docs/SYNC_GUIDE.md)
 - [Server Updates](docs/SERVER-UPDATE.md)
 
 **Development:**
+
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [MCP Client Source](mcp-servers/ha_mcp_client.py)
 - [Automation Engine](automation-engine/)
 
 **Operations:**
+
 - [Align Server Script](scripts/align-server.py)
 - [MCP Quick Connect](scripts/mcp-quick-connect.py)
 - [Integration Status](mcp-servers/.integration-status.json)
-
-
 
 ## 📚 Documentation Index
 
 For a complete list of all documentation files, see
 [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md).
-
-
 
 **Repository Structure Version**: 2.0  
 **Last Reorganization**: February 6, 2026  

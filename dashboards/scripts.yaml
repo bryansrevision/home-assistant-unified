@@ -342,6 +342,58 @@ script:
             Phone is at: {{ states('sensor.phone_location') }}
             Battery: {{ states('sensor.phone_battery_level') }}%
 
+  send_sms_via_tasker:
+    alias: "Send SMS via Tasker (Android)"
+    description: "Send SMS using Tasker/Join on Android"
+    sequence:
+      - service: rest_command.join_tasker_command
+        data:
+          deviceId: "{{ states('input_text.join_device_id_primary') }}"
+          taskname: "SMS_SEND"
+          number: "{{ states('input_text.sms_target_number') }}"
+          message: "{{ states('input_text.sms_message') }}"
+
+  place_call_via_tasker:
+    alias: "Place Call via Tasker (Android)"
+    description: "Start a phone call using Tasker/Join"
+    sequence:
+      - service: rest_command.join_tasker_command
+        data:
+          deviceId: "{{ states('input_text.join_device_id_primary') }}"
+          taskname: "CALL_START"
+          number: "{{ states('input_text.call_target_number') }}"
+
+  android_find_phone:
+    alias: "Find Android Phone"
+    description: "Set ringer loud + play sound"
+    sequence:
+      - service: "notify.mobile_app_{{ states('input_text.android_device_name') }}"
+        data:
+          message: command_ringer_mode
+          data:
+            command: "normal"
+      - service: "notify.mobile_app_{{ states('input_text.android_device_name') }}"
+        data:
+          message: command_volume_level
+          data:
+            command: "100"
+            media_stream: "ring"
+      - service: "notify.mobile_app_{{ states('input_text.android_device_name') }}"
+        data:
+          message: "command_media"
+          data:
+            command: "play"
+            media_content_id: "https://www.soundjay.com/phone/phone-ring-01a.mp3"
+
+  iphone_notify_message:
+    alias: "Send iPhone Notification"
+    description: "Send a message to iPhone via HA mobile app"
+    sequence:
+      - service: "notify.mobile_app_{{ states('input_text.iphone_device_name') }}"
+        data:
+          title: "Home Assistant"
+          message: "{{ states('input_text.sms_message') }}"
+
   # ============================================================================
   # AGENT CONTROL SCRIPTS
   # ============================================================================

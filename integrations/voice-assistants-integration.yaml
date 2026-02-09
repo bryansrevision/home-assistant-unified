@@ -172,6 +172,44 @@ script:
           target: "{{ device }}"
           data:
             type: announce
+
+  # Alexa Drop In (Echo Dot / Echo devices)
+  alexa_drop_in_specific:
+    alias: "Alexa - Drop In"
+    fields:
+      device:
+        description: "Target Echo device entity ID"
+        example: "media_player.bedroom_echo_dot"
+    sequence:
+      - service: notify.alexa_media
+        data:
+          target: "{{ device }}"
+          message: ""
+          data:
+            type: dropin
+
+  alexa_drop_in_bedroom_dot:
+    alias: "Alexa - Drop In Bedroom Echo Dot"
+    sequence:
+      - service: script.alexa_drop_in_specific
+        data:
+          device: media_player.bedroom_echo_dot
+
+  alexa_drop_in_all:
+    alias: "Alexa - Drop In All"
+    sequence:
+      - service: script.alexa_drop_in_specific
+        data:
+          device: media_player.living_room_echo
+      - service: script.alexa_drop_in_specific
+        data:
+          device: media_player.bedroom_echo_dot
+      - service: script.alexa_drop_in_specific
+        data:
+          device: media_player.kitchen_echo_show
+      - service: script.alexa_drop_in_specific
+        data:
+          device: media_player.office_echo
             
   # Google Home TTS
   google_home_speak:

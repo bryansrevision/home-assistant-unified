@@ -1,0 +1,108 @@
+---
+# Home Automation Command Center
+
+title: Automation Command Center
+views:
+  - title: Automation Command Center
+    path: automation_command_center
+    icon: mdi:robot
+    theme: Backend-selected
+    badges:
+      - entity: binary_sensor.ha_agent_running
+      - entity: sensor.ha_agent_integrations_healthy
+      - entity: sensor.automations_count
+    cards:
+      - type: markdown
+        content: |
+          ## 🤖 Automation Command Center
+          Create, test, debug, and deploy automations with AI assistance.
+
+      - type: entities
+        title: 🧠 AI Provider
+        entities:
+          - entity: input_select.ai_provider
+            name: Active AI Provider
+          - entity: sensor.openai_conversation_status
+            name: OpenAI Status
+          - entity: sensor.google_gemini_status
+            name: Gemini Status
+          - entity: sensor.ai_assistant_usage_today
+            name: Requests Today
+
+      - type: grid
+        title: ⚡ Quick Commands
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Turn on my lights
+            icon: mdi:lightbulb-on
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Turn on my lights"
+          - type: button
+            name: When I get home, lights 30%
+            icon: mdi:home-lightbulb
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "When I get home, trigger family room lights on at 30 percent"
+          - type: button
+            name: Create webhook + SMS
+            icon: mdi:webhook
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Create webhook, SMS xxx-xxxx when Android phone xxx notification received"
+          - type: button
+            name: Find my phone (ringer high)
+            icon: mdi:cellphone-sound
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Find my phone, trigger Android ringer and volume high"
+
+      - type: entities
+        title: 🧪 Lifecycle Actions
+        entities:
+          - type: button
+            name: Run Health Check
+            icon: mdi:heart-pulse
+            tap_action:
+              action: call-service
+              service: script.agent_full_health_check
+          - type: button
+            name: Check Integrations
+            icon: mdi:puzzle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_check_integrations
+          - type: button
+            name: Generate Docs
+            icon: mdi:file-document
+            tap_action:
+              action: call-service
+              service: rest_command.agent_generate_docs
+          - type: button
+            name: Sync & Backup
+            icon: mdi:github
+            tap_action:
+              action: call-service
+              service: script.agent_sync_and_backup
+
+      - type: entities
+        title: 📊 Agent Status
+        entities:
+          - entity: binary_sensor.ha_agent_running
+            name: Agent Running
+          - entity: sensor.ha_agent_uptime
+            name: Uptime
+          - entity: sensor.ha_agent_integrations_healthy
+            name: Healthy Integrations
+          - entity: sensor.ha_agent_errors_count
+            name: Errors

@@ -1,0 +1,295 @@
+---
+# AI Automation Assistant Dashboard
+# Natural language automation commands + agent controls
+
+title: AI Automation
+views:
+  - title: AI Automation
+    path: ai_automation
+    icon: mdi:robot
+    theme: Backend-selected
+    badges:
+      - entity: binary_sensor.ha_agent_running
+      - entity: sensor.ha_agent_integrations_healthy
+      - entity: sensor.ha_agent_errors_count
+    cards:
+      - type: markdown
+        content: |
+          ## 🤖 AI Automation Assistant
+          Use quick commands to create, test, debug, and deploy automations.
+          You can also ask for natural language actions like:
+          - "Turn on my lights"
+          - "Create webhook, SMS xxx-xxxx when Android notification received"
+          - "When I get home, turn family room lights to 30%"
+          - "Send SMS to xxx-xxxx (Hello)"
+          - "Find my phone (ringer high)"
+
+      - type: entities
+        title: 🧠 AI Provider
+        entities:
+          - entity: input_select.ai_provider
+            name: Active AI Provider
+          - entity: sensor.openai_conversation_status
+            name: OpenAI Status
+          - entity: sensor.google_gemini_status
+            name: Gemini Status
+          - entity: sensor.ai_assistant_usage_today
+            name: Requests Today
+
+      - type: entities
+        title: 🧩 Microsoft Graph Inputs
+        entities:
+          - entity: input_text.graph_access_token
+            name: Graph Access Token
+          - entity: input_text.graph_mail_to
+            name: Mail To
+          - entity: input_text.graph_mail_subject
+            name: Mail Subject
+          - entity: input_text.graph_mail_body
+            name: Mail Body
+          - entity: input_text.graph_todo_list_id
+            name: ToDo List ID
+          - entity: input_text.graph_task_title
+            name: Task Title
+          - entity: input_text.graph_onedrive_path
+            name: OneDrive Path
+          - entity: input_text.graph_file_content
+            name: OneDrive Content
+
+      - type: grid
+        title: ☁️ Microsoft Graph Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Send Mail
+            icon: mdi:email-send
+            tap_action:
+              action: call-service
+              service: rest_command.graph_send_mail
+          - type: button
+            name: Create ToDo Task
+            icon: mdi:check-circle
+            tap_action:
+              action: call-service
+              service: rest_command.graph_create_todo_task
+          - type: button
+            name: Create Calendar Event
+            icon: mdi:calendar-plus
+            tap_action:
+              action: call-service
+              service: rest_command.graph_create_event
+          - type: button
+            name: Upload to OneDrive
+            icon: mdi:cloud-upload
+            tap_action:
+              action: call-service
+              service: rest_command.graph_onedrive_upload
+
+      - type: grid
+        title: ⚡ Quick Commands
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Turn on my lights
+            icon: mdi:lightbulb-on
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Turn on my lights"
+          - type: button
+            name: When I get home, lights 30%
+            icon: mdi:home-lightbulb
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "When I get home, trigger family room lights on at 30 percent"
+          - type: button
+            name: Send SMS (Hello)
+            icon: mdi:message-text
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Send SMS to xxx-xxxx (Hello)"
+          - type: button
+            name: Create webhook + SMS
+            icon: mdi:webhook
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Create webhook, SMS xxx-xxxx when Android phone xxx notification received"
+          - type: button
+            name: Find my phone (ringer high)
+            icon: mdi:cellphone-sound
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Find my phone, trigger Android ringer and volume high"
+          - type: button
+            name: Create new automation
+            icon: mdi:robot-cog
+            tap_action:
+              action: call-service
+              service: script.ask_ai_assistant
+              service_data:
+                question: "Create a new automation, test, debug, and deploy"
+
+      - type: entities
+        title: 🧪 Automation Lifecycle
+        entities:
+          - type: button
+            name: Run Health Check
+            icon: mdi:heart-pulse
+            tap_action:
+              action: call-service
+              service: script.agent_full_health_check
+          - type: button
+            name: Check Integrations
+            icon: mdi:puzzle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_check_integrations
+          - type: button
+            name: Generate Docs
+            icon: mdi:file-document
+            tap_action:
+              action: call-service
+              service: rest_command.agent_generate_docs
+          - type: button
+            name: Sync & Backup
+            icon: mdi:github
+            tap_action:
+              action: call-service
+              service: script.agent_sync_and_backup
+
+      - type: grid
+        title: 🧩 GitHub AI Agent Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Create Issue
+            icon: mdi:alert-circle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_execute_command
+              service_data:
+                command: "create_github_issue"
+                params: "{\"repo\":\"home-assistant-unified\",\"title\":\"Home Assistant Task\",\"body\":\"Describe the task here\"}"
+          - type: button
+            name: Create Task
+            icon: mdi:check-circle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_execute_command
+              service_data:
+                command: "create_github_task"
+                params: "{\"repo\":\"home-assistant-unified\",\"title\":\"Automation Task\",\"details\":\"Describe the task\"}"
+          - type: button
+            name: Create Action
+            icon: mdi:play-circle
+            tap_action:
+              action: call-service
+              service: rest_command.agent_execute_command
+              service_data:
+                command: "create_github_action"
+                params: "{\"repo\":\"home-assistant-unified\",\"name\":\"Automation Action\",\"description\":\"Describe the action\"}"
+          - type: button
+            name: Collect System Info
+            icon: mdi:database-search
+            tap_action:
+              action: call-service
+              service: rest_command.agent_execute_command
+              service_data:
+                command: "collect_system_info"
+                params: "{\"scope\":\"home_assistant\"}"
+          - type: button
+            name: Add Integration
+            icon: mdi:puzzle-plus
+            tap_action:
+              action: call-service
+              service: rest_command.agent_execute_command
+              service_data:
+                command: "add_integration"
+                params: "{\"name\":\"integration_name_here\"}"
+          - type: button
+            name: Deploy Automation
+            icon: mdi:rocket-launch
+            tap_action:
+              action: call-service
+              service: rest_command.agent_execute_command
+              service_data:
+                command: "deploy_automation"
+                params: "{\"name\":\"automation_name_here\"}"
+
+      - type: entities
+        title: 🧠 Copilot Agent Inputs
+        entities:
+          - entity: input_text.copilot_agent_command
+            name: Copilot Command
+          - entity: input_text.copilot_agent_params
+            name: Copilot Params (JSON)
+
+      - type: grid
+        title: 🧰 Copilot Agent Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Run Copilot Command
+            icon: mdi:assistant
+            tap_action:
+              action: call-service
+              service: rest_command.copilot_agent_execute
+
+      - type: entities
+        title: 🔌 MCP Server Connections
+        entities:
+          - entity: binary_sensor.mcp_hub_online
+            name: MCP Hub Online
+          - entity: sensor.mcp_hub_status
+            name: MCP Hub Status
+          - entity: sensor.mcp_hub_active_agents
+            name: Active Agents
+          - entity: sensor.mcp_hub_total_requests
+            name: Total Requests
+          - type: button
+            name: Refresh MCP Status
+            icon: mdi:sync
+            tap_action:
+              action: call-service
+              service: rest_command.mcp_get_agent_status
+              service_data:
+                agent_id: "all"
+          - type: button
+            name: Restart MCP Agent
+            icon: mdi:restart
+            tap_action:
+              action: call-service
+              service: rest_command.mcp_restart_agent
+              service_data:
+                agent_id: "agent_orchestration"
+
+      - type: entities
+        title: 📊 Agent Status
+        entities:
+          - entity: binary_sensor.ha_agent_running
+            name: Agent Running
+          - entity: sensor.ha_agent_uptime
+            name: Uptime
+          - entity: sensor.ha_agent_integrations_healthy
+            name: Healthy Integrations
+          - entity: sensor.ha_agent_errors_count
+            name: Errors
+          - entity: sensor.ha_agent_last_health_check
+            name: Last Health Check
+          - entity: sensor.ha_agent_last_github_sync
+            name: Last GitHub Sync
+          - entity: sensor.ha_agent_version
+            name: Version

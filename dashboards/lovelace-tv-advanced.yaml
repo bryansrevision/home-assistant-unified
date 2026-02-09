@@ -87,6 +87,375 @@ views:
               service: script.all_tvs_off
 
       - type: entities
+        title: 🎯 TV Control Selectors
+        entities:
+          - entity: input_select.favorite_tv
+            name: Target TV
+          - entity: input_select.favorite_streaming_service
+            name: Favorite App
+          - type: button
+            name: Launch Favorite App
+            icon: mdi:play-circle
+            action_name: Launch
+            tap_action:
+              action: call-service
+              service: script.tv_set_favorite_source
+
+      - type: vertical-stack
+        cards:
+          - type: grid
+            title: 🧭 D‑Pad + System
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: Up
+                icon: mdi:chevron-up
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_UP
+              - type: button
+                name: Select
+                icon: mdi:circle-outline
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_CENTER
+              - type: button
+                name: Home
+                icon: mdi:home
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_HOME
+              - type: button
+                name: Left
+                icon: mdi:chevron-left
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_LEFT
+              - type: button
+                name: Back
+                icon: mdi:arrow-left-circle
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_BACK
+              - type: button
+                name: Menu
+                icon: mdi:menu
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_MENU
+              - type: button
+                name: Down
+                icon: mdi:chevron-down
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DPAD_DOWN
+              - type: button
+                name: Recents
+                icon: mdi:apps
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_APP_SWITCH
+              - type: button
+                name: Power
+                icon: mdi:power
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_POWER
+
+          - type: grid
+            title: 🔊 Volume + Channels
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: Vol +
+                icon: mdi:volume-plus
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_VOLUME_UP
+              - type: button
+                name: Mute
+                icon: mdi:volume-mute
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_VOLUME_MUTE
+              - type: button
+                name: Vol -
+                icon: mdi:volume-minus
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_VOLUME_DOWN
+              - type: button
+                name: Ch +
+                icon: mdi:plus-box
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_CHANNEL_UP
+              - type: button
+                name: Enter
+                icon: mdi:check-circle
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_ENTER
+              - type: button
+                name: Ch -
+                icon: mdi:minus-box
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_CHANNEL_DOWN
+
+          - type: grid
+            title: 🖱️ Scroll + Input
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: Scroll Up
+                icon: mdi:arrow-up-bold
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_PAGE_UP
+              - type: button
+                name: Input
+                icon: mdi:video-input-hdmi
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_TV_INPUT
+              - type: button
+                name: Scroll Down
+                icon: mdi:arrow-down-bold
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_PAGE_DOWN
+
+          - type: grid
+            title: 🔢 Numpad
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: 1
+                icon: mdi:numeric-1
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_1
+              - type: button
+                name: 2
+                icon: mdi:numeric-2
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_2
+              - type: button
+                name: 3
+                icon: mdi:numeric-3
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_3
+              - type: button
+                name: 4
+                icon: mdi:numeric-4
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_4
+              - type: button
+                name: 5
+                icon: mdi:numeric-5
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_5
+              - type: button
+                name: 6
+                icon: mdi:numeric-6
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_6
+              - type: button
+                name: 7
+                icon: mdi:numeric-7
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_7
+              - type: button
+                name: 8
+                icon: mdi:numeric-8
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_8
+              - type: button
+                name: 9
+                icon: mdi:numeric-9
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_9
+              - type: button
+                name: 0
+                icon: mdi:numeric-0
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_0
+              - type: button
+                name: Del
+                icon: mdi:backspace
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DEL
+              - type: button
+                name: Info
+                icon: mdi:information
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_INFO
+
+          - type: grid
+            title: 🖱️ Touchpad
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: Swipe Up
+                icon: mdi:gesture-swipe-up
+                tap_action:
+                  action: call-service
+                  service: script.tv_swipe
+                  service_data:
+                    x: 960
+                    y: 820
+                    x2: 960
+                    y2: 260
+              - type: button
+                name: Tap Center
+                icon: mdi:gesture-tap
+                tap_action:
+                  action: call-service
+                  service: script.tv_tap
+              - type: button
+                name: Swipe Down
+                icon: mdi:gesture-swipe-down
+                tap_action:
+                  action: call-service
+                  service: script.tv_swipe
+                  service_data:
+                    x: 960
+                    y: 260
+                    x2: 960
+                    y2: 820
+              - type: button
+                name: Swipe Left
+                icon: mdi:gesture-swipe-left
+                tap_action:
+                  action: call-service
+                  service: script.tv_swipe
+                  service_data:
+                    x: 1380
+                    y: 540
+                    x2: 540
+                    y2: 540
+              - type: button
+                name: Backspace
+                icon: mdi:backspace
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_DEL
+              - type: button
+                name: Swipe Right
+                icon: mdi:gesture-swipe-right
+                tap_action:
+                  action: call-service
+                  service: script.tv_swipe
+                  service_data:
+                    x: 540
+                    y: 540
+                    x2: 1380
+                    y2: 540
+              - type: button
+                name: Search
+                icon: mdi:magnify
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_SEARCH
+              - type: button
+                name: Keyboard
+                icon: mdi:keyboard
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_SEARCH
+              - type: button
+                name: Voice
+                icon: mdi:microphone
+                tap_action:
+                  action: call-service
+                  service: script.tv_send_key
+                  service_data:
+                    key: KEYCODE_VOICE_ASSIST
+
+      - type: entities
         title: 🖥️ All Media Players
         entities:
           - entity: media_player.google_tv_living_room
@@ -103,3 +472,11 @@ views:
             name: Samsung TV Living Room
           - entity: media_player.samsung_tv_bedroom
             name: Samsung TV Bedroom
+
+      - type: entities
+        title: 🕹️ Google TV Remote Entities
+        entities:
+          - entity: remote.google_tv_living_room
+            name: Google TV Living Room Remote
+          - entity: remote.google_tv_bedroom
+            name: Google TV Bedroom Remote

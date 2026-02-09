@@ -1,0 +1,13 @@
+copilot_agent_execute:
+  url: "http://192.168.1.201:8888/api/execute"
+  method: POST
+  headers:
+    Authorization: "Bearer !secret agent_api_token"
+    Content-Type: "application/json"
+  payload: >
+    {
+      "command": "{{ states('input_text.copilot_agent_command') }}",
+      "params": {{ states('input_text.copilot_agent_params') }}
+    }
+  content_type: "application/json"
+  timeout: 60

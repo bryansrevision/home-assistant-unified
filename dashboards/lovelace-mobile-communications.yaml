@@ -1,0 +1,108 @@
+---
+# Mobile Communications Control Center
+
+title: Mobile Communications
+views:
+  - title: Mobile Communications
+    path: mobile_communications
+    icon: mdi:cellphone-message
+    theme: Backend-selected
+    cards:
+      - type: entities
+        title: 📱 Targets
+        entities:
+          - entity: input_text.sms_target_number
+            name: SMS Target Number
+          - entity: input_text.sms_message
+            name: SMS Message
+          - entity: input_text.call_target_number
+            name: Call Target Number
+          - entity: input_text.android_device_name
+            name: Android Device Name
+          - entity: input_text.iphone_device_name
+            name: iPhone Device Name
+          - entity: input_text.join_device_id_primary
+            name: Join Device ID (Primary)
+
+      - type: grid
+        title: 📤 SMS & Calls (Android via Tasker/Join)
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Send SMS (Android)
+            icon: mdi:message-text
+            tap_action:
+              action: call-service
+              service: script.send_sms_via_tasker
+          - type: button
+            name: Place Call (Android)
+            icon: mdi:phone
+            tap_action:
+              action: call-service
+              service: script.place_call_via_tasker
+
+      - type: grid
+        title: 🔊 Find Phone
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Find Android Phone
+            icon: mdi:cellphone-sound
+            tap_action:
+              action: call-service
+              service: script.android_find_phone
+          - type: button
+            name: Notify iPhone
+            icon: mdi:cellphone
+            tap_action:
+              action: call-service
+              service: script.iphone_notify_message
+
+      - type: entities
+        title: 📥 Incoming Events
+        entities:
+          - entity: input_text.last_sms_from
+            name: Last SMS From
+          - entity: input_text.last_sms_message
+            name: Last SMS Message
+          - entity: input_text.last_android_notification
+            name: Last Android Notification
+          - entity: input_text.last_ios_event
+            name: Last iOS Event
+
+      - type: entities
+        title: 🔗 Webhook Endpoints
+        entities:
+          - type: markdown
+            content: |
+              **Android SMS Webhook**: `/api/webhook/android_sms_received`
+              **Android Notification Webhook**: `/api/webhook/android_notification_received`
+              **iOS Shortcuts Webhook**: `/api/webhook/ios_shortcuts_event`
+
+      - type: grid
+        title: 🔗 Remote View
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Android Remote View
+            icon: mdi:cellphone-link
+            tap_action:
+              action: url
+              url_path: "http://192.168.1.201:8090"
+          - type: button
+            name: iOS Shortcuts Console
+            icon: mdi:apple
+            tap_action:
+              action: url
+              url_path: "http://192.168.1.201:8091"
+
+      - type: entities
+        title: 🧭 Notes
+        entities:
+          - type: markdown
+            content: |
+              **Android SMS/Calls:** Requires Tasker profile listening for Join commands
+              **iPhone SMS/Calls:** iOS does not allow SMS/call automation. Use notifications + Shortcuts.

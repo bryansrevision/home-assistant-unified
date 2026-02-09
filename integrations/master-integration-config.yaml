@@ -149,6 +149,12 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-layout-card/layout-card.js
       type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /hacsfiles/apexcharts-card/apexcharts-card.js
+      type: module
+    - url: /hacsfiles/stack-in-card/stack-in-card.js
+      type: module
   dashboards:
     lovelace-main:
       mode: yaml
@@ -168,12 +174,66 @@ lovelace:
       icon: mdi:shield-home
       show_in_sidebar: true
       filename: dashboards/lovelace-security.yaml
+    lovelace-cameras:
+      mode: yaml
+      title: "Cameras"
+      icon: mdi:cctv
+      show_in_sidebar: true
+      filename: dashboards/lovelace-cameras.yaml
     lovelace-mobile:
       mode: yaml
       title: "Mobile Device Control"
       icon: mdi:cellphone
       show_in_sidebar: true
       filename: dashboards/lovelace-mobile.yaml
+    lovelace-ai-automation:
+      mode: yaml
+      title: "AI Automation"
+      icon: mdi:robot
+      show_in_sidebar: true
+      filename: dashboards/lovelace-ai-automation.yaml
+    lovelace-control-center:
+      mode: yaml
+      title: "Control Center"
+      icon: mdi:console
+      show_in_sidebar: true
+      filename: dashboards/lovelace-control-center.yaml
+    lovelace-security-command-center:
+      mode: yaml
+      title: "Security Command Center"
+      icon: mdi:shield-home
+      show_in_sidebar: true
+      filename: dashboards/lovelace-security-command-center.yaml
+    lovelace-automation-command-center:
+      mode: yaml
+      title: "Automation Command Center"
+      icon: mdi:robot
+      show_in_sidebar: true
+      filename: dashboards/lovelace-automation-command-center.yaml
+    lovelace-media-control-center:
+      mode: yaml
+      title: "Media Control Center"
+      icon: mdi:television
+      show_in_sidebar: true
+      filename: dashboards/lovelace-media-control-center.yaml
+    lovelace-lighting-control-center:
+      mode: yaml
+      title: "Lighting Control Center"
+      icon: mdi:lightbulb-group
+      show_in_sidebar: true
+      filename: dashboards/lovelace-lighting-control-center.yaml
+    lovelace-personal-console:
+      mode: yaml
+      title: "Personal Console"
+      icon: mdi:account
+      show_in_sidebar: true
+      filename: dashboards/lovelace-personal-console.yaml
+    lovelace-mobile-communications:
+      mode: yaml
+      title: "Mobile Communications"
+      icon: mdi:cellphone-message
+      show_in_sidebar: true
+      filename: dashboards/lovelace-mobile-communications.yaml
 
 # ============================================================================
 # FRONTEND CUSTOMIZATION
@@ -282,6 +342,16 @@ panel_iframe:
     url: "https://192.168.1.100:8006"
     icon: mdi:server
     require_admin: true
+  android_remote_view:
+    title: "Android Remote View"
+    url: "http://192.168.1.201:8090"
+    icon: mdi:cellphone-link
+    require_admin: true
+  ios_remote_shortcuts:
+    title: "iOS Shortcuts"
+    url: "http://192.168.1.201:8091"
+    icon: mdi:apple
+    require_admin: true
 
 # ============================================================================
 # INPUT BOOLEANS, NUMBERS, SELECTS
@@ -290,7 +360,7 @@ panel_iframe:
 input_boolean: !include_dir_merge_named integrations/input_boolean/
 input_number: !include_dir_merge_named integrations/input_number/
 input_select: !include_dir_merge_named integrations/input_select/
-input_text: !include_dir_merge_named integrations/input_text /
+input_text: !include_dir_merge_named integrations/input_text/
 
 # ============================================================================
 # SHELL COMMANDS

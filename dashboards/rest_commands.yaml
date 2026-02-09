@@ -31,7 +31,7 @@ rest_command:
         "apikey": "!secret join_api_key",
         "deviceId": "{{ deviceId }}",
         "title": "TaskerCommand",
-        "text": "=:={{ taskname }}",
+        "text": "=:={{ taskname }}=:={{ number | default('') }}=:={{ message | default('') }}",
         "priority": 2
       }
     content_type: "application/json"

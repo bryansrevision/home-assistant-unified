@@ -1,0 +1,61 @@
+- id: android_sms_received
+  alias: "Android: SMS Received (Webhook)"
+  description: "Handle SMS events forwarded from Tasker/Join"
+  trigger:
+    - platform: webhook
+      webhook_id: android_sms_received
+      allowed_methods:
+        - POST
+  action:
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_sms_from
+      data:
+        value: "{{ trigger.json.from | default('unknown') }}"
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_sms_message
+      data:
+        value: "{{ trigger.json.message | default('') }}"
+    - service: notify.persistent_notification
+      data:
+        title: "📩 SMS Received"
+        message: "From {{ trigger.json.from }}: {{ trigger.json.message }}"
+
+- id: android_notification_received
+  alias: "Android: Notification Received (Webhook)"
+  description: "Handle Android notification events forwarded from Tasker/Join"
+  trigger:
+    - platform: webhook
+      webhook_id: android_notification_received
+      allowed_methods:
+        - POST
+  action:
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_android_notification
+      data:
+        value: "{{ trigger.json.title | default('') }} - {{ trigger.json.text | default('') }}"
+    - service: notify.persistent_notification
+      data:
+        title: "📲 Android Notification"
+        message: "{{ trigger.json.title }}: {{ trigger.json.text }}"
+
+- id: ios_shortcuts_event
+  alias: "iOS Shortcuts Event (Webhook)"
+  description: "Handle iOS Shortcuts webhook events"
+  trigger:
+    - platform: webhook
+      webhook_id: ios_shortcuts_event
+      allowed_methods:
+        - POST
+  action:
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_ios_event
+      data:
+        value: "{{ trigger.json.event | default('unknown') }}"
+    - service: notify.persistent_notification
+      data:
+        title: "🍎 iOS Shortcuts"
+        message: "{{ trigger.json.event | default('event') }}"

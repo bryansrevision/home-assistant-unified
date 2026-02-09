@@ -1,0 +1,93 @@
+---
+# Personal Services Console
+
+
+title: Personal Console
+views:
+  - title: Personal Console
+    path: personal_console
+    icon: mdi:account
+    theme: Backend-selected
+    cards:
+      - type: markdown
+        content: |
+          ## 🧾 Personal Services Console
+          Mail, calendar, to‑do, notes, reminders, and quick actions.
+
+      - type: entities
+        title: ☁️ Microsoft Graph Inputs
+        entities:
+          - entity: input_text.graph_access_token
+            name: Graph Access Token
+          - entity: input_text.graph_mail_to
+            name: Mail To
+          - entity: input_text.graph_mail_subject
+            name: Mail Subject
+          - entity: input_text.graph_mail_body
+            name: Mail Body
+          - entity: input_text.graph_todo_list_id
+            name: ToDo List ID
+          - entity: input_text.graph_task_title
+            name: Task Title
+          - entity: input_text.graph_onedrive_path
+            name: OneDrive Path
+          - entity: input_text.graph_file_content
+            name: OneDrive Content
+
+      - type: grid
+        title: ☁️ Microsoft Graph Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Send Mail
+            icon: mdi:email-send
+            tap_action:
+              action: call-service
+              service: rest_command.graph_send_mail
+          - type: button
+            name: Create ToDo Task
+            icon: mdi:check-circle
+            tap_action:
+              action: call-service
+              service: rest_command.graph_create_todo_task
+          - type: button
+            name: Create Calendar Event
+            icon: mdi:calendar-plus
+            tap_action:
+              action: call-service
+              service: rest_command.graph_create_event
+          - type: button
+            name: Upload to OneDrive
+            icon: mdi:cloud-upload
+            tap_action:
+              action: call-service
+              service: rest_command.graph_onedrive_upload
+
+      - type: entities
+        title: 🧠 Copilot Agent Inputs
+        entities:
+          - entity: input_text.copilot_agent_command
+            name: Copilot Command
+          - entity: input_text.copilot_agent_params
+            name: Copilot Params (JSON)
+
+      - type: grid
+        title: 🧰 Copilot Actions
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Run Copilot Command
+            icon: mdi:assistant
+            tap_action:
+              action: call-service
+              service: rest_command.copilot_agent_execute
+
+      - type: entities
+        title: 📅 Calendar & Reminders
+        entities:
+          - entity: calendar.personal_calendar
+            name: Personal Calendar
+          - entity: todo.personal_todo
+            name: Personal To‑Do

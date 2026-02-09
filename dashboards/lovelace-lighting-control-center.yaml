@@ -1,0 +1,67 @@
+---
+# Lighting Control Center
+
+title: Lighting Control Center
+views:
+  - title: Lighting Control Center
+    path: lighting_control_center
+    icon: mdi:lightbulb-group
+    theme: Backend-selected
+    badges:
+      - entity: sensor.lights_count
+      - entity: sensor.switches_count
+    cards:
+      - type: entities
+        title: 💡 Core Lighting
+        show_header_toggle: true
+        entities:
+          - entity: light.living_room
+            name: Living Room
+          - entity: light.bedroom
+            name: Bedroom
+          - entity: light.kitchen
+            name: Kitchen
+          - entity: light.office
+            name: Office
+          - entity: switch.all_lights
+            name: All Lights
+
+      - type: grid
+        title: 🎛️ Scenes & Routines
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            name: Good Morning
+            icon: mdi:weather-sunny
+            tap_action:
+              action: call-service
+              service: script.good_morning
+          - type: button
+            name: Good Night
+            icon: mdi:weather-night
+            tap_action:
+              action: call-service
+              service: script.good_night
+          - type: button
+            name: Movie Mode
+            icon: mdi:movie-open
+            tap_action:
+              action: call-service
+              service: script.movie_mode
+          - type: button
+            name: Away Mode
+            icon: mdi:home-export-outline
+            tap_action:
+              action: call-service
+              service: script.away_mode
+
+      - type: entities
+        title: 🌈 Brightness & Color
+        entities:
+          - entity: light.living_room
+            name: Living Room
+          - entity: light.bedroom
+            name: Bedroom
+          - entity: light.kitchen
+            name: Kitchen

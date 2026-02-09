@@ -1,0 +1,49 @@
+graph_access_token:
+  name: "Microsoft Graph Access Token"
+  initial: ""
+  max: 4096
+
+graph_mail_to:
+  name: "Graph Mail To"
+  initial: "user@example.com"
+  max: 255
+
+graph_mail_subject:
+  name: "Graph Mail Subject"
+  initial: "Home Assistant Notification"
+  max: 255
+
+graph_mail_body:
+  name: "Graph Mail Body"
+  initial: "Hello from Home Assistant"
+  max: 1024
+
+graph_todo_list_id:
+  name: "Graph ToDo List ID"
+  initial: ""
+  max: 255
+
+graph_task_title:
+  name: "Graph Task Title"
+  initial: "Home Assistant Task"
+  max: 255
+
+graph_onedrive_path:
+  name: "OneDrive Upload Path"
+  initial: "/HomeAssistant/notes.txt"
+  max: 255
+
+graph_file_content:
+  name: "OneDrive File Content"
+  initial: "Hello from Home Assistant"
+  max: 4096
+
+copilot_agent_command:
+  name: "Copilot Agent Command"
+  initial: "create_issue"
+  max: 255
+
+copilot_agent_params:
+  name: "Copilot Agent Params (JSON)"
+  initial: "{}"
+  max: 2048
