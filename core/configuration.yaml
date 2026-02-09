@@ -288,6 +288,18 @@ google_generative_ai_conversation: !include ../integrations/ai-assistant-integra
 conversation: !include ../integrations/ai-assistant-integration.yaml
 assist_pipeline: !include ../integrations/ai-assistant-integration.yaml
 
+################################################################################
+# AI AGENT ORCHESTRATION & COPILOT INTEGRATION
+################################################################################
+
+# GitHub Copilot Agent Integration
+# Includes: input_boolean, input_text, input_select, automation, script, template
+homeassistant:
+  packages:
+    github_copilot: !include ../integrations/github-copilot-agent-integration.yaml
+    ai_orchestration: !include ../integrations/ai-agent-orchestration.yaml
+    assist_voice: !include ../integrations/assist-voice-improvements.yaml
+
 # Android Device Integration
 # Mobile app integration is enabled above, additional Android configs:
 # See integrations/android-device-integration.yaml for full configuration
