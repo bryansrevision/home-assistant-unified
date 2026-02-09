@@ -39,6 +39,7 @@ home-assistant-unified/
 │   ├── align-server.py                   # Server sync tool
 │   ├── mcp-quick-connect.py              # Quick MCP test
 │   ├── setup/                            # Setup scripts
+│   ├── vm101/                            # VM 101 backup system scripts
 │   ├── debug_env.py                      # Environment debugger
 │   └── test_ha_connection.py             # Connection tester
 │
@@ -47,6 +48,9 @@ home-assistant-unified/
 │   ├── COPILOT-DEPLOYMENT-INSTRUCTIONS.md# GitHub Copilot deployment
 │   ├── SERVER-UPDATE.md                  # Server update procedures
 │   ├── SYNC_GUIDE.md                     # Repository sync guide
+│   ├── operations/                       # Operational procedures
+│   │   ├── failover-procedure.md         # VM failover instructions
+│   │   └── vm101-backup-system.md        # Backup system documentation
 │   └── *.md                              # Additional guides
 │
 ├── 📂 integrations/                      # Integration modules
@@ -67,6 +71,7 @@ home-assistant-unified/
 ├── 📂 config/                            # Configuration files
 │   ├── .env                              # Environment variables (gitignored)
 │   ├── .env.example                      # Environment template
+│   ├── vm101/                            # VM 101 backup configuration
 │   └── *.json                            # Configuration files
 │
 ├── 📂 dashboards/                        # Grafana dashboards
@@ -149,12 +154,13 @@ home-assistant-unified/
 - **Sync tools**: `align-server.py` for server synchronization
 - **Debug tools**: Environment debugging and connection testing
 - **Health checks**: Status verification and diagnostics
+- **VM 101 scripts**: High-availability backup system management
 
 ### `/docs/` - Detailed Guides
 
 - **Deployment**: Comprehensive deployment procedures
 - **Integration**: MCP, Proxmox, Android, wearables setup
-- **Operations**: Sync procedures, troubleshooting, maintenance
+- **Operations**: VM 101 backup system, failover procedures, sync procedures, troubleshooting, maintenance
 
 ### `/integrations/` - Platform Integrations
 
