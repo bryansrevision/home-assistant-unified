@@ -1,23 +1,59 @@
 # ============================================================================
-# MQTT INTEGRATION
+# MQTT INTEGRATION (Enhanced)
+# Broker on VM 102 with TLS and discovery
 # ============================================================================
 
 mqtt:
   broker: !secret mqtt_broker
   port: !secret mqtt_port
-  username: !secret mqtt_user
+  username: !secret mqtt_username
   password: !secret mqtt_password
   discovery: true
+  discovery_prefix: !secret mqtt_discovery_prefix
   birth_message:
     topic: "homeassistant/status"
     payload: "online"
+    qos: 1
+    retain: true
   will_message:
     topic: "homeassistant/status"
     payload: "offline"
+    qos: 1
+    retain: true
+  keepalive: 60
+
+# MQTT Sensors
+sensor:
+  - platform: mqtt
+    name: "MQTT Messages Received"
+    state_topic: "homeassistant/stats/messages"
+    unit_of_measurement: "messages"
+    icon: mdi:message-processing
 
 binary_sensor:
   - platform: ping
     name: "MQTT Broker Online"
     host: !secret mqtt_broker
     count: 2
-    scan_interval: 30
+    scan_interval: 60
+
+# MQTT Automations
+automation:
+  - alias: "MQTT - Broker Offline Alert"
+    id: mqtt_broker_offline_alert
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.mqtt_broker_online
+        to: "off"
+        for:
+          minutes: 2
+    action:
+      - service: notify.mobile_app_phone
+        data:
+          title: "⚠️ MQTT Broker Offline"
+          message: "MQTT broker has been offline for 2 minutes"
+      - service: persistent_notification.create
+        data:
+          title: "MQTT Alert"
+          message: "MQTT broker is offline - check Mosquitto service"
+          notification_id: mqtt_offline

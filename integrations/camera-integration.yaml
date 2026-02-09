@@ -1,6 +1,7 @@
 # ============================================================================
 # CAMERA INTEGRATIONS
-# Yi Cameras, Kami Cameras, and Generic Camera Support
+# Yi Cameras, Kami Cameras, Eufy Cameras and Generic Camera Support
+# Updated: February 2026 - Uses secrets for all IPs/credentials
 # ============================================================================
 
 # Yi Home Cameras Integration
@@ -9,75 +10,97 @@ camera:
   # Yi Camera - Living Room
   - platform: generic
     name: "Yi Camera Living Room"
-    still_image_url: "http://192.168.1.150/cgi-bin/snapshot.cgi?chn=0&u=admin&p={{ yi_camera_password }}"
-    stream_source: "rtsp://admin:{{ yi_camera_password }}@192.168.1.150/ch0_0.h264"
+    still_image_url: !secret yi_living_room_snapshot_url
+    stream_source: !secret yi_living_room_stream_url
     verify_ssl: false
     framerate: 5
     
   # Yi Camera - Front Door
   - platform: generic
     name: "Yi Camera Front Door"
-    still_image_url: "http://192.168.1.151/cgi-bin/snapshot.cgi?chn=0&u=admin&p={{ yi_camera_password }}"
-    stream_source: "rtsp://admin:{{ yi_camera_password }}@192.168.1.151/ch0_0.h264"
+    still_image_url: !secret yi_front_door_snapshot_url
+    stream_source: !secret yi_front_door_stream_url
     verify_ssl: false
     framerate: 5
     
   # Yi Camera - Backyard
   - platform: generic
     name: "Yi Camera Backyard"
-    still_image_url: "http://192.168.1.152/cgi-bin/snapshot.cgi?chn=0&u=admin&p={{ yi_camera_password }}"
-    stream_source: "rtsp://admin:{{ yi_camera_password }}@192.168.1.152/ch0_0.h264"
+    still_image_url: !secret yi_backyard_snapshot_url
+    stream_source: !secret yi_backyard_stream_url
     verify_ssl: false
     framerate: 5
     
   # Kami Camera - Garage
   - platform: generic
     name: "Kami Camera Garage"
-    still_image_url: "http://192.168.1.153/snap.jpg"
-    stream_source: "rtsp://admin:{{ kami_camera_password }}@192.168.1.153:554/stream1"
+    still_image_url: !secret kami_garage_snapshot_url
+    stream_source: !secret kami_garage_stream_url
     verify_ssl: false
     framerate: 5
     
   # Kami Camera - Driveway
   - platform: generic
     name: "Kami Camera Driveway"
-    still_image_url: "http://192.168.1.154/snap.jpg"
-    stream_source: "rtsp://admin:{{ kami_camera_password }}@192.168.1.154:554/stream1"
+    still_image_url: !secret kami_driveway_snapshot_url
+    stream_source: !secret kami_driveway_stream_url
     verify_ssl: false
     framerate: 5
 
-# ONVIF Integration for Yi/Kami cameras (alternative method)
+  # Eufy Doorbell Camera
+  - platform: generic
+    name: "Eufy Doorbell"
+    still_image_url: !secret eufy_doorbell_snapshot_url
+    stream_source: !secret eufy_doorbell_stream_url
+    verify_ssl: false
+    framerate: 10
+
+  # Eufy Indoor Camera
+  - platform: generic
+    name: "Eufy Indoor Camera"
+    still_image_url: !secret eufy_indoor_snapshot_url
+    stream_source: !secret eufy_indoor_stream_url
+    verify_ssl: false
+    framerate: 5
+
+# ONVIF Integration for Yi/Kami/Eufy cameras
 # Provides better control including PTZ if supported
 onvif:
-  - host: 192.168.1.150
+  - host: !secret yi_camera_living_room_ip
     name: "Yi Camera Living Room ONVIF"
     username: admin
     password: !secret yi_camera_password
     port: 8080
     
-  - host: 192.168.1.151
+  - host: !secret yi_camera_front_door_ip
     name: "Yi Camera Front Door ONVIF"
     username: admin
     password: !secret yi_camera_password
     port: 8080
     
-  - host: 192.168.1.152
+  - host: !secret yi_camera_backyard_ip
     name: "Yi Camera Backyard ONVIF"
     username: admin
     password: !secret yi_camera_password
     port: 8080
     
-  - host: 192.168.1.153
+  - host: !secret kami_garage_ip
     name: "Kami Camera Garage ONVIF"
     username: admin
     password: !secret kami_camera_password
     port: 8080
     
-  - host: 192.168.1.154
+  - host: !secret kami_driveway_ip
     name: "Kami Camera Driveway ONVIF"
     username: admin
     password: !secret kami_camera_password
     port: 8080
+
+  - host: !secret eufy_doorbell_ip
+    name: "Eufy Doorbell ONVIF"
+    username: !secret eufy_username
+    password: !secret eufy_password
+    port: 554
 
 # Camera Motion Detection Binary Sensors
 binary_sensor:

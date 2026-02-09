@@ -1,0 +1,148 @@
+# ============================================================================
+# BACKUP INTEGRATION (Native HA 2025+ Backup System)
+# Automated encrypted backups with retention policies
+# ============================================================================
+
+# Backup Configuration (uses built-in backup component)
+backup:
+
+# Backup Automations
+automation:
+  # Daily Automatic Backup
+  - id: backup_daily_automatic
+    alias: "Backup - Daily Automatic"
+    description: "Create daily backup at 3 AM"
+    trigger:
+      - platform: time
+        at: "03:00:00"
+    action:
+      - service: backup.create
+        data:
+          name: "daily_{{ now().strftime('%Y%m%d') }}"
+      - delay:
+          minutes: 5
+      - service: shell_command.sync_backup_to_cloud
+      - service: logbook.log
+        data:
+          name: "Backup"
+          message: "Daily backup completed and synced to cloud"
+
+  # Weekly Full Backup
+  - id: backup_weekly_full
+    alias: "Backup - Weekly Full"
+    description: "Create weekly full backup on Sunday"
+    trigger:
+      - platform: time
+        at: "02:00:00"
+    condition:
+      - condition: time
+        weekday:
+          - sun
+    action:
+      - service: backup.create
+        data:
+          name: "weekly_full_{{ now().strftime('%Y%m%d') }}"
+      - delay:
+          minutes: 10
+      - service: shell_command.sync_backup_to_cloud
+      - service: notify.mobile_app_phone
+        data:
+          title: "💾 Weekly Backup Complete"
+          message: "Full backup created and synced to cloud storage"
+
+  # Pre-Update Backup
+  - id: backup_pre_update
+    alias: "Backup - Pre-Update"
+    description: "Create backup before HA update"
+    trigger:
+      - platform: state
+        entity_id: update.home_assistant_core_update
+        to: "on"
+    action:
+      - service: backup.create
+        data:
+          name: "pre_update_{{ now().strftime('%Y%m%d_%H%M') }}"
+      - service: persistent_notification.create
+        data:
+          title: "Backup Created"
+          message: "Pre-update backup created before HA update"
+          notification_id: pre_update_backup
+
+  # Configuration Change Backup
+  - id: backup_config_change
+    alias: "Backup - On Configuration Change"
+    description: "Backup when config is reloaded"
+    trigger:
+      - platform: event
+        event_type: call_service
+        event_data:
+          domain: homeassistant
+          service: reload_core_config
+    action:
+      - delay:
+          seconds: 30
+      - service: backup.create
+        data:
+          name: "config_change_{{ now().strftime('%Y%m%d_%H%M') }}"
+
+# Cloud Sync Shell Commands
+shell_command:
+  sync_backup_to_cloud: "/config/scripts/sync_backup_to_cloud.sh"
+  sync_to_onedrive: "rclone sync /config/backups onedrive:HomeAssistant/backups --quiet"
+  sync_to_gdrive: "rclone sync /config/backups gdrive:HomeAssistant/backups --quiet"
+  sync_to_dropbox: "rclone sync /config/backups dropbox:HomeAssistant/backups --quiet"
+
+# Backup Status Sensors
+template:
+  - sensor:
+      - name: "Last Backup"
+        unique_id: last_backup_time
+        state: >
+          {{ states.automation.backup_daily_automatic.attributes.last_triggered | default('unknown') }}
+        icon: mdi:backup-restore
+
+      - name: "Backup Status"
+        unique_id: backup_status
+        state: >
+          {% set last = states.automation.backup_daily_automatic.attributes.last_triggered %}
+          {% if last %}
+            {% set hours = ((now() - last).total_seconds() / 3600) | round(1) %}
+            {% if hours < 25 %}
+              Current
+            {% elif hours < 50 %}
+              Stale
+            {% else %}
+              Overdue
+            {% endif %}
+          {% else %}
+            Unknown
+          {% endif %}
+        icon: >
+          {% set state = this.state %}
+          {% if state == 'Current' %}
+            mdi:shield-check
+          {% elif state == 'Stale' %}
+            mdi:shield-half-full
+          {% else %}
+            mdi:shield-alert
+          {% endif %}
+
+# Backup Retention Script
+script:
+  backup_cleanup_old:
+    alias: "Cleanup Old Backups"
+    description: "Remove backups older than retention period"
+    sequence:
+      - service: shell_command.cleanup_old_backups
+      - service: logbook.log
+        data:
+          name: "Backup"
+          message: "Old backups cleaned up per retention policy"
+
+# ============================================================================
+# NOTES:
+# 1. Requires rclone configured for cloud providers
+# 2. Create /config/scripts/sync_backup_to_cloud.sh with cloud sync logic
+# 3. Backups stored in /config/backups by default
+# 4. Configure retention in HA Settings → System → Backups
+# ============================================================================

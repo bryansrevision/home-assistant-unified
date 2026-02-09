@@ -29,7 +29,7 @@ automation:
 rest_command:
   # Trigger Node-RED Flow
   nodered_trigger_flow:
-    url: "http://192.168.1.201:1880/trigger/{{ flow_id }}"
+    url: !secret nodered_trigger_url
     method: POST
     headers:
       Content-Type: "application/json"
@@ -37,7 +37,7 @@ rest_command:
     
   # Node-RED Deploy
   nodered_deploy:
-    url: "http://192.168.1.201:1880/flows"
+    url: !secret nodered_flows_url
     method: POST
     headers:
       Content-Type: "application/json"
@@ -45,7 +45,7 @@ rest_command:
     
   # Get Node-RED Flows
   nodered_get_flows:
-    url: "http://192.168.1.201:1880/flows"
+    url: !secret nodered_flows_url
     method: GET
     headers:
       Content-Type: "application/json"
@@ -54,7 +54,7 @@ rest_command:
 sensor:
   - platform: rest
     name: "Node-RED Status"
-    resource: "http://192.168.1.201:1880/health"
+    resource: !secret nodered_health_url
     method: GET
     value_template: "{{ value_json.status | default('unknown') }}"
     json_attributes:
@@ -175,7 +175,7 @@ script:
 sensor:
   - platform: rest
     name: "MCP Hub Status"
-    resource: "http://192.168.1.201:8765/api/status"
+    resource: !secret mcp_hub_status_url
     method: GET
     headers:
       Authorization: !secret mcp_hub_api_token
@@ -215,7 +215,7 @@ binary_sensor:
 rest_command:
   # Execute MCP Command
   mcp_execute_command:
-    url: "http://192.168.1.201:8765/api/execute"
+    url: !secret mcp_hub_execute_url
     method: POST
     headers:
       Authorization: !secret mcp_hub_api_token
@@ -224,14 +224,14 @@ rest_command:
     
   # Get MCP Agent Status
   mcp_get_agent_status:
-    url: "http://192.168.1.201:8765/api/agents/{{ agent_id }}/status"
+    url: !secret mcp_hub_agent_url
     method: GET
     headers:
       Authorization: !secret mcp_hub_api_token
     
   # Restart MCP Agent
   mcp_restart_agent:
-    url: "http://192.168.1.201:8765/api/agents/{{ agent_id }}/restart"
+    url: !secret mcp_hub_restart_url
     method: POST
     headers:
       Authorization: !secret mcp_hub_api_token
@@ -244,7 +244,7 @@ rest_command:
 sensor:
   - platform: rest
     name: "Proxmox Server Status"
-    resource: "https://192.168.1.100:8006/api2/json/cluster/resources"
+    resource: !secret proxmox_api_url
     method: GET
     headers:
       Authorization: !secret proxmox_api_token
@@ -298,7 +298,7 @@ sensor:
 rest_command:
   # Start Proxmox VM
   proxmox_start_vm:
-    url: "https://192.168.1.100:8006/api2/json/nodes/{{ node }}/qemu/{{ vmid }}/status/start"
+    url: !secret proxmox_vm_start_url
     method: POST
     headers:
       Authorization: !secret proxmox_api_token
@@ -306,7 +306,7 @@ rest_command:
     
   # Stop Proxmox VM
   proxmox_stop_vm:
-    url: "https://192.168.1.100:8006/api2/json/nodes/{{ node }}/qemu/{{ vmid }}/status/stop"
+    url: !secret proxmox_vm_stop_url
     method: POST
     headers:
       Authorization: !secret proxmox_api_token
@@ -314,7 +314,7 @@ rest_command:
     
   # Snapshot Proxmox VM
   proxmox_snapshot_vm:
-    url: "https://192.168.1.100:8006/api2/json/nodes/{{ node }}/qemu/{{ vmid }}/snapshot"
+    url: !secret proxmox_vm_snapshot_url
     method: POST
     headers:
       Authorization: !secret proxmox_api_token

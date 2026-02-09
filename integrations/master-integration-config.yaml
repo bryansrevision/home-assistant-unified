@@ -99,25 +99,42 @@ automation: !include_dir_merge_list integrations/automations/
 group: !include_dir_merge_named integrations/groups/
 
 # ============================================================================
-# RECORDER OPTIMIZATION
+# RECORDER OPTIMIZATION (Enhanced per recommendations)
 # ============================================================================
 
 recorder:
-  purge_keep_days: 7
-  commit_interval: 1
+  purge_keep_days: 14
+  commit_interval: 30
+  auto_purge: true
   db_url: !secret db_url
+  include:
+    domains:
+      - alarm_control_panel
+      - climate
+      - light
+      - lock
+      - cover
+    entity_globs:
+      - sensor.*_battery
+      - binary_sensor.*_motion
+      - binary_sensor.*_door
+      - binary_sensor.*_window
   exclude:
     domains:
       - automation
       - updater
       - camera
+      - media_player
     entity_globs:
       - sensor.weather_*
       - sensor.dark_sky_*
+      - sensor.*_raw
+      - sensor.*_debug
     entities:
       - sun.sun
       - sensor.date
       - sensor.time
+      - sensor.last_boot
 
 # History configuration
 history:
@@ -292,20 +309,25 @@ weather:
 stream:
 
 # ============================================================================
-# ONVIF (for Yi/Kami cameras)
+# ONVIF (for Yi/Kami/Eufy cameras)
 # ============================================================================
 
 onvif:
-  - host: 192.168.1.150
+  - host: !secret yi_camera_living_room_ip
     name: "Yi Camera Living Room ONVIF"
     username: admin
     password: !secret yi_camera_password
     port: 8080
-  - host: 192.168.1.151
+  - host: !secret yi_camera_front_door_ip
     name: "Yi Camera Front Door ONVIF"
     username: admin
     password: !secret yi_camera_password
     port: 8080
+  - host: !secret eufy_doorbell_ip
+    name: "Eufy Doorbell ONVIF"
+    username: !secret eufy_username
+    password: !secret eufy_password
+    port: 554
 
 # ============================================================================
 # WAKE ON LAN (for TVs)
@@ -319,37 +341,38 @@ wake_on_lan:
 
 iptv:
   - name: "IPTV Channels"
-    url: "http://192.168.1.201:8000/playlist.m3u8"
+    url: !secret iptv_playlist_url
     scan_interval: 3600
 
 # ============================================================================
 # PANEL IFRAME (for external dashboards)
+# Uses secrets for security
 # ============================================================================
 
 panel_iframe:
   agent_dashboard:
     title: "Agent Dashboard"
-    url: "http://192.168.1.201:8888/dashboard"
+    url: !secret agent_dashboard_url
     icon: mdi:robot
     require_admin: true
   nodered:
     title: "Node-RED"
-    url: "http://192.168.1.201:1880"
+    url: !secret nodered_url
     icon: mdi:sitemap
     require_admin: true
   proxmox:
     title: "Proxmox Server"
-    url: "https://192.168.1.100:8006"
+    url: !secret proxmox_url
     icon: mdi:server
     require_admin: true
   android_remote_view:
     title: "Android Remote View"
-    url: "http://192.168.1.201:8090"
+    url: !secret android_remote_view_url
     icon: mdi:cellphone-link
     require_admin: true
   ios_remote_shortcuts:
     title: "iOS Shortcuts"
-    url: "http://192.168.1.201:8091"
+    url: !secret ios_shortcuts_url
     icon: mdi:apple
     require_admin: true
 
