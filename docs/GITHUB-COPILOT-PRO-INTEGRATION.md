@@ -96,7 +96,7 @@ This is a Home Assistant configuration repository.
 - Configuration: YAML-based
 - Integrations: Alexa, SmartThings, IFTTT, Join, Tasker
 - AI Services: OpenAI GPT-4, Google Gemini
-- Smart Home Hub: 192.168.1.201:8123
+- Smart Home Hub: 192.168.1.134:8123
 
 ## Coding Standards
 - Use YAML syntax for all configurations

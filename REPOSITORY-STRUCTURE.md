@@ -145,7 +145,7 @@ home-assistant-unified/
 
 - **Purpose**: Model Context Protocol server integration
 - **Key Component**: Live bidirectional sync with HA server
-- **Status**: Initialized and connected (192.168.1.201:8123)
+- **Status**: Initialized and connected (192.168.1.134:8123)
 - **Entities**: 307 entities across 21 domains
 
 ### `/scripts/` - Automation & Utilities

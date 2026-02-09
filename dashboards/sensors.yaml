@@ -357,7 +357,7 @@ binary_sensor:
     scan_interval: 60
   
   - platform: ping
-    host: 192.168.1.201
+    host: 192.168.1.134
     name: home_assistant_server
     count: 2
     scan_interval: 60

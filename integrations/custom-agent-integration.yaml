@@ -11,7 +11,7 @@ sensor:
   # Main Agent Status Sensor
   - platform: rest
     name: "HA Agent Status"
-    resource: "http://192.168.1.201:8888/api/status"
+    resource: "http://192.168.1.134:8888/api/status"
     method: GET
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -129,7 +129,7 @@ binary_sensor:
 rest_command:
   # Trigger agent health check
   agent_health_check:
-    url: "http://192.168.1.201:8888/api/health"
+    url: "http://192.168.1.134:8888/api/health"
     method: GET
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -137,7 +137,7 @@ rest_command:
       
   # Check all integrations
   agent_check_integrations:
-    url: "http://192.168.1.201:8888/api/integrations/check"
+    url: "http://192.168.1.134:8888/api/integrations/check"
     method: GET
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -145,7 +145,7 @@ rest_command:
       
   # Sync with GitHub
   agent_github_sync:
-    url: "http://192.168.1.201:8888/api/github/sync"
+    url: "http://192.168.1.134:8888/api/github/sync"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -153,7 +153,7 @@ rest_command:
       
   # Execute agent command
   agent_execute_command:
-    url: "http://192.168.1.201:8888/api/execute"
+    url: "http://192.168.1.134:8888/api/execute"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -162,7 +162,7 @@ rest_command:
     
   # Generate documentation
   agent_generate_docs:
-    url: "http://192.168.1.201:8888/api/docs/generate"
+    url: "http://192.168.1.134:8888/api/docs/generate"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -170,7 +170,7 @@ rest_command:
       
   # Network scan
   agent_network_scan:
-    url: "http://192.168.1.201:8888/api/network/scan"
+    url: "http://192.168.1.134:8888/api/network/scan"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -178,7 +178,7 @@ rest_command:
       
   # Restart Home Assistant (via agent)
   agent_restart_ha:
-    url: "http://192.168.1.201:8888/api/ha/restart"
+    url: "http://192.168.1.134:8888/api/ha/restart"
     method: POST
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -186,7 +186,7 @@ rest_command:
       
   # Get agent logs
   agent_get_logs:
-    url: "http://192.168.1.201:8888/api/logs?lines={{ lines | default(50) }}"
+    url: "http://192.168.1.134:8888/api/logs?lines={{ lines | default(50) }}"
     method: GET
     headers:
       Authorization: "Bearer {{ home_assistant_token }}"
@@ -490,5 +490,5 @@ group:
 # 7. GitHub sync requires GitHub token in secrets.yaml
 # 8. Auto-fix feature requires agent v1.0+ with enhanced capabilities
 # 9. Network scan may take 30-60 seconds to complete
-# 10. Agent dashboard available at http://192.168.1.201:8888/dashboard
+# 10. Agent dashboard available at http://192.168.1.134:8888/dashboard
 # ============================================================================

@@ -70,7 +70,7 @@ async def interactive_installation():
         
         # Step 1: Access Terminal
         print_step(1, 6, "Access Terminal & SSH Add-on", """
-In your Home Assistant browser window (http://192.168.1.201:8123):
+In your Home Assistant browser window (http://192.168.1.134:8123):
 
 1. Click ⚙️ **Settings** (bottom left sidebar)
 2. Click **Add-ons**

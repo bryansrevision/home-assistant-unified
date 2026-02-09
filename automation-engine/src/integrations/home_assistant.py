@@ -24,7 +24,7 @@ class HomeAssistantClient:
         """Initialize Home Assistant client.
 
         Args:
-            url: Home Assistant URL (e.g., http://192.168.1.201:8123)
+            url: Home Assistant URL (e.g., http://192.168.1.134:8123)
             token: Long-lived access token
             verify_ssl: Whether to verify SSL certificates
             timeout: Request timeout in seconds

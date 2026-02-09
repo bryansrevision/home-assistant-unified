@@ -26,6 +26,7 @@ unified, well-organized system:
 |-----------|---------|
 | **Home Assistant (Primary)** | VM 102: 192.168.1.134:8123 (263 entities) |
 | **Home Assistant (Backup)** | VM 101: 192.168.1.201:8123 (Hot Standby) |
+| **Home Assistant** | 192.168.1.134:8123 (263 entities) |
 | **Proxmox Host** | 192.168.1.185:8006 |
 | **Automation Engine** | Port 5000 (Flask/Python) |
 | **MQTT Broker** | Port 1883 (Mosquitto) |

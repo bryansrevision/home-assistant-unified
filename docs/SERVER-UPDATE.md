@@ -11,7 +11,7 @@
 ### ✅ MCP Server Configuration
 - **File:** `mcp-servers/home-assistant-live.yaml`
 - **Capabilities:**
-  - Real-time bidirectional connection to 192.168.1.201:8123
+  - Real-time bidirectional connection to 192.168.1.134:8123
   - Entity state synchronization (5-second intervals)
   - Event streaming to MQTT, InfluxDB, webhooks
   - Automation sync with conflict detection
@@ -89,14 +89,14 @@ notepad config/.env
 
 # Add/update these variables:
 HOME_ASSISTANT_TOKEN=eyJhbGci...  # From HA: Settings → Developer Tools
-HA_HOST=192.168.1.201
+HA_HOST=192.168.1.134
 HA_PORT=8123
 MQTT_BROKER=localhost
 MQTT_PORT=1883
 ```
 
 **How to generate Home Assistant token:**
-1. Go to http://192.168.1.201:8123
+1. Go to http://192.168.1.134:8123
 2. Click Profile (bottom left)
 3. Scroll to "Long-Lived Access Tokens"
 4. Click "Create Token"

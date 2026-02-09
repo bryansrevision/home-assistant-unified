@@ -6,7 +6,7 @@
 access to thousands of community-created custom components, plugins, themes, and
 more for Home Assistant.
 
-**Server:** 192.168.1.201:8123  
+**Server:** 192.168.1.134:8123  
 **HA Version:** 2025.12.5  
 **Date:** February 6, 2026
 
@@ -40,7 +40,7 @@ wget -O - https://get.hacs.xyz | bash -
 ```powershell
 # Download HACS to custom_components
 $hacsUrl = "https://github.com/hacs/integration/releases/latest/download/hacs.zip"
-$configPath = "\\192.168.1.201\config"
+$configPath = "\\192.168.1.134\config"
 $customComponentsPath = "$configPath\custom_components"
 
 # Create custom_components directory if it doesn't exist
@@ -67,7 +67,7 @@ ha core restart
 
 #### Step 3: Add HACS Integration
 
-1. Open Home Assistant: http://192.168.1.201:8123
+1. Open Home Assistant: http://192.168.1.134:8123
 2. Go to **Settings → Devices & Services**
 3. Click **+ Add Integration** (bottom right)
 4. Search for **HACS**
@@ -115,7 +115,7 @@ If automated download fails:
 ```powershell
 # Copy HACS directory to custom_components
 $hacsSource = "C:\Users\Dylan\Downloads\hacs"
-$configPath = "\\192.168.1.201\config"
+$configPath = "\\192.168.1.134\config"
 
 Copy-Item -Path $hacsSource -Destination "$configPath\custom_components\hacs" -Recurse -Force
 ```
@@ -263,7 +263,7 @@ $backupPath = "C:\Users\Dylan\Dev\.WorkSpace\HomeAssistant\backups"
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 
 # Copy current config
-robocopy "\\192.168.1.201\config" "$backupPath\ha-backup-$timestamp" /E /Z /R:3
+robocopy "\\192.168.1.134\config" "$backupPath\ha-backup-$timestamp" /E /Z /R:3
 
 Write-Host "✅ Backup saved to: $backupPath\ha-backup-$timestamp"
 ```

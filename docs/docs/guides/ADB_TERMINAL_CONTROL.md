@@ -180,7 +180,7 @@ fi
 set -e  # Exit on error
 
 DEVICE_IP="192.168.1.XXX"
-HA_WEBHOOK="http://192.168.1.201:8123/api/webhook"
+HA_WEBHOOK="http://192.168.1.134:8123/api/webhook"
 
 echo "🔧 Ulefone Armor 27T Pro - Turnkey Setup"
 echo "========================================"
@@ -299,7 +299,7 @@ deploy_scripts() {
 #!/system/bin/sh
 # Daily health check script
 
-WEBHOOK="http://192.168.1.201:8123/api/webhook/device_health"
+WEBHOOK="http://192.168.1.134:8123/api/webhook/device_health"
 
 BATTERY=$(dumpsys battery | grep level | cut -d: -f2 | tr -d ' ')
 TEMP=$(dumpsys battery | grep temperature | cut -d: -f2 | tr -d ' ')
@@ -387,7 +387,7 @@ main
 # Description: Monitor device health and report to Home Assistant
 
 DEVICE_IP="192.168.1.XXX"
-HA_WEBHOOK="http://192.168.1.201:8123/api/webhook/ulefone_health"
+HA_WEBHOOK="http://192.168.1.134:8123/api/webhook/ulefone_health"
 
 # Connect to device
 adb connect ${DEVICE_IP}:5555 2>/dev/null
@@ -603,7 +603,7 @@ done
 # Description: Integrate device status with Home Assistant
 
 DEVICE_IP="192.168.1.XXX"
-HA_URL="http://192.168.1.201:8123"
+HA_URL="http://192.168.1.134:8123"
 HA_TOKEN="YOUR_LONG_LIVED_TOKEN"
 
 # Function: Update sensor in HA
@@ -697,7 +697,7 @@ import requests
 from datetime import datetime
 
 DEVICE_IP = "192.168.1.XXX"
-HA_WEBHOOK = "http://192.168.1.201:8123/api/webhook/ulefone_monitor"
+HA_WEBHOOK = "http://192.168.1.134:8123/api/webhook/ulefone_monitor"
 
 def adb_command(cmd):
     """Execute ADB command and return output"""

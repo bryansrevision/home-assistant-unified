@@ -62,7 +62,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_location_trigger"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_location_trigger"
         method: "POST"
         content_type: "application/json"
         body: |
@@ -91,7 +91,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_location_trigger"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_location_trigger"
         method: "POST"
         content_type: "application/json"
         body: |
@@ -118,7 +118,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_battery_alert"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_battery_alert"
         method: "POST"
         content_type: "application/json"
         body: |
@@ -146,7 +146,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_battery_alert"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_battery_alert"
         method: "POST"
         content_type: "application/json"
         body: |
@@ -173,7 +173,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_weather_trigger"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_weather_trigger"
         method: "POST"
         content_type: "application/json"
         body: |
@@ -199,7 +199,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_calendar_event"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_calendar_event"
         method: "POST"
         content_type: "application/json"
         body: |
@@ -227,7 +227,7 @@ applets:
       service: "Webhooks"
       type: "Make a web request"
       config:
-        url: "http://192.168.1.201:8123/api/webhook/ifttt_email_command"
+        url: "http://192.168.1.134:8123/api/webhook/ifttt_email_command"
         method: "POST"
         content_type: "application/json"
         body: |

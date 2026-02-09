@@ -14,7 +14,7 @@ This document describes the architecture of the Android home automation integrat
 ### Virtual Machines and Containers
 
 #### VM 1: Home Assistant
-- **IP**: 192.168.1.201
+- **IP**: 192.168.1.134
 - **Services**:
   - Home Assistant Core (Port 8123)
   - 263 entities configured
@@ -49,10 +49,10 @@ Internet
    |
 Android Device <--[VPN Tunnel]--> Proxmox Network (192.168.1.0/24)
    |                                    |
-   |                                    +-- Home Assistant (192.168.1.201:8123)
-   |                                    +-- MCP Hub (192.168.1.201:3000)
-   |                                    +-- AI Automation (192.168.1.201:5000)
-   |                                    +-- MQTT Broker (192.168.1.201:1883)
+   |                                    +-- Home Assistant (192.168.1.134:8123)
+   |                                    +-- MCP Hub (192.168.1.134:3000)
+   |                                    +-- AI Automation (192.168.1.134:5000)
+   |                                    +-- MQTT Broker (192.168.1.134:1883)
    |                                    +-- Proxmox Host (192.168.1.185:8006)
    |
    +-- Home Assistant App

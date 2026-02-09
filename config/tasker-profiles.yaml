@@ -15,35 +15,35 @@
 # WEBHOOK ENDPOINTS
 # ================================================
 webhooks:
-  base_url: "http://192.168.1.201:8123/api/webhook"
+  base_url: "http://192.168.1.134:8123/api/webhook"
   
   endpoints:
     - id: "tasker_home_wifi"
-      url: "http://192.168.1.201:8123/api/webhook/tasker_home_wifi"
+      url: "http://192.168.1.134:8123/api/webhook/tasker_home_wifi"
       description: "Home WiFi connected/disconnected"
     
     - id: "tasker_entering_home"
-      url: "http://192.168.1.201:8123/api/webhook/tasker_entering_home"
+      url: "http://192.168.1.134:8123/api/webhook/tasker_entering_home"
       description: "Entering home zone (GPS/Cell)"
     
     - id: "tasker_leaving_home"
-      url: "http://192.168.1.201:8123/api/webhook/tasker_leaving_home"
+      url: "http://192.168.1.134:8123/api/webhook/tasker_leaving_home"
       description: "Leaving home zone"
     
     - id: "tasker_driving"
-      url: "http://192.168.1.201:8123/api/webhook/tasker_driving"
+      url: "http://192.168.1.134:8123/api/webhook/tasker_driving"
       description: "Driving mode detected"
     
     - id: "nfc_scanned"
-      url: "http://192.168.1.201:8123/api/webhook/nfc_scanned"
+      url: "http://192.168.1.134:8123/api/webhook/nfc_scanned"
       description: "NFC tag scanned"
     
     - id: "tasker_activity"
-      url: "http://192.168.1.201:8123/api/webhook/tasker_activity"
+      url: "http://192.168.1.134:8123/api/webhook/tasker_activity"
       description: "Activity recognition (walking, running, etc)"
     
     - id: "tasker_voice_command"
-      url: "http://192.168.1.201:8123/api/webhook/tasker_voice_command"
+      url: "http://192.168.1.134:8123/api/webhook/tasker_voice_command"
       description: "Voice command processed"
 
 # ================================================
@@ -68,7 +68,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_home_wifi"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_home_wifi"
             content_type: "application/json"
             body: |
               {
@@ -93,7 +93,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_home_wifi"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_home_wifi"
             content_type: "application/json"
             body: |
               {
@@ -128,7 +128,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_entering_home"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_entering_home"
             content_type: "application/json"
             body: |
               {
@@ -164,7 +164,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_leaving_home"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_leaving_home"
             content_type: "application/json"
             body: |
               {
@@ -183,7 +183,7 @@ profiles:
           actions:
             - action: "HTTP Post"
               config:
-                url: "http://192.168.1.201:8123/api/services/lock/lock"
+                url: "http://192.168.1.134:8123/api/services/lock/lock"
                 body: |
                   {
                     "entity_id": "lock.front_door"
@@ -212,7 +212,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_driving"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_driving"
             content_type: "application/json"
             body: |
               {
@@ -244,7 +244,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_driving"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_driving"
             content_type: "application/json"
             body: |
               {
@@ -276,7 +276,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/nfc_scanned"
+            url: "http://192.168.1.134:8123/api/webhook/nfc_scanned"
             content_type: "application/json"
             body: |
               {
@@ -316,7 +316,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_battery"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_battery"
             content_type: "application/json"
             body: |
               {
@@ -352,7 +352,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_night_mode"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_night_mode"
             content_type: "application/json"
             body: |
               {
@@ -379,7 +379,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_night_mode"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_night_mode"
             content_type: "application/json"
             body: |
               {
@@ -414,7 +414,7 @@ profiles:
       actions:
         - action: "HTTP Post"
           config:
-            url: "http://192.168.1.201:8123/api/webhook/tasker_voice_command"
+            url: "http://192.168.1.134:8123/api/webhook/tasker_voice_command"
             content_type: "application/json"
             body: |
               {

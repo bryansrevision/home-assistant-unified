@@ -33,7 +33,7 @@ variables > Actions):
 gh secret list --repo bryansrevision/home-assistant-unified
 
 # Verify Home Assistant is accessible
-curl http://192.168.1.201:8123/api/ -H "Authorization: Bearer ${{ secrets.HOME_ASSISTANT_TOKEN }}"
+curl http://192.168.1.134:8123/api/ -H "Authorization: Bearer ${{ secrets.HOME_ASSISTANT_TOKEN }}"
 ```
 
 ### Step 2: Retrieve Secrets
@@ -67,7 +67,7 @@ $mcpConfig | Out-File config/mcp-m365-config-live.json -Encoding UTF8
 npx @modelcontextprotocol/server-m365
 
 # Test Home Assistant API
-Invoke-RestMethod -Uri "http://192.168.1.201:8123/api/" `
+Invoke-RestMethod -Uri "http://192.168.1.134:8123/api/" `
   -Method GET `
   -Headers @{ "Authorization" = "Bearer $env:HOME_ASSISTANT_TOKEN" }
 ```
@@ -79,7 +79,7 @@ Create `.github/connections/ha-services.yml`:
 ```yaml
 connections:
   - name: home-assistant
-    url: http://192.168.1.201:8123
+    url: http://192.168.1.134:8123
     auth:
       type: bearer
       token: ${{ secrets.HOME_ASSISTANT_TOKEN }}
@@ -108,7 +108,7 @@ import asyncio
 import websockets
 
 async def listen_ha_events():
-    uri = "ws://192.168.1.201:8123/api/websocket"
+    uri = "ws://192.168.1.134:8123/api/websocket"
     async with websockets.connect(uri) as websocket:
         # Authenticate
         await websocket.send(json.dumps({
@@ -141,7 +141,7 @@ kafka-console-consumer \
 #### Option 6: NGINX API Gateway (Load Balancing)
 ```nginx
 upstream ha_backend {
-    server 192.168.1.201:8123;
+    server 192.168.1.134:8123;
 }
 
 upstream agent_backend {

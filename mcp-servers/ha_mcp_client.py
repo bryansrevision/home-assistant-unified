@@ -35,7 +35,7 @@ class SyncDirection(Enum):
 @dataclass
 class MCPConfig:
     """MCP Configuration data class"""
-    host: str = "192.168.1.201"
+    host: str = "192.168.1.134"
     port: int = 8123
     token: str = ""
     protocol: str = "http"

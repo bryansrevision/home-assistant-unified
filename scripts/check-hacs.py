@@ -79,7 +79,7 @@ async def check_hacs_installation():
             print("   3. Manual: https://hacs.xyz/docs/setup/download")
             print()
             print("Quick Install via SSH:")
-            print("   ssh root@192.168.1.201")
+            print("   ssh root@192.168.1.134")
             print("   cd /config")
             print("   wget -O - https://get.hacs.xyz | bash -")
             print("   Then restart Home Assistant")

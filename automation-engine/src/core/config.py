@@ -21,7 +21,7 @@ class Config(BaseSettings):
     GITHUB_COPILOT_TOKEN: str = Field(default="", description="GitHub Copilot token")
 
     # Home Assistant Configuration
-    HOME_ASSISTANT_URL: str = Field(default="http://192.168.1.201:8123", description="Home Assistant URL")
+    HOME_ASSISTANT_URL: str = Field(default="http://192.168.1.134:8123", description="Home Assistant URL")
     HOME_ASSISTANT_TOKEN: str = Field(default="", description="Home Assistant long-lived access token")
     HOME_ASSISTANT_VERIFY_SSL: bool = Field(default=False, description="Verify SSL for Home Assistant")
 

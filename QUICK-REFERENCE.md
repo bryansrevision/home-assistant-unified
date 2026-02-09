@@ -13,12 +13,12 @@ notepad config/.env
 
 # Add to file:
 HOME_ASSISTANT_TOKEN=eyJhbGci...  # Get from HA settings
-HA_HOST=192.168.1.201
+HA_HOST=192.168.1.134
 HA_PORT=8123
 ```
 
 **Where to get token:**
-1. Go to http://192.168.1.201:8123
+1. Go to http://192.168.1.134:8123
 2. Profile (bottom left) → Long-Lived Access Tokens
 3. Create New Token → Name it "MCP Integration"
 4. Copy token to HOME_ASSISTANT_TOKEN
@@ -209,11 +209,11 @@ home-assistant-unified/
 ### Connection Failed
 ```bash
 # 1. Test server is running
-curl http://192.168.1.201:8123
+curl http://192.168.1.134:8123
 
 # 2. Test token is valid
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-     http://192.168.1.201:8123/api/
+     http://192.168.1.134:8123/api/
 
 # 3. Check firewall
 # Windows: Check if port 8123 is open

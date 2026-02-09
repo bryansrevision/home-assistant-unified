@@ -18,7 +18,7 @@
 **Configuration:**
 1. Open the app
 2. Tap "Add Server"
-3. Enter Home Assistant URL: `http://192.168.1.201:8123`
+3. Enter Home Assistant URL: `http://192.168.1.134:8123`
 4. Log in with your Home Assistant credentials
 5. Grant necessary permissions:
    - Location (for presence detection)
@@ -57,7 +57,7 @@
 **Configuration:**
 1. Open MQTT client app
 2. Add new connection:
-   - **Broker**: 192.168.1.201
+   - **Broker**: 192.168.1.134
    - **Port**: 1883
    - **Username**: [Your MQTT username]
    - **Password**: [Your MQTT password]
@@ -104,9 +104,9 @@ When on your home network (192.168.1.0/24):
 - Optimal performance
 
 **URLs:**
-- Home Assistant: `http://192.168.1.201:8123`
-- MCP Hub: `http://192.168.1.201:3000`
-- AI Automation: `http://192.168.1.201:5000`
+- Home Assistant: `http://192.168.1.134:8123`
+- MCP Hub: `http://192.168.1.134:3000`
+- AI Automation: `http://192.168.1.134:5000`
 
 ### Remote Access via Tailscale
 
@@ -196,8 +196,8 @@ Create Android shortcuts for common actions:
 ### Connection Issues
 ```bash
 # Test from Android Terminal Emulator or via PC
-ping 192.168.1.201
-curl http://192.168.1.201:8123/api/
+ping 192.168.1.134
+curl http://192.168.1.134:8123/api/
 ```
 
 ### Home Assistant Not Responding

@@ -1,6 +1,6 @@
 {
   "server": {
-    "host": "192.168.1.201",
+    "host": "192.168.1.134",
     "port": 8123,
     "connected": true
   },

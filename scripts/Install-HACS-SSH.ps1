@@ -2,7 +2,7 @@
 # Installs HACS on remote Home Assistant server via SSH
 
 param(
-    [string]$HAHost = "192.168.1.201",
+    [string]$HAHost = "192.168.1.134",
     [string]$SSHUser = "root",
     [switch]$SkipRestart,
     [string]$SSHKeyPath = ""
@@ -160,7 +160,7 @@ Write-Host "📋 Next Steps:" -ForegroundColor Yellow
 Write-Host "   1. Wait for Home Assistant to restart (30-60 seconds)" -ForegroundColor White
 Write-Host ""
 Write-Host "   2. Add HACS Integration" -ForegroundColor White
-Write-Host "      → http://192.168.1.201:8123" -ForegroundColor Gray
+Write-Host "      → http://192.168.1.134:8123" -ForegroundColor Gray
 Write-Host "      → Settings → Devices & Services → Add Integration" -ForegroundColor Gray
 Write-Host "      → Search for 'HACS'" -ForegroundColor Gray
 Write-Host ""

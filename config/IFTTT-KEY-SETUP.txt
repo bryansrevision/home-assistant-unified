@@ -102,7 +102,7 @@ https://YOUR_HA_URL/api/webhook/ifttt_ENDPOINT_NAME
 
 Example:
 ```
-https://192.168.1.201:8123/api/webhook/ifttt_mobile_button
+https://192.168.1.134:8123/api/webhook/ifttt_mobile_button
 ```
 
 Available endpoints:

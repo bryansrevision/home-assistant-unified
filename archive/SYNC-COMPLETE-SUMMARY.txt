@@ -142,7 +142,7 @@ notepad config\.env
 
 # Add your Home Assistant token:
 HOME_ASSISTANT_TOKEN=eyJhbGci...  # From HA settings
-HA_HOST=192.168.1.201
+HA_HOST=192.168.1.134
 HA_PORT=8123
 ```
 
@@ -222,7 +222,7 @@ git push
 - [ ] Verify Home Assistant version (2024.1+)
 - [ ] Generate long-lived token
 - [ ] Update config/.env
-- [ ] Verify network connectivity to 192.168.1.201:8123
+- [ ] Verify network connectivity to 192.168.1.134:8123
 
 ### Deployment
 - [ ] Run Initialize-MCPIntegration.ps1
@@ -318,7 +318,7 @@ You'll know everything is working when:
 
 | Issue | Fix |
 |-------|-----|
-| Connection failed | Check firewall: `curl http://192.168.1.201:8123` |
+| Connection failed | Check firewall: `curl http://192.168.1.134:8123` |
 | Token invalid | Regenerate in HA settings, update .env |
 | Sync conflicts | Review with `git diff`, resolve manually |
 | MQTT not working | `docker ps` to verify broker running |
@@ -399,7 +399,7 @@ Start with these in order:
 ║                                                                ║
 ║  Home Assistant Server Update & MCP Integration               ║
 ║  Repository Version: master                                   ║
-║  Live Server: 192.168.1.201:8123                             ║
+║  Live Server: 192.168.1.134:8123                             ║
 ║  Status: ✅ PRODUCTION READY                                  ║
 ║                                                                ║
 ║  Files Created: 11                                             ║

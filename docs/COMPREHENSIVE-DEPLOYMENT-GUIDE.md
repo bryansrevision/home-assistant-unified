@@ -114,7 +114,7 @@ API Status:
   - Network device discovery
   - Auto-fix capabilities
   - Error tracking and alerts
-  - Dashboard at http://192.168.1.201:8888
+  - Dashboard at http://192.168.1.134:8888
 
 ### 7. Android Device Integration (Enhanced) ✅
 **Existing file enhanced:**
@@ -184,7 +184,7 @@ Required custom cards for enhanced dashboards:
 
 ```bash
 # SSH into Home Assistant
-ssh root@192.168.1.201
+ssh root@192.168.1.134
 
 # Install ADB
 apk add android-tools
@@ -229,7 +229,7 @@ adb connect 192.168.1.227:5555  # NVIDIA Shield
 
 2. **Copy to HA:**
    ```powershell
-   Copy-Item SERVICE_ACCOUNT.JSON \\192.168.1.201\config\
+   Copy-Item SERVICE_ACCOUNT.JSON \\192.168.1.134\config\
    ```
 
 3. **Enable in HA:**
@@ -315,7 +315,7 @@ python agent_cli.py health
 ```powershell
 # Copy all integration files
 $source = "c:\Users\Dylan\Dev\.WorkSpace\HomeAssistant\home-assistant-unified\integrations"
-$dest = "\\192.168.1.201\config\integrations"
+$dest = "\\192.168.1.134\config\integrations"
 
 Copy-Item -Path "$source\*" -Destination $dest -Recurse -Force
 

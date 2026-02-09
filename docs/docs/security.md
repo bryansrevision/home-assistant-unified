@@ -150,7 +150,7 @@ Generate self-signed certificate:
 ```bash
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /ssl/privkey.pem -out /ssl/fullchain.pem \
-  -subj "/CN=192.168.1.201"
+  -subj "/CN=192.168.1.134"
 ```
 
 ### MQTT Security

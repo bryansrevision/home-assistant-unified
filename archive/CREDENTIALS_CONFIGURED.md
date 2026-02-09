@@ -6,7 +6,7 @@
 ## ✅ Credentials Configured
 
 ### Home Assistant
-- **URL:** http://192.168.1.201:8123
+- **URL:** http://192.168.1.134:8123
 - **Token:** ✅ Configured (from MCP config)
 - **Entities:** 263 configured
 - **Status:** Ready
@@ -57,7 +57,7 @@ All required credentials are now configured. You can:
 2. **Verify Connectivity:**
    ```bash
    # Test Home Assistant
-   curl -H "Authorization: Bearer $HA_TOKEN" http://192.168.1.201:8123/api/
+   curl -H "Authorization: Bearer $HA_TOKEN" http://192.168.1.134:8123/api/
 
    # Test Proxmox
    curl -k https://192.168.1.185:8006/api2/json/version -u "root@pam:root"
@@ -66,7 +66,7 @@ All required credentials are now configured. You can:
 3. **Access Services:**
    - Grafana: http://localhost:3000
    - InfluxDB: http://localhost:8086
-   - Home Assistant: http://192.168.1.201:8123
+   - Home Assistant: http://192.168.1.134:8123
 
 ## ⚠️ Security Notes
 

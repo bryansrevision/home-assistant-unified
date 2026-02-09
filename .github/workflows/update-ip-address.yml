@@ -1,0 +1,63 @@
+name: Update IP Address Configuration
+
+on:
+  workflow_dispatch:
+    inputs:
+      old_ip:
+        description: 'Old IP address'
+        required: true
+        default: '192.168.1.134'
+      new_ip:
+        description: 'New IP address'
+        required: true
+        default: '192.168.1.134'
+
+jobs:
+  update-ip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Update IP addresses
+        run: |
+          chmod +x scripts/update-ha-ip.sh
+          ./scripts/update-ha-ip.sh
+      
+      - name: Verify changes
+        run: |
+          chmod +x scripts/verify-ip-config.sh
+          ./scripts/verify-ip-config.sh
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "fix: Update Home Assistant IP from ${{ github.event.inputs.old_ip }} to ${{ github.event.inputs.new_ip }}"
+          title: "🔧 Update Home Assistant IP Configuration"
+          body: |
+            ## Changes
+            - Updated Home Assistant IP address from `${{ github.event.inputs.old_ip }}` to `${{ github.event.inputs.new_ip }}`
+            - Updated all configuration files, documentation, and scripts
+            
+            ## Files Modified
+            - Environment configuration files
+            - Integration YAML files
+            - Documentation (README, guides, API docs)
+            - Shell and Python scripts
+            
+            ## Testing Required
+            - [ ] Verify Home Assistant connectivity
+            - [ ] Test MQTT broker connection
+            - [ ] Validate MCP server endpoints
+            - [ ] Check automation engine connection
+            - [ ] Test mobile app connectivity
+            
+            ## Verification
+            Run verification script:
+            ```bash
+            ./scripts/verify-ip-config.sh
+            ```
+          branch: fix/update-ha-ip-address
+          delete-branch: true

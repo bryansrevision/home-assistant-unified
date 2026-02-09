@@ -25,15 +25,15 @@
 1. **Check Network Connectivity**
    ```
    - Verify WiFi is connected
-   - Try opening http://192.168.1.201:8123 in a browser
-   - Ping Home Assistant: Settings > Network > Ping 192.168.1.201
+   - Try opening http://192.168.1.134:8123 in a browser
+   - Ping Home Assistant: Settings > Network > Ping 192.168.1.134
    ```
 
 2. **Verify Home Assistant URL**
    ```
-   - Local URL: http://192.168.1.201:8123 (not https)
+   - Local URL: http://192.168.1.134:8123 (not https)
    - External URL: If using Nabu Casa or DuckDNS
-   - No trailing slash: ✅ http://192.168.1.201:8123 ❌ http://192.168.1.201:8123/
+   - No trailing slash: ✅ http://192.168.1.134:8123 ❌ http://192.168.1.134:8123/
    ```
 
 3. **Check Home Assistant Status**
@@ -72,7 +72,7 @@
 2. **Verify External URL**
    ```
    HA Companion App > App Configuration > Connection
-   - Internal URL: http://192.168.1.201:8123
+   - Internal URL: http://192.168.1.134:8123
    - External URL: http://your-tailscale-ip:8123
    ```
 
@@ -749,8 +749,8 @@
 1. **Test Local Network**
    ```bash
    # From Android terminal (Termux)
-   ping 192.168.1.201
-   curl http://192.168.1.201:8123
+   ping 192.168.1.134
+   curl http://192.168.1.134:8123
    ```
 
 2. **Test External Network**

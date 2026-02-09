@@ -1,7 +1,7 @@
 # Quick Start Guide: MQTT Integration & Automated Backups
 
 ## Overview
-This guide provides a streamlined path to configure MQTT integration and automated backups for your Home Assistant instance at http://192.168.1.201:8123.
+This guide provides a streamlined path to configure MQTT integration and automated backups for your Home Assistant instance at http://192.168.1.134:8123.
 
 ## Prerequisites
 - [ ] Home Assistant instance running and accessible
@@ -85,7 +85,7 @@ mosquitto_pub -h localhost -p 1883 -u homeassistant -P "YOUR_PASSWORD" -t 'test/
 ### Step 6: Add MQTT to Home Assistant
 
 **Via UI (Recommended):**
-1. Open http://192.168.1.201:8123
+1. Open http://192.168.1.134:8123
 2. Go to **Settings → Devices & Services**
 3. Click **+ ADD INTEGRATION**
 4. Search for "MQTT" and select it
@@ -106,7 +106,7 @@ mosquitto_pub -h localhost -p 1883 -u homeassistant -P "YOUR_PASSWORD" -t 'test/
 # Click START LISTENING
 
 # Publish test message
-mosquitto_pub -h 192.168.1.201 -p 1883 -u homeassistant -P "YOUR_PASSWORD" \
+mosquitto_pub -h 192.168.1.134 -p 1883 -u homeassistant -P "YOUR_PASSWORD" \
   -t 'homeassistant/test' -m '{"status": "working"}'
 ```
 
@@ -138,7 +138,7 @@ mosquitto_pub -h 192.168.1.201 -p 1883 -u homeassistant -P "YOUR_PASSWORD" \
 cd /path/to/HOME-AI-AUTOMATION
 
 # Set environment variables
-export HA_URL="http://192.168.1.201:8123"
+export HA_URL="http://192.168.1.134:8123"
 export HA_TOKEN="your_token_here"
 
 # Run validation test
@@ -214,14 +214,14 @@ EOF
 docker-compose up -d zigbee2mqtt
 
 # 6. Access web UI
-# Open http://192.168.1.201:8080
+# Open http://192.168.1.134:8080
 ```
 
 ✅ **Success**: Zigbee2MQTT web interface accessible, coordinator connected
 
 ### Pairing Devices
 
-1. Open Zigbee2MQTT UI: http://192.168.1.201:8080
+1. Open Zigbee2MQTT UI: http://192.168.1.134:8080
 2. Click "Permit join (All)"
 3. Put device in pairing mode (see device manual)
 4. Wait for device to appear in UI
@@ -276,7 +276,7 @@ docker-compose restart mosquitto
 ### Backup Script Errors
 ```bash
 # Check HA is accessible
-curl -H "Authorization: Bearer $HA_TOKEN" http://192.168.1.201:8123/api/
+curl -H "Authorization: Bearer $HA_TOKEN" http://192.168.1.134:8123/api/
 
 # Test connection
 python scripts/ha_backup.py --test-connection

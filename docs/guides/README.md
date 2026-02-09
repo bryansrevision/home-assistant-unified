@@ -16,7 +16,7 @@ An intelligent, AI-powered home automation system that enables natural language 
 - **Response Generation**: Provides natural, helpful feedback
 
 ### 🏠 Home Assistant Integration
-- **Seamless Connectivity**: Direct integration with Home Assistant at 192.168.1.201
+- **Seamless Connectivity**: Direct integration with Home Assistant at 192.168.1.134
 - **Entity Control**: Turn on/off lights, switches, and other entities
 - **State Monitoring**: Real-time status of all Home Assistant devices
 - **Service Calls**: Execute any Home Assistant service
@@ -131,7 +131,7 @@ An intelligent, AI-powered home automation system that enables natural language 
 
 2. **Configure in `.env`**
    ```bash
-   HOME_ASSISTANT_URL=http://192.168.1.201:8123
+   HOME_ASSISTANT_URL=http://192.168.1.134:8123
    HOME_ASSISTANT_TOKEN=your_token_here
    HOME_ASSISTANT_VERIFY_SSL=false
    ```
@@ -145,7 +145,7 @@ An intelligent, AI-powered home automation system that enables natural language 
 
 1. **Install Home Assistant Companion App**
    - Download from Google Play Store
-   - Connect to `http://192.168.1.201:8123`
+   - Connect to `http://192.168.1.134:8123`
    - Grant necessary permissions
 
 2. **Configure Devices** in `config/mobile_devices.json`
@@ -403,7 +403,7 @@ Automated backup system for Home Assistant that creates daily backups, stores th
 2. **Test Locally** (optional):
    ```bash
    # Set environment variables
-   export HA_URL="http://192.168.1.201:8123"
+   export HA_URL="http://192.168.1.134:8123"
    export HA_TOKEN="your_token_here"
    
    # Validate setup
