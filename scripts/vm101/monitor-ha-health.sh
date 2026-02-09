@@ -12,7 +12,7 @@ check_vm_health() {
     echo "Checking ${vm_name} (${vm_ip})..."
     
     # Check if Home Assistant is responding
-    if curl -s -f -m 5 http://${vm_ip}:8123/api/ > /dev/null 2>&1; then
+    if curl -s -f -m 5 "http://${vm_ip}:8123/api/" > /dev/null 2>&1; then
         echo "  ✅ ${vm_name} is healthy"
         return 0
     else
@@ -27,7 +27,7 @@ send_alert() {
     # Send notification via multiple channels
     
     # IFTTT webhook
-    curl -X POST https://maker.ifttt.com/trigger/ha_alert/with/key/${IFTTT_KEY} \
+    curl -X POST "https://maker.ifttt.com/trigger/ha_alert/with/key/${IFTTT_KEY}" \
         -d "value1=${message}"
     
     # Optional: Send email, SMS, etc.

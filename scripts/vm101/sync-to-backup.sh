@@ -44,7 +44,7 @@ download_backup() {
     
     curl -o /tmp/ha-backup.tar \
         -H "Authorization: Bearer ${PRIMARY_TOKEN}" \
-        http://${PRIMARY_IP}:8123/api/backup/download/${BACKUP_ID}
+        "http://${PRIMARY_IP}:8123/api/backup/download/${BACKUP_ID}"
 }
 
 # Upload to backup VM
@@ -64,7 +64,7 @@ restore_backup() {
     curl -X POST \
         -H "Authorization: Bearer ${BACKUP_TOKEN}" \
         -H "Content-Type: application/json" \
-        http://${BACKUP_IP}:8123/api/backup/restore/${BACKUP_ID}
+        "http://${BACKUP_IP}:8123/api/backup/restore/${BACKUP_ID}"
 }
 
 # Main execution
