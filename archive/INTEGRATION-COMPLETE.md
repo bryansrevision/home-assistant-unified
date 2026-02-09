@@ -1,7 +1,7 @@
 # ✅ FULL INTEGRATION COMPLETE
 
 **Date:** January 31, 2026  
-**Server:** 192.168.1.201:8123  
+**Server:** 192.168.1.134:8123  
 **Commit:** c7092c4  
 **Status:** 🟢 Live & Operational
 
@@ -153,7 +153,7 @@
 - Tools and resources definitions
 
 ✅ **.env** (Updated)
-- HOME_ASSISTANT_URL: http://192.168.1.201:8123
+- HOME_ASSISTANT_URL: http://192.168.1.134:8123
 - HOME_ASSISTANT_TOKEN: ✓ Configured
 - Environment properly loaded with python-dotenv
 
@@ -226,7 +226,7 @@
 
 - [x] MCP connection established
 - [x] Environment variables loaded correctly
-- [x] Live server accessible (192.168.1.201:8123)
+- [x] Live server accessible (192.168.1.134:8123)
 - [x] Bearer token authentication working
 - [x] All 328 entities retrieved
 - [x] All 27 automations synced

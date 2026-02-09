@@ -250,7 +250,7 @@ THEN: Webhooks → Send command to HA
 ```
 Task: Home WiFi Actions
 1. HTTP Post
-   URL: http://192.168.1.201:8123/api/webhook/tasker_home_wifi
+   URL: http://192.168.1.134:8123/api/webhook/tasker_home_wifi
    Content Type: application/json
    Body: {"device":"ulefone","action":"wifi_connected","ssid":"%WIFII"}
    
@@ -269,7 +269,7 @@ Task: Home WiFi Actions
 ```
 Task: Entering Home Zone
 1. HTTP Post
-   URL: http://192.168.1.201:8123/api/webhook/tasker_entering_home
+   URL: http://192.168.1.134:8123/api/webhook/tasker_entering_home
    
 2. Variable Set %AT_HOME = true
 
@@ -284,7 +284,7 @@ Task: Entering Home Zone
 ```
 Task: Leaving Home Zone
 1. HTTP Post
-   URL: http://192.168.1.201:8123/api/webhook/tasker_leaving_home
+   URL: http://192.168.1.134:8123/api/webhook/tasker_leaving_home
    
 2. Variable Set %AT_HOME = false
 
@@ -308,7 +308,7 @@ Task: Enable Driving Mode
 3. Launch App → Android Auto
 
 4. HTTP Post
-   URL: http://192.168.1.201:8123/api/webhook/tasker_driving
+   URL: http://192.168.1.134:8123/api/webhook/tasker_driving
    Body: {"device":"ulefone","activity":"driving","speed":"%LOCSPD"}
 
 5. Say → "Driving mode enabled"
@@ -324,7 +324,7 @@ Task: NFC Bedside Scanned
 1. Variable Set %SCANNED_TAG = %nfc_id
 
 2. HTTP Post
-   URL: http://192.168.1.201:8123/api/webhook/nfc_scanned
+   URL: http://192.168.1.134:8123/api/webhook/nfc_scanned
    Body: {"tag_id":"%nfc_id","location":"bedside"}
 
 3. Wait 1 second
@@ -369,7 +369,7 @@ Task: Night Mode
 3. Blue Light Filter → On
 
 4. HTTP Post
-   URL: http://192.168.1.201:8123/api/webhook/tasker_night_mode
+   URL: http://192.168.1.134:8123/api/webhook/tasker_night_mode
    Body: {"mode":"night","time":"%TIME"}
 
 5. Launch App → Sleep Tracker
@@ -460,7 +460,7 @@ Task: Backup New Photos
    
 2. For %photo in %photos
    HTTP Post
-   URL: http://192.168.1.201:3000/api/upload
+   URL: http://192.168.1.134:3000/api/upload
    File: %photo
    
 3. If %http_response_code = 200

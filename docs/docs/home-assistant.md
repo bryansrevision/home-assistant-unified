@@ -7,15 +7,15 @@ This document describes the Home Assistant configuration for Android device inte
 ## Server Configuration
 
 ### Instance Details
-- **URL**: http://192.168.1.201:8123
-- **HTTPS URL**: https://192.168.1.201:8123 (if SSL configured)
-- **Internal URL**: http://192.168.1.201:8123
+- **URL**: http://192.168.1.134:8123
+- **HTTPS URL**: https://192.168.1.134:8123 (if SSL configured)
+- **Internal URL**: http://192.168.1.134:8123
 - **Entities**: 263 configured entities
 
 ### Installation Location
 - **Platform**: Proxmox VE (VM or LXC)
 - **Host**: 192.168.1.185:8006
-- **Container/VM IP**: 192.168.1.201
+- **Container/VM IP**: 192.168.1.134
 
 ## Configuration Files
 
@@ -32,7 +32,7 @@ homeassistant:
   elevation: !secret home_elevation
   unit_system: metric
   time_zone: !secret timezone
-  internal_url: "http://192.168.1.201:8123"
+  internal_url: "http://192.168.1.134:8123"
   external_url: !secret external_url
 
 # Enable HTTP
@@ -109,7 +109,7 @@ device_tracker:
 
 # MQTT Configuration
 mqtt:
-  broker: 192.168.1.201
+  broker: 192.168.1.134
   port: 1883
   username: !secret mqtt_username
   password: !secret mqtt_password
@@ -125,7 +125,7 @@ mqtt:
 # REST API for AI Automation
 rest_command:
   ai_automation_trigger:
-    url: "http://192.168.1.201:5000/api/automation/trigger"
+    url: "http://192.168.1.134:5000/api/automation/trigger"
     method: POST
     headers:
       Authorization: !secret ai_automation_token
@@ -342,7 +342,7 @@ mobile_app:
 sensor:
   - platform: rest
     name: "MCP Hub Status"
-    resource: "http://192.168.1.201:3000/api/status"
+    resource: "http://192.168.1.134:3000/api/status"
     method: GET
     headers:
       Authorization: !secret mcp_hub_token

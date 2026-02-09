@@ -9,7 +9,7 @@
 
 This guide implements **bidirectional Model Context Protocol (MCP) integration**
 between the repository and the live Home Assistant server at
-`192.168.1.201:8123`.
+`192.168.1.134:8123`.
 
 The integration provides:
 - ✅ Real-time state synchronization
@@ -92,8 +92,8 @@ Set these in `config/.env`:
 ```bash
 # Home Assistant Server
 HOME_ASSISTANT_TOKEN=eyJhbGci...  # Long-lived token from HA
-HOME_ASSISTANT_URL=http://192.168.1.201:8123
-HA_HOST=192.168.1.201
+HOME_ASSISTANT_URL=http://192.168.1.134:8123
+HA_HOST=192.168.1.134
 HA_PORT=8123
 HA_PROTOCOL=http
 
@@ -121,7 +121,7 @@ Key sections:
 mcp_servers:
   home_assistant_live:
     connection:
-      host: '192.168.1.201'
+      host: '192.168.1.134'
       port: 8123
       
     entities:
@@ -145,7 +145,7 @@ mcp_servers:
 ```
 ┌─────────────────────────────────────────────────┐
 │         Home Assistant Server (Live)            │
-│         192.168.1.201:8123                      │
+│         192.168.1.134:8123                      │
 │                                                 │
 │  • 263+ Entities                                │
 │  • Automations                                  │
@@ -308,11 +308,11 @@ await client.listen_for_events()
 
 ```bash
 # Check if server is running
-curl -i http://192.168.1.201:8123/api/
+curl -i http://192.168.1.134:8123/api/
 
 # Verify token is valid
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-     http://192.168.1.201:8123/api/
+     http://192.168.1.134:8123/api/
 ```
 
 **Solutions:**

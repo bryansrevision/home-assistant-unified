@@ -36,7 +36,7 @@ infrastructure, and full production-grade security measures.
 
 ### Phase 3: MCP Infrastructure ✅
 - [x] MCP server deployed and connected
-- [x] Live server connection verified (192.168.1.201:8123)
+- [x] Live server connection verified (192.168.1.134:8123)
 - [x] 328 entities synced and cached
 - [x] 27 automations synchronized
 - [x] JWT Bearer token validated
@@ -236,7 +236,7 @@ Scripts:             12
 - **Deployment Status**: `DEPLOYMENT-READY.md` - Current deployment status
 
 ### Monitoring Tools
-- Home Assistant UI: http://192.168.1.201:8123
+- Home Assistant UI: http://192.168.1.134:8123
 - Proxmox UI: https://192.168.1.185:8006
 - IFTTT Activity: https://ifttt.com/activity
 

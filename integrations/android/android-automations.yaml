@@ -1031,7 +1031,7 @@
         message: "command_broadcast_intent"
         data:
           intent_action: "android.intent.action.VIEW"
-          intent_uri: "http://192.168.1.201:8123/lovelace/cameras"
+          intent_uri: "http://192.168.1.134:8123/lovelace/cameras"
 
 # ------------------------------------------------
 # 8.3 Handle "Sound Alarm" Action

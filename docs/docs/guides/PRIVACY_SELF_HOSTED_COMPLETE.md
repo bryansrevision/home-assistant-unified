@@ -503,7 +503,7 @@ pihole -w \
 
 # Add whitelist for necessary services
 pihole -w \
-  192.168.1.201 \
+  192.168.1.134 \
   ollama.local \
   nextcloud.local
 
@@ -895,7 +895,7 @@ EOF
 }
 
 # Create certificates for all services
-create_cert "homeassistant" "192.168.1.201"
+create_cert "homeassistant" "192.168.1.134"
 create_cert "nextcloud" "192.168.1.212"
 create_cert "photoprism" "192.168.1.213"
 create_cert "vaultwarden" "192.168.1.211"

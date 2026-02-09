@@ -7,7 +7,7 @@ Get your complete Home Automation ecosystem running in 5 minutes!
 ## ⚡ Prerequisites
 
 - **Docker & Docker Compose** installed
-- **Home Assistant** instance running (192.168.1.201:8123)
+- **Home Assistant** instance running (192.168.1.134:8123)
 - **Omi wearable** (optional) for wearables integration
 - **Proxmox VE** (optional) for infrastructure monitoring
 
@@ -29,7 +29,7 @@ nano .env
 
 ```bash
 # Home Assistant
-HOME_ASSISTANT_URL=http://192.168.1.201:8123
+HOME_ASSISTANT_URL=http://192.168.1.134:8123
 HOME_ASSISTANT_TOKEN=your_long_lived_token_here
 
 # Omi Wearables (if using)
@@ -99,7 +99,7 @@ curl http://localhost:8080/health
 ```bash
 # Test HA API
 curl -H "Authorization: Bearer YOUR_HA_TOKEN" \
-     http://192.168.1.201:8123/api/
+     http://192.168.1.134:8123/api/
 
 # Should return: {"message": "API running."}
 ```
@@ -189,7 +189,7 @@ docker-compose logs -f agentstack
 ### Mobile Devices
 
 1. Install Home Assistant Companion App on Android
-2. Configure in app: Settings → Companion App → Server → http://192.168.1.201:8123
+2. Configure in app: Settings → Companion App → Server → http://192.168.1.134:8123
 3. Add device in `integrations/mobile-devices/configs/`
 
 ### Omi Wearables
@@ -237,14 +237,14 @@ cat ./services/mqtt/config/mosquitto.conf
 
 ```bash
 # Verify HA is running
-curl http://192.168.1.201:8123
+curl http://192.168.1.134:8123
 
 # Check token
 echo $HOME_ASSISTANT_TOKEN
 
 # Test API
 curl -H "Authorization: Bearer $HOME_ASSISTANT_TOKEN" \
-     http://192.168.1.201:8123/api/
+     http://192.168.1.134:8123/api/
 ```
 
 ### InfluxDB Not Accepting Data
@@ -297,4 +297,4 @@ docker-compose up -d influxdb
 Access your dashboards:
 - **Grafana:** http://localhost:3000
 - **API Docs:** http://localhost:8000/docs
-- **Home Assistant:** http://192.168.1.201:8123
+- **Home Assistant:** http://192.168.1.134:8123

@@ -1,4 +1,4 @@
-# 🏪 HACS Installation - Step-by-Step Guide for 192.168.1.201
+# 🏪 HACS Installation - Step-by-Step Guide for 192.168.1.134
 
 ## ✅ Easiest Method: Terminal & SSH Add-on (Web UI)
 
@@ -7,7 +7,7 @@ Terminal add-on:
 
 ### Step 1: Access Home Assistant
 
-Open your browser to: **http://192.168.1.201:8123**
+Open your browser to: **http://192.168.1.134:8123**
 
 ### Step 2: Open Terminal & SSH Add-on
 
@@ -163,7 +163,7 @@ sudo wget -O - https://get.hacs.xyz | sudo bash -
 
 ## 📱 Quick Access Links
 
-- **Home Assistant:** http://192.168.1.201:8123
+- **Home Assistant:** http://192.168.1.134:8123
 - **GitHub Device Login:** https://github.com/login/device
 - **HACS Docs:** https://hacs.xyz/
 - **HACS Troubleshooting:** https://hacs.xyz/docs/issues

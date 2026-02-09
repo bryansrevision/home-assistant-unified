@@ -114,7 +114,7 @@ Configuration Validation:
   ✅ .gitignore properly excludes sensitive files
   
 Connectivity Tests:
-  ✅ Home Assistant API accessible (192.168.1.201:8123)
+  ✅ Home Assistant API accessible (192.168.1.134:8123)
   ✅ 328 entities synced and cached
   ✅ 27 automations confirmed
   ✅ MCP integration operational
@@ -205,7 +205,7 @@ Security Features:                8+
 
 ### Next Action: Ready for Restart
 ```
-1. Navigate to Home Assistant (192.168.1.201:8123)
+1. Navigate to Home Assistant (192.168.1.134:8123)
 2. Go to: Configuration > Server Controls > Restart Home Assistant
 3. Wait 2-3 minutes for services to start
 4. Check logs for any errors

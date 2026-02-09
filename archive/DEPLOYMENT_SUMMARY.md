@@ -43,7 +43,7 @@ home-assistant-unified/
 
 ### 5. Environment Configuration ✅
 **Created config/.env with:**
-- ✅ Home Assistant URL: http://192.168.1.201:8123
+- ✅ Home Assistant URL: http://192.168.1.134:8123
 - ✅ Proxmox Host: 192.168.1.185:8006
 - ✅ Proxmox User: root@pam
 - ✅ 60+ environment variables documented
@@ -79,7 +79,7 @@ home-assistant-unified/
 | **Grafana** | http://localhost:3000 | admin/admin |
 | **InfluxDB** | http://localhost:8086 | admin/changeme |
 | **MQTT** | localhost:1883 | anonymous |
-| **Home Assistant** | http://192.168.1.201:8123 | (your token) |
+| **Home Assistant** | http://192.168.1.134:8123 | (your token) |
 | **Proxmox** | https://192.168.1.185:8006 | root@pam |
 
 ---
@@ -138,7 +138,7 @@ docker ps
 1. Settings → Devices & Services → Add Integration
 2. Search for "MQTT"
 3. Configure:
-   - Broker: `localhost` or `192.168.1.201`
+   - Broker: `localhost` or `192.168.1.134`
    - Port: `1883`
    - Username: (leave empty for anonymous)
 
@@ -146,10 +146,10 @@ docker ps
 **From repository to Home Assistant:**
 ```bash
 # Copy wearables automations
-copy automations\wearables\*.yaml "\\192.168.1.201\config\automations\"
+copy automations\wearables\*.yaml "\\192.168.1.134\config\automations\"
 
 # Copy AI automations
-copy automations\ai-powered\*.yaml "\\192.168.1.201\config\automations\"
+copy automations\ai-powered\*.yaml "\\192.168.1.134\config\automations\"
 ```
 
 **Or manually:**
@@ -170,7 +170,7 @@ copy automations\ai-powered\*.yaml "\\192.168.1.201\config\automations\"
 ```powershell
 $token = "YOUR_HOME_ASSISTANT_TOKEN"
 $headers = @{ "Authorization" = "Bearer $token" }
-Invoke-RestMethod -Uri "http://192.168.1.201:8123/api/" -Headers $headers
+Invoke-RestMethod -Uri "http://192.168.1.134:8123/api/" -Headers $headers
 ```
 
 #### Test Proxmox Connectivity
@@ -248,7 +248,7 @@ docker-compose up -d
 
 ### Home Assistant Can't Connect
 - Verify token is valid
-- Check network connectivity: `ping 192.168.1.201`
+- Check network connectivity: `ping 192.168.1.134`
 - Ensure HA is running
 - Check firewall rules
 
