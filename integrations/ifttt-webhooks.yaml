@@ -1,255 +1,367 @@
----
-# IFTTT Webhooks Integration Configuration
-# Webhooks for mobile triggers via IFTTT applets
-# Home Assistant integration with Android/iOS apps
-# Updated: January 31, 2026
+# ================================================
+# IFTTT WEBHOOK CONFIGURATION
+# ================================================
+# Complete IFTTT integration setup for Home Assistant
+# Add to configuration.yaml:
+#   ifttt:
+#     key: !secret ifttt_webhook_key
+# ================================================
 
-################################################################################
-# IFTTT WEBHOOK SERVICE (Outgoing)
-################################################################################
-
-# IFTTT Notification Service - Send events TO IFTTT
+# ================================================
+# CONFIGURATION
+# ================================================
 ifttt:
   key: !secret ifttt_webhook_key
-
-################################################################################
-# REST COMMANDS - Send data TO IFTTT
-################################################################################
-
-rest_command:
-  # Send custom event to IFTTT
-  ifttt_trigger_event:
-    url: "https://maker.ifttt.com/trigger/{{ event }}/with/key/!secret ifttt_webhook_key"
-    method: POST
-    headers:
-      Content-Type: application/json
-    payload: >
-      {
-        "value1": "{{ value1 }}",
-        "value2": "{{ value2 }}",
-        "value3": "{{ value3 }}"
-      }
   
-  # Notify via IFTTT (for iOS/Android)
-  ifttt_notify:
-    url: "https://maker.ifttt.com/trigger/notify/with/key/!secret ifttt_webhook_key"
-    method: POST
-    headers:
-      Content-Type: application/json
-    payload: >
-      {
-        "value1": "{{ title }}",
-        "value2": "{{ message }}",
-        "value3": "{{ priority | default('normal') }}"
-      }
+  # Webhook Base URL
+  webhook_url: "https://maker.ifttt.com/trigger/{event}/with/key/{key}"
+  
+  # Home Assistant Webhook Receivers
+  incoming_webhooks:
+    - id: "ifttt_location_trigger"
+      description: "Location-based triggers from IFTTT"
+      url: "https://your-ha-url/api/webhook/ifttt_location_trigger"
+      method: "POST"
+      content_type: "application/json"
+    
+    - id: "ifttt_battery_alert"
+      description: "Battery level alerts"
+      url: "https://your-ha-url/api/webhook/ifttt_battery_alert"
+      method: "POST"
+    
+    - id: "ifttt_weather_trigger"
+      description: "Weather-based automations"
+      url: "https://your-ha-url/api/webhook/ifttt_weather_trigger"
+      method: "POST"
+    
+    - id: "ifttt_calendar_event"
+      description: "Calendar event triggers"
+      url: "https://your-ha-url/api/webhook/ifttt_calendar_event"
+      method: "POST"
 
-################################################################################
-# Webhook Automations from IFTTT
-################################################################################
+# ================================================
+# IFTTT APPLET CONFIGURATIONS
+# ================================================
 
-automation:
-  - id: 'ifttt_mobile_button_pressed'
-    alias: "IFTTT: Mobile Button Event"
-    description: "Handle mobile button presses from IFTTT"
+applets:
+  # ------------------------------------------------
+  # APPLET 1: Location Enter Home
+  # ------------------------------------------------
+  location_enter_home:
+    name: "Location - Entering Home"
+    description: "Trigger when Android device enters home area"
+    
     trigger:
-      - platform: webhook
-        webhook_id: !secret ifttt_mobile_button_webhook
+      service: "Android Device"
+      type: "Location"
+      action: "You enter an area"
+      area: "Home"
+      radius: "100 meters"
+    
     action:
-      - service: "{{ trigger.json.service }}"
-        data: "{{ trigger.json.service_data }}"
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_location_trigger"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "trigger": "entering_home",
+            "device": "{{DeviceName}}",
+            "timestamp": "{{OccurredAt}}",
+            "latitude": "{{Latitude}}",
+            "longitude": "{{Longitude}}"
+          }
+  
+  # ------------------------------------------------
+  # APPLET 2: Location Leave Home
+  # ------------------------------------------------
+  location_leave_home:
+    name: "Location - Leaving Home"
+    description: "Trigger when Android device leaves home area"
+    
+    trigger:
+      service: "Android Device"
+      type: "Location"
+      action: "You exit an area"
+      area: "Home"
+    
+    action:
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_location_trigger"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "trigger": "leaving_home",
+            "device": "{{DeviceName}}",
+            "timestamp": "{{OccurredAt}}"
+          }
+  
+  # ------------------------------------------------
+  # APPLET 3: Battery Low Alert
+  # ------------------------------------------------
+  battery_low:
+    name: "Battery Low Alert"
+    description: "Alert when Android battery drops below 20%"
+    
+    trigger:
+      service: "Android Device"
+      type: "Battery"
+      action: "Battery level drops below"
+      threshold: 20
+    
+    action:
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_battery_alert"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "event": "battery_low",
+            "level": "{{BatteryPercentage}}",
+            "device": "{{DeviceName}}",
+            "timestamp": "{{OccurredAt}}"
+          }
+  
+  # ------------------------------------------------
+  # APPLET 4: Battery Fully Charged
+  # ------------------------------------------------
+  battery_charged:
+    name: "Battery Fully Charged"
+    description: "Notify when battery reaches 100%"
+    
+    trigger:
+      service: "Android Device"
+      type: "Battery"
+      action: "Battery level rises above"
+      threshold: 99
+    
+    action:
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_battery_alert"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "event": "battery_charged",
+            "level": "100",
+            "device": "{{DeviceName}}"
+          }
+  
+  # ------------------------------------------------
+  # APPLET 5: Weather - Rain Forecast
+  # ------------------------------------------------
+  weather_rain:
+    name: "Weather - Rain Tomorrow"
+    description: "Prepare home for rain"
+    
+    trigger:
+      service: "Weather Underground"
+      type: "Forecast"
+      action: "Tomorrow's forecast calls for"
+      condition: "Rain"
+    
+    action:
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_weather_trigger"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "weather": "rain",
+            "forecast": "tomorrow",
+            "action": "prepare_for_rain"
+          }
+  
+  # ------------------------------------------------
+  # APPLET 6: Calendar Event Starting
+  # ------------------------------------------------
+  calendar_meeting:
+    name: "Calendar - Meeting Starting"
+    description: "Enable work mode when meeting starts"
+    
+    trigger:
+      service: "Google Calendar"
+      type: "Event from search starts"
+      search_query: "Meeting OR Work OR Call"
+    
+    action:
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_calendar_event"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "event": "{{Title}}",
+            "start_time": "{{Starts}}",
+            "end_time": "{{Ends}}",
+            "action": "enable_work_mode"
+          }
+  
+  # ------------------------------------------------
+  # APPLET 7: Email Command
+  # ------------------------------------------------
+  email_command:
+    name: "Email - Home Command"
+    description: "Execute commands via email"
+    
+    trigger:
+      service: "Email"
+      type: "New email from"
+      sender: "your-trusted-email@example.com"
+      subject_contains: "Execute:"
+    
+    action:
+      service: "Webhooks"
+      type: "Make a web request"
+      config:
+        url: "http://192.168.1.201:8123/api/webhook/ifttt_email_command"
+        method: "POST"
+        content_type: "application/json"
+        body: |
+          {
+            "subject": "{{Subject}}",
+            "body": "{{Body}}",
+            "sender": "{{FromAddress}}"
+          }
 
-  - id: 'ifttt_notification_action'
-    alias: "IFTTT: Handle Notification Actions"
-    description: "Process actions from mobile notifications"
+# ================================================
+# HOME ASSISTANT → IFTTT TRIGGERS
+# ================================================
+# Send events FROM Home Assistant TO IFTTT
+
+outgoing_triggers:
+  # Backup completed
+  - event_name: "backup_all_services"
+    description: "Trigger multi-service backup"
+    home_assistant_trigger:
+      platform: time
+      at: "02:00:00"
+    ifttt_value1: "{{ now().strftime('%Y-%m-%d') }}"
+    ifttt_value2: "{{ states('sensor.backup_size') }}"
+    ifttt_value3: "completed"
+  
+  # Vacation mode enabled
+  - event_name: "vacation_mode_enabled"
+    description: "Notify when vacation mode starts"
+    home_assistant_trigger:
+      platform: state
+      entity_id: input_boolean.vacation_mode
+      to: 'on'
+    ifttt_value1: "{{ states('sensor.indoor_temperature') }}"
+    ifttt_value2: "{{ now().strftime('%Y-%m-%d %H:%M') }}"
+  
+  # Security alert
+  - event_name: "security_alert"
+    description: "Critical security notification"
+    home_assistant_trigger:
+      platform: state
+      entity_id: alarm_control_panel.home_security
+      to: 'triggered'
+    ifttt_value1: "{{ trigger.to_state.attributes.changed_by }}"
+    ifttt_value2: "{{ now().timestamp() }}"
+
+# ================================================
+# SETUP INSTRUCTIONS
+# ================================================
+setup_instructions: |
+  1. Get IFTTT Webhook Key:
+     - Visit: https://ifttt.com/maker_webhooks
+     - Click "Documentation"
+     - Copy your webhook key
+  
+  2. Add to secrets.yaml:
+     ifttt_webhook_key: YOUR_KEY_HERE
+  
+  3. Create IFTTT Applets:
+     - Go to https://ifttt.com/create
+     - Configure each applet from the configurations above
+     - Replace webhook URLs with your actual HA URL
+  
+  4. Add to configuration.yaml:
+     ifttt:
+       key: !secret ifttt_webhook_key
+  
+  5. Restart Home Assistant
+  
+  6. Test webhooks:
+     - Use Developer Tools → Services
+     - Call: ifttt.trigger
+     - Data: {"event": "test", "value1": "hello"}
+
+# ================================================
+# WEBHOOK AUTOMATION EXAMPLES
+# ================================================
+# Add these to your automations.yaml
+
+automation_examples:
+  - alias: "IFTTT - Process Location Trigger"
     trigger:
       - platform: webhook
-        webhook_id: !secret ifttt_notification_webhook
+        webhook_id: ifttt_location_trigger
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.json.trigger == 'entering_home' }}"
+            sequence:
+              - service: script.arriving_home
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.json.trigger == 'leaving_home' }}"
+            sequence:
+              - service: script.leaving_home
+  
+  - alias: "IFTTT - Battery Alert"
+    trigger:
+      - platform: webhook
+        webhook_id: ifttt_battery_alert
+    action:
+      - service: notify.mobile_app_primary_android
+        data:
+          message: "Phone battery: {{ trigger.json.level }}%"
+          title: "Battery Status"
+  
+  - alias: "IFTTT - Weather Preparation"
+    trigger:
+      - platform: webhook
+        webhook_id: ifttt_weather_trigger
     condition:
       - condition: template
-        value_template: "{{ trigger.json.action is defined }}"
+        value_template: "{{ trigger.json.action == 'prepare_for_rain' }}"
     action:
-      - service: "{{ trigger.json.action }}"
-        data_template:
-          entity_id: "{{ trigger.json.target }}"
-
-  - id: 'ifttt_tasker_trigger'
-    alias: "IFTTT: Tasker Integration"
-    description: "Receive Tasker automation events"
-    trigger:
-      - platform: webhook
-        webhook_id: !secret ifttt_tasker_webhook
-    condition:
-      - condition: state
-        entity_id: input_boolean.tasker_integration
-        state: 'on'
-    action:
-      - service: python_script.process_tasker_event
-        data_template:
-          event_type: "{{ trigger.json.event_type }}"
-          data: "{{ trigger.json.data }}"
-
-  - id: 'ifttt_scene_activation'
-    alias: "IFTTT: Scene Activation from Mobile"
-    description: "Activate scenes via IFTTT"
-    trigger:
-      - platform: webhook
-        webhook_id: !secret ifttt_scene_webhook
-    action:
-      - service: scene.turn_on
+      - service: cover.close_cover
         target:
-          entity_id: "scene.{{ trigger.json.scene_name }}"
-
-################################################################################
-# IFTTT Applet Configurations
-################################################################################
-
-# Applet 1: "If voice command → Then turn on lights"
-input_boolean:
-  ifttt_voice_lights:
-    name: "IFTTT Voice Lights"
-    initial: off
-    icon: mdi:lightbulb-outline
-
-script:
-  ifttt_voice_activate:
-    description: "Activate voice-triggered scene"
-    sequence:
-      - service: light.turn_on
-        target:
-          entity_id: light.{{ trigger.json.area }}_lights
+          entity_id: all
+      - service: notify.mobile_app_primary_android
         data:
-          brightness_pct: "{{ trigger.json.brightness | default(80) }}"
+          message: "Rain forecast tomorrow. Windows closed."
+          title: "Weather Alert"
 
-# Applet 2: "If motion detected → Then send notification"
-automation:
-  - id: 'ifttt_send_motion_notification'
-    alias: "IFTTT: Send Motion Notification"
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.front_door_motion
-        to: 'on'
-    action:
-      - service: webhook.send
-        data:
-          method: POST
-          url: !secret ifttt_webhook_url
-          data:
-            value1: "Motion detected at front door"
-            value2: "{{ now().strftime('%I:%M %p') }}"
-            value3: "{{ states('camera.front_door') }}"
-
-# Applet 3: "If battery low → Then alert user"
-automation:
-  - id: 'ifttt_battery_alert'
-    alias: "IFTTT: Battery Low Alert"
-    trigger:
-      - platform: numeric_state
-        entity_id: sensor.phone_battery
-        below: 20
-    action:
-      - service: webhook.send
-        data:
-          method: POST
-          url: !secret ifttt_webhook_url
-          data:
-            value1: "Battery Low"
-            value2: "{{ states('sensor.phone_battery') }}%"
-            value3: "Charge your device"
-
-# Applet 4: "If location changed → Then arm/disarm"
-automation:
-  - id: 'ifttt_location_based_arm'
-    alias: "IFTTT: Location-Based Security"
-    trigger:
-      - platform: webhook
-        webhook_id: !secret ifttt_location_webhook
-    condition:
-      - condition: template
-        value_template: "{{ trigger.json.location == 'home' }}"
-    action:
-      - service: alarm_control_panel.alarm_disarm
-        target:
-          entity_id: alarm_control_panel.home_alarm
-        data:
-          code: !secret alarm_code
-
-# Applet 5: "If temperature alert → Then adjust thermostat"
-automation:
-  - id: 'ifttt_temp_adjustment'
-    alias: "IFTTT: Temperature Adjustment"
-    trigger:
-      - platform: webhook
-        webhook_id: !secret ifttt_temperature_webhook
-    action:
-      - service: climate.set_temperature
-        target:
-          entity_id: climate.home_thermostat
-        data:
-          temperature: "{{ trigger.json.target_temp }}"
-
-################################################################################
-# Input Helpers for IFTTT Integration
-################################################################################
-
-input_text:
-  ifttt_last_event:
-    name: "IFTTT Last Event"
-    initial: "none"
-    max: 255
-
-input_select:
-  ifttt_mode:
-    name: "IFTTT Integration Mode"
-    options:
-      - "enabled"
-      - "disabled"
-      - "test"
-    initial: "enabled"
-
-input_number:
-  ifttt_timeout:
-    name: "IFTTT Webhook Timeout (seconds)"
-    min: 5
-    max: 60
-    step: 5
-    unit_of_measurement: "s"
-    initial: 30
-
-################################################################################
-# Service Calls for IFTTT Actions
-################################################################################
-
-service:
-  ifttt_send_event:
-    description: "Send custom event to IFTTT"
-    fields:
-      event_value1:
-        description: "IFTTT value 1"
-        example: "Motion detected"
-      event_value2:
-        description: "IFTTT value 2"
-        example: "Front door"
-      event_value3:
-        description: "IFTTT value 3"
-        example: "Low confidence"
-
-################################################################################
-# Template Sensors for IFTTT Status
-################################################################################
-
-template:
-  - sensor:
-      - name: "IFTTT Integration Status"
-        unique_id: ifttt_status
-        state: "{{ state_attr('rest.ifttt_webhook', 'status') }}"
-        availability: "{{ state_attr('rest.ifttt_webhook', 'status') is defined }}"
-        icon: mdi:webhook
-
-      - name: "IFTTT Last Event Type"
-        unique_id: ifttt_last_event_type
-        state: "{{ state_attr('input_text.ifttt_last_event', 'last_triggered') }}"
-        icon: mdi:bell-ring-outline
-
-################################################################################
-# END OF IFTTT WEBHOOKS CONFIGURATION
-################################################################################
+# ================================================
+# STATISTICS
+# ================================================
+# Total Applets Configured: 7
+# - Location-based: 2
+# - Battery monitoring: 2
+# - Weather automation: 1
+# - Calendar integration: 1
+# - Email commands: 1
+#
+# Outgoing Triggers: 3
+# - Backup notifications
+# - Vacation mode alerts
+# - Security alerts
+# ================================================

@@ -296,24 +296,24 @@ script:
 # REST Commands for GitHub API
 rest_command:
   get_github_actions_status:
-    url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/actions/runs?status=in_progress"
+    url: "https://api.github.com/repos/{{ states('input_text.github_owner') }}/{{ states('input_text.github_repo') }}/actions/runs?status=in_progress"
     method: GET
     headers:
-      Authorization: "token {{ github_token }}"
+      Authorization: !secret github_token_header
       Accept: "application/vnd.github.v3+json"
       
   get_github_issues:
-    url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/issues?state=open"
+    url: "https://api.github.com/repos/{{ states('input_text.github_owner') }}/{{ states('input_text.github_repo') }}/issues?state=open"
     method: GET
     headers:
-      Authorization: "token {{ github_token }}"
+      Authorization: !secret github_token_header
       Accept: "application/vnd.github.v3+json"
       
   get_github_recent_commits:
-    url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/commits?since={{ (now() - timedelta(days=1)).isoformat() }}"
+    url: "https://api.github.com/repos/{{ states('input_text.github_owner') }}/{{ states('input_text.github_repo') }}/commits?since={{ (now() - timedelta(days=1)).isoformat() }}"
     method: GET
     headers:
-      Authorization: "token {{ github_token }}"
+      Authorization: !secret github_token_header
       Accept: "application/vnd.github.v3+json"
 
 # GitHub Status Sensors

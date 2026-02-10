@@ -101,26 +101,26 @@ views:
             icon: mdi:server
             tap_action:
               action: url
-              url_path: "https://192.168.1.100:8006"
+              url_path: !secret proxmox_url
           - type: button
             name: Open Node-RED
             icon: mdi:sitemap
             tap_action:
               action: url
-              url_path: "http://192.168.1.134:1880"
+              url_path: !secret nodered_url
           - type: button
             name: MCP Hub
             icon: mdi:robot
             tap_action:
               action: url
-              url_path: "http://192.168.1.134:8765"
+              url_path: !secret mcp_hub_url
 
       - type: iframe
         title: Proxmox Console
-        url: "https://192.168.1.100:8006"
+        url: !secret proxmox_url
         aspect_ratio: 75%
 
       - type: iframe
         title: Node-RED Console
-        url: "http://192.168.1.134:1880"
+        url: !secret nodered_url
         aspect_ratio: 60%
