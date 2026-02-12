@@ -79,8 +79,9 @@ main() {
     echo "✅ Sync complete!"
     echo "Backup ID: ${BACKUP_ID}"
     echo ""
-    echo "To restore on VM 101, run:"
-    echo "  ./scripts/vm101/restore-backup.sh ${BACKUP_ID}"
+    echo "Restore on VM 101 is optional. You can:"
+    echo "  - Use the Home Assistant UI on VM 101 to restore this backup ID, or"
+    echo "  - Call the restore_backup() function in this script (uncomment its use if desired)."
 }
 
 main
