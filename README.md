@@ -148,13 +148,6 @@ home-assistant-unified/
 - **[Android Setup](./docs/technical/android-setup.md)** - Android integration
 
 For a complete list of all documentation, see [DOCUMENTATION-INDEX.md](./DOCUMENTATION-INDEX.md).
-- [Proxmox Integration](docs/guides/proxmox-setup.md)
-- [MCP Configuration](docs/guides/mcp-setup.md)
-- [AI Control Guide](docs/guides/ai-control.md)
-- [Wearables Setup](docs/guides/wearables-setup.md)
-- [API Reference](docs/api/REST_API.md)
-- [MQTT Topics](docs/api/MQTT_TOPICS.md)
-- [Troubleshooting](docs/troubleshooting/)
 
 ## 🔐 Security
 
