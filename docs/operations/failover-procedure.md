@@ -29,10 +29,11 @@ Update all devices/services to use: `http://192.168.1.201:8123`
 
 ### 4. Verify Services
 ```bash
-# Check all integrations
+# Check all integrations (unauthenticated)
 curl http://192.168.1.201:8123/api/
-curl http://192.168.1.201:8123/api/config
 
+# Config endpoint requires a valid Home Assistant token:
+# curl -H "Authorization: Bearer <HOME_ASSISTANT_TOKEN>" http://192.168.1.201:8123/api/config
 # Test automation engine
 curl http://192.168.1.201:5000/api/health
 
