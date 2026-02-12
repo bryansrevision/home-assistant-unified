@@ -55,7 +55,7 @@
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | [SYNC_GUIDE.md](./docs/SYNC_GUIDE.md) | Repository sync strategy | Maintainers |
-| [align-server.py](./scripts/README.md) | Server sync tool | Developers |
+| [align-server.py](./scripts/align-server.py) | Server sync tool | Developers |
 | State export | Backup & recovery | Operators |
 
 ### 📱 Integrations
